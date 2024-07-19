@@ -1,4 +1,5 @@
 package br.ufg.ceia.gameinsight.userservice.domain.user;
+import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -62,7 +63,7 @@ public class User {
      * The marketplace profiles associated with the user (e.g., Steam, PlayStation, Xbox).
      */
     @Field
-    private MarketplaceProfiles marketplaceProfiles;
+    private List<MarketplaceProfile> marketplaceProfiles;
 
     /**
      * The friend list of the user.
@@ -204,7 +205,7 @@ public class User {
      *
      * @return The marketplace profiles associated with the user.
      */
-    public MarketplaceProfiles getMarketplaceProfiles() {
+    public List<MarketplaceProfile> getMarketplaceProfiles() {
         return marketplaceProfiles;
     }
 
@@ -213,7 +214,7 @@ public class User {
      *
      * @param marketplaceProfiles The marketplace profiles associated with the user.
      */
-    public void setMarketplaceProfiles(MarketplaceProfiles marketplaceProfiles) {
+    public void setMarketplaceProfiles( List<MarketplaceProfile>  marketplaceProfiles) {
         this.marketplaceProfiles = marketplaceProfiles;
     }
 
@@ -233,6 +234,43 @@ public class User {
      */
     public void setFriends(List<Friend> friends) {
         this.friends = friends;
+    }
+
+    // Adders and removers
+    /**
+     * Adds a friend to the user's friend list.
+     *
+     * @param friend The friend to add.
+     */
+    public void addFriend(Friend friend) {
+        friends.add(friend);
+    }
+
+    /**
+     * Removes a friend from the user's friend list.
+     *
+     * @param friend The friend to remove.
+     */
+    public void removeFriend(Friend friend) {
+        friends.remove(friend);
+    }
+
+    /**
+     * Adds a marketplace profile to the user's marketplace profiles.
+     *
+     * @param marketplaceProfile The marketplace profile to add.
+     */
+    public void addMarketplaceProfile(MarketplaceProfile marketplaceProfile) {
+        marketplaceProfiles.add(marketplaceProfile);
+    }
+
+    /**
+     * Removes a marketplace profile from the user's marketplace profiles.
+     *
+     * @param marketplaceProfile The marketplace profile to remove.
+     */
+    public void removeMarketplaceProfile(MarketplaceProfile marketplaceProfile) {
+        marketplaceProfiles.remove(marketplaceProfile);
     }
 
     // Equals and hashCode

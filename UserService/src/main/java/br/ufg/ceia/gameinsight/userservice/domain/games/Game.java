@@ -26,22 +26,10 @@ public class Game {
     private String title;
 
     /**
-     * The genre of the game.
+     * The genres of the game.
      */
     @Field
-    private String genre;
-
-    /**
-     * The release date of the game.
-     */
-    @Field
-    private Date releaseDate;
-
-    /**
-     * The developer of the game.
-     */
-    @Field
-    private String developer;
+    private List<String> genre;
 
     /**
      * The thumbnail image URL of the game.
@@ -112,57 +100,21 @@ public class Game {
     }
 
     /**
-     * Gets the developer of the game.
+     * Gets the genres of the game.
      *
-     * @return The developer of the game.
+     * @return The genres of the game.
      */
-    public String getDeveloper() {
-        return developer;
-    }
-
-    /**
-     * Sets the developer of the game.
-     *
-     * @param developer The developer of the game.
-     */
-    public void setDeveloper(String developer) {
-        this.developer = developer;
-    }
-
-    /**
-     * Gets the release date of the game.
-     *
-     * @return The release date of the game.
-     */
-    public Date getReleaseDate() {
-        return releaseDate;
-    }
-
-    /**
-     * Sets the release date of the game.
-     *
-     * @param releaseDate The release date of the game.
-     */
-    public void setReleaseDate(Date releaseDate) {
-        this.releaseDate = releaseDate;
-    }
-
-    /**
-     * Gets the genre of the game.
-     *
-     * @return The genre of the game.
-     */
-    public String getGenre() {
+    public List<String> getGenre() {
         return genre;
     }
 
     /**
-     * Sets the genre of the game.
+     * Sets the genres of the game.
      *
-     * @param genre The genre of the game.
+     * @param genres The genre of the game.
      */
-    public void setGenre(String genre) {
-        this.genre = genre;
+    public void setGenre(List<String> genres) {
+        this.genre = genres;
     }
 
     /**
@@ -183,6 +135,44 @@ public class Game {
         this.title = title;
     }
 
+    // Add and Remove Achievement
+    /**
+     * Adds an achievement to the list of achievements associated with the game.
+     *
+     * @param achievement The achievement to add to the list of achievements associated with the game.
+     */
+    public void addAchievement(Achievement achievement) {
+        this.achievements.add(achievement);
+    }
+
+    /**
+     * Removes an achievement from the list of achievements associated with the game.
+     *
+     * @param achievement The achievement to remove from the list of achievements associated with the game.
+     */
+    public void removeAchievement(Achievement achievement) {
+        this.achievements.remove(achievement);
+    }
+
+    // Add and Remove Genre
+    /**
+     * Adds a genre to the list of genres associated with the game.
+     *
+     * @param genre The genre to add to the list of genres associated with the game.
+     */
+    public void addGenre(String genre) {
+        this.genre.add(genre);
+    }
+
+    /**
+     * Removes a genre from the list of genres associated with the game.
+     *
+     * @param genre The genre to remove from the list of genres associated with the game.
+     */
+    public void removeGenre(String genre) {
+        this.genre.remove(genre);
+    }
+
     // Equals and hashcode
 
     /**
@@ -199,8 +189,6 @@ public class Game {
         return Objects.equals(gameId, game.gameId) &&
             Objects.equals(title, game.title) &&
             Objects.equals(genre, game.genre) &&
-            Objects.equals(releaseDate, game.releaseDate) &&
-            Objects.equals(developer, game.developer) &&
             Objects.equals(thumbnail, game.thumbnail) &&
             Objects.equals(achievements, game.achievements);
     }
@@ -213,8 +201,7 @@ public class Game {
     @Override
     public int hashCode() {
         return Objects.hash(gameId, title, genre,
-                releaseDate, developer, thumbnail,
-                achievements);
+                thumbnail, achievements);
     }
 
     // ToString
@@ -229,8 +216,6 @@ public class Game {
                 "gameId='" + gameId + '\'' +
                 ", title='" + title + '\'' +
                 ", genre='" + genre + '\'' +
-                ", releaseDate=" + releaseDate +
-                ", developer='" + developer + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +
                 ", achievements=" + achievements +
                 '}';
