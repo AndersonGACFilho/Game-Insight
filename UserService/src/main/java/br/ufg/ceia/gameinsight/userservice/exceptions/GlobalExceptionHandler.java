@@ -1,6 +1,7 @@
-package br.ufg.fullstack.rpg_character_sheet_manager.exceptions;
+package br.ufg.ceia.gameinsight.userservice.exceptions;
 
-import br.ufg.fullstack.rpg_character_sheet_manager.exceptions.erros.StandardError;
+
+import br.ufg.ceia.gameinsight.userservice.exceptions.erros.StandardError;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -9,13 +10,16 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<StandardError> handleResourceNotFoundException(ResourceNotFoundException ex,
-                                                                         HttpServletRequest request) {
+        HttpServletRequest request)
+    {
         StandardError error = new StandardError(
                 System.currentTimeMillis(),
                 HttpStatus.NOT_FOUND.value(),
@@ -29,7 +33,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<StandardError> handleDataIntegrityViolationException(DataIntegrityViolationException ex,
-                                                                              HttpServletRequest request) {
+        HttpServletRequest request)
+    {
         StandardError error = new StandardError(
                 System.currentTimeMillis(),
                 HttpStatus.BAD_REQUEST.value(),

@@ -1,0 +1,116 @@
+package br.ufg.ceia.gameinsight.userservice.controllers;
+
+import br.ufg.ceia.gameinsight.userservice.configs.JwtResponse;
+import br.ufg.ceia.gameinsight.userservice.domain.user.User;
+import br.ufg.ceia.gameinsight.userservice.dtos.LoginRequest;
+import br.ufg.ceia.gameinsight.userservice.dtos.UserDto;
+import br.ufg.ceia.gameinsight.userservice.exceptions.BadCredentialsException;
+import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
+import br.ufg.ceia.gameinsight.userservice.services.AuthenticationService;
+import br.ufg.ceia.gameinsight.userservice.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+
+@RestController()
+@RequestMapping("/users")
+public class UserController {
+
+    /**
+     * The logger.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    /**
+     * The service that handles the authentication operations.
+     */
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    /**
+     * The service that handles the user operations.
+     */
+    @Autowired
+    private UserService userService;
+
+    // Mapping for the user operations
+
+    /**
+     * Creates a new user.
+     *
+     * @param user The user to be created.
+     */
+    @PostMapping("/register")
+    public ResponseEntity<Void> createUser(@RequestBody User user) {
+        // Create a new user
+        logger.info("Creating a new user: " + user.getEmail());
+        User createdUser = userService.createUser(user);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Gets the logged user.
+     * @return The logged user.
+     */
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getLoggedUser() {
+        // Get the secret key
+        logger.info("Getting the logged user");
+        // Get the logged user
+        User user = userService.getUser();
+        // Return the user
+        return ResponseEntity.ok(new UserDto(user));
+    }
+
+    /**
+     * Get all users.
+     *
+     * @param page of the page (number of the page).
+     * @param size of the page (number of users).
+     * @param sortBy of the page (field name).
+     * @param order of the page (ASC or DESC).
+     * @return Page of users.
+     */
+    @GetMapping("/all")
+    public ResponseEntity<Page<UserDto>> getAllUsers(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order) {
+        // Get all users
+        Page<User> users = userService.getAllUsers(page, size, sortBy, order);
+        // Return the users
+        return ResponseEntity.ok(users.map(UserDto::new));
+    }
+
+    /**
+     * Login the user.
+     *
+     * @param loginRequest The login request.
+     * @return The token.
+     */
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest) {
+        try {
+            // Authenticate the user
+            String token = authenticationService.authenticateUser(loginRequest);
+            return ResponseEntity.ok(new JwtResponse(token));
+        } catch (Exception e) {
+            logger.error("Error authenticating the user", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                new BadCredentialsException("Invalid email or password"));
+        }
+    }
+}

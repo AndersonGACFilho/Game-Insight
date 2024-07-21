@@ -1,4 +1,4 @@
-package br.ufg.fullstack.rpg_character_sheet_manager.exceptions.erros;
+package br.ufg.ceia.gameinsight.userservice.exceptions.erros;
 
 import java.io.Serializable;
 

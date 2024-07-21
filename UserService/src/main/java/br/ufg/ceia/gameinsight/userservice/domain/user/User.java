@@ -1,9 +1,9 @@
 package br.ufg.ceia.gameinsight.userservice.domain.user;
 import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.Date;
 import java.util.List;
@@ -20,56 +20,57 @@ public class User {
     /**
      * The unique identifier for the user.
      */
-    @Id
-    private String userId;
+    @MongoId(FieldType.INT64)
+    private int id;
 
     /**
      * The name of the user.
      */
-    @Field
+    @Indexed
     private String name;
 
     /**
      * The email address of the user.
      */
-    @Field
+    @Indexed(unique = true)
     private String email;
 
     /**
      * The hashed password of the user.
      */
-    @Field
-    private String passwordHash;
+    @Indexed
+    private String password;
 
     /**
      * The date when the user was created.
      */
-    @Field
+    @Indexed
     private Date createdAt;
 
     /**
      * The date when the user was last updated.
      */
-    @Field
+    @Indexed
     private Date updatedAt;
 
     /**
      * The profile of the user containing personal details.
      */
-    @Field
+    @Indexed
     private UserProfile profile;
 
     /**
      * The marketplace profiles associated with the user (e.g., Steam, PlayStation, Xbox).
      */
-    @Field
+    @Indexed
     private List<MarketplaceProfile> marketplaceProfiles;
 
     /**
      * The friend list of the user.
      */
-    @Field
+    @Indexed
     private List<Friend> friends;
+
 
     // Getters and setters
 
@@ -78,17 +79,17 @@ public class User {
      *
      * @return The unique identifier for the user.
      */
-    public String getUserId() {
-        return userId;
+    public Integer getId() {
+        return id;
     }
 
     /**
      * Sets the unique identifier for the user.
      *
-     * @param userId The unique identifier for the user.
+     * @param id The unique identifier for the user.
      */
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     /**
@@ -128,22 +129,21 @@ public class User {
     }
 
     /**
-     * Gets the hashed password of the user.
+     * Gets the password of the user.
      *
-     * @return The hashed password of the user.
+     * @return The password of the user.
      */
-    public String getPasswordHash() {
-        return passwordHash;
+    public String getPassword() {
+        return password;
     }
 
     /**
-     * Sets the hashed password of the user.
+     * Sets the password of the user.
      *
      * @param password The password of the user.
      */
-    public void setPasswordHash(String password) {
-        // Hash the password
-        this.passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
@@ -288,13 +288,13 @@ public class User {
 
         User user = (User) o;
 
-        if (!Objects.equals(userId, user.userId))
+        if (!Objects.equals(id, user.id))
             return false;
         if (!Objects.equals(name, user.name))
             return false;
         if (!Objects.equals(email, user.email))
             return false;
-        if (!Objects.equals(passwordHash, user.passwordHash))
+        if (!Objects.equals(password, user.password))
             return false;
         if (!Objects.equals(createdAt, user.createdAt))
             return false;
@@ -315,8 +315,8 @@ public class User {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(userId, name, email,
-            passwordHash, createdAt, updatedAt,
+        return Objects.hash( id, name, email,
+                password, createdAt, updatedAt,
             profile, marketplaceProfiles, friends);
     }
 }
