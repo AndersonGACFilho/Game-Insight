@@ -61,6 +61,7 @@ public class AuthenticationService {
         logger.info("Checking the password");
         if (!BCrypt.checkpw(loginRequest.getPassword(), user.getPassword())) {
             logger.error("Invalid password");
+            logger.error("Password tried: " + loginRequest.getPassword());
             throw new BadCredentialsException("Invalid email or password");
         }
         logger.info("Password is correct");

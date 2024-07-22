@@ -3,6 +3,7 @@ package br.ufg.ceia.gameinsight.userservice.dtos;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -10,8 +11,20 @@ import java.util.Objects;
  * <p>
  * This class holds details about the login request.
  */
-public class LoginRequest {
+public class LoginRequest implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The email address of the user.
+     */
     private String email;
+
+    /**
+     * The password of the user.
+     */
     private String password;
 
     // Getters and setters
