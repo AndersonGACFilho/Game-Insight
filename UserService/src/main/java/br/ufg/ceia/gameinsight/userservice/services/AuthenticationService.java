@@ -42,6 +42,12 @@ public class AuthenticationService {
     private String jwtSecret;
 
     /**
+     * The expiration time for the JWT token.
+     */
+    @Value("${jwt.expiration}")
+    private Long jwtExpiration;
+
+    /**
      * Authenticates the user.
      *
      * @param loginRequest The login request.
@@ -81,7 +87,7 @@ public class AuthenticationService {
         JwtBuilder builder = Jwts.builder()
                 .subject(user.getEmail())
                 .issuedAt(Date.from(now))
-                .expiration(Date.from(now.plusSeconds(86400))) // 1 day
+                .expiration(Date.from(now.plusSeconds( jwtExpiration )))
                 .signWith(key);
 
         // Return the JWT token

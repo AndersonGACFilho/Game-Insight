@@ -1,64 +1,132 @@
-# User Service<p align="center">
-<img src="https://img.shields.io/badge/Version-1.0.0-blue" alt="Version">
+# UserService
 
-This is a simple user service of my project. 
+UserService is a Spring Boot application designed to handle user authentication and management. It provides endpoints for user registration, login, and querying user details. The application uses MongoDB for data storage and JWT for authentication.
 
-The project is written in Spring Boot and uses a MongoDB database.
+## Table of Contents
 
-The user data includes:
-- Personal information: name, email, phone number, date of birth
-- Marketplaces that the user registered.
+1. [Getting Started](#getting-started)
+2. [Prerequisites](#prerequisites)
+3. [Installation](#installation)
+4. [Configuration](#configuration)
+5. [Running the Application](#running-the-application)
+6. [API Endpoints](#api-endpoints)
+7. [Running Tests](#running-tests)
+8. [Contributing](#contributing)
 
-The marketplaces are:
-- Xbox
-- Playstation
-- Steam
+## Getting Started
 
-The marketplace data related to the user includes:
-- Username
-- Token
-- Date of registration
-- Date of last update
-- Level
-- Games that the user has
+These instructions will help you set up and run the UserService application on your local machine for development and testing purposes.
 
-The game data related to the user includes:
-- Name
-- Genres
-- Thumbnail
-- Achievements
+## Prerequisites
 
-The achievement data related to the user includes:
-- Name
-- Description
-- Date of achievement
-- Thumbnail
-- State (locked or unlocked)
+- Java 21
+- Maven 3.6+
+- MongoDB 4.4+
+- Postman (optional, for API testing)
 
-The project has the following endpoints:
-- User:
-  - Create a user
-  - Get all users
-  - Get a user by id
-  - Update a user
-  - Delete a user
+## Installation
 
-- Marketplace:
-  - Register a marketplace account to a user
-  - Get all accounts of a user
-  - Update an account of a user
-  - Delete an account of a user
+1. Clone the repository:
 
-- Game:
-  - Get all games of a user 
-  - Add a game to a marketplace user account
-  - Get all games of a marketplace user account
-  - Update a game of a marketplace user account
-  - Delete a game of a marketplace user account
+    ```bash
+    git clone https://github.com/your-username/UserService.git
+    cd UserService
+    ```
 
-- Achievement:
-  - Get all achievements of a user
-  - Add an achievement to a game of the user
-  - Get all game achievements of the user
-  - Update a game achievement of the user
-  - Delete a game achievement of the user
+2. Install the dependencies:
+
+    ```bash
+    mvn clean install
+    ```
+
+## Configuration
+
+Configure the application by editing the `application.properties` file located in the `src/main/resources` directory. Set the following properties:
+
+```properties
+# MongoDB configuration
+spring.data.mongodb.uri=mongodb://localhost:27017/userservice
+
+# JWT configuration
+jwt.secret=YourSecretKey
+jwt.expirationTime=86400000
+```
+
+## Running the Application
+
+To run the application, use the following command:
+
+```bash
+mvn spring-boot:run
+```
+
+The application will start on `http://localhost:8080`.
+
+## API Endpoints
+
+Here are the available API endpoints. For detailed request and response formats, refer to the [Postman collection](postman-collection.json).
+
+### User Registration
+
+- **URL:** `/users/register`
+- **Method:** `POST`
+- **Request Body:**
+    ```json
+    {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "password": "password"
+    }
+    ```
+- **Response:** `201 Created`
+
+### User Login
+
+- **URL:** `/users/login`
+- **Method:** `POST`
+- **Request Body:**
+    ```json
+    {
+      "email": "john.doe@example.com",
+      "password": "password"
+    }
+    ```
+- **Response:** `200 OK`
+
+### Get Authenticated User
+
+- **URL:** `/users/me`
+- **Method:** `GET`
+- **Headers:**
+    ```text
+    Authorization: Bearer <jwt_token>
+    ```
+- **Response:** `200 OK`
+
+### Get All Users
+
+- **URL:** `/users/all?page=0&size=10&sort=id&direction=ASC`
+- **Method:** `GET`
+- **Headers:**
+    ```text
+    Authorization: Bearer <jwt_token>
+    ```
+- **Response:** `200 OK`
+
+## Running Tests
+
+To run the tests, use the following command:
+
+```bash
+mvn test
+```
+
+## Contributing
+
+We welcome contributions to improve this project. Please follow these steps to contribute:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Commit your changes (`git commit -m 'Add YourFeature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a pull request.

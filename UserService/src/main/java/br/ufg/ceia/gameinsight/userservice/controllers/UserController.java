@@ -57,7 +57,9 @@ public class UserController {
         // Create a new user
         logger.info("Creating a new user: " + user.getEmail());
         User createdUser = userService.createUser(user);
-        return ResponseEntity.ok().build();
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(createdUser.getId()).toUri();
+        return ResponseEntity.created(location).build();
     }
 
     /**
