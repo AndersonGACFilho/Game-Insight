@@ -2,8 +2,10 @@ package br.ufg.ceia.gameinsight.userservice.controllers;
 
 import br.ufg.ceia.gameinsight.userservice.configs.JwtResponse;
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
+import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
 import br.ufg.ceia.gameinsight.userservice.dtos.LoginRequest;
 import br.ufg.ceia.gameinsight.userservice.dtos.UserDto;
+import br.ufg.ceia.gameinsight.userservice.dtos.UserProfileDto;
 import br.ufg.ceia.gameinsight.userservice.exceptions.BadCredentialsException;
 import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
 import br.ufg.ceia.gameinsight.userservice.services.AuthenticationService;
@@ -119,5 +121,19 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 new BadCredentialsException("Invalid email or password"));
         }
+    }
+
+    @GetMapping("/me/profile")
+    public ResponseEntity<UserProfileDto> getUserProfile() {
+        logger.info("Getting the user profile");
+        UserProfile userProfile = userService.getUserProfile();
+        return ResponseEntity.ok(new UserProfileDto(userProfile));
+    }
+
+    @PutMapping("/me/profile")
+    public ResponseEntity<UserProfileDto> updateUserProfile(@RequestBody UserProfileDto userProfileDto) {
+        logger.info("Updating the user profile");
+        UserProfile updatedProfile = userService.updateUserProfile(userProfileDto.toUserProfile());
+        return ResponseEntity.ok(new UserProfileDto(updatedProfile));
     }
 }
