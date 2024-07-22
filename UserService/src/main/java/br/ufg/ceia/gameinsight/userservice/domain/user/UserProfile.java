@@ -3,6 +3,7 @@ package br.ufg.ceia.gameinsight.userservice.domain.user;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Objects;
 
