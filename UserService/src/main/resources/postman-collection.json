@@ -14,9 +14,8 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"pm.collectionVariables.set(\"start_timestamp\",Date.now());\r",
-							"let today = new Date();\r",
-							"today = today.toTimeString;\r",
+							"today = Date.now();\r",
+							"pm.collectionVariables.set(\"start_timestamp\", today);\r",
 							"pm.collectionVariables.set(\"birthdate\", today);"
 						],
 						"type": "text/javascript",

@@ -49,6 +49,7 @@ public class UserDto implements Serializable{
         this.id = user.getId();
         this.username = user.getName();
         this.email = user.getEmail();
+        this.userProfile = user.getProfile();
     }
 
     /**
