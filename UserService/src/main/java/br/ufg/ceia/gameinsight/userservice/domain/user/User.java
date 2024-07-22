@@ -1,10 +1,14 @@
 package br.ufg.ceia.gameinsight.userservice.domain.user;
 import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -15,18 +19,28 @@ import java.util.Objects;
  * This class is used to represent the User JSON object in the MongoDB database.
  */
 @Document(collection = "users")
-public class User {
+public class User implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * The name of the sequence used to generate unique identifiers for users.
+     */
+    @Transient
+    public static final String SEQUENCE_NAME = "users_sequence";
 
     /**
      * The unique identifier for the user.
      */
-    @MongoId(FieldType.INT64)
-    private int id;
+    @Id
+    private Long id;
 
     /**
      * The name of the user.
      */
-    @Indexed
+    @Field
     private String name;
 
     /**
@@ -38,37 +52,37 @@ public class User {
     /**
      * The hashed password of the user.
      */
-    @Indexed
+    @Field
     private String password;
 
     /**
      * The date when the user was created.
      */
-    @Indexed
+    @Field
     private Date createdAt;
 
     /**
      * The date when the user was last updated.
      */
-    @Indexed
+    @Field
     private Date updatedAt;
 
     /**
      * The profile of the user containing personal details.
      */
-    @Indexed
+    @Field
     private UserProfile profile;
 
     /**
      * The marketplace profiles associated with the user (e.g., Steam, PlayStation, Xbox).
      */
-    @Indexed
+    @Field
     private List<MarketplaceProfile> marketplaceProfiles;
 
     /**
      * The friend list of the user.
      */
-    @Indexed
+    @Field
     private List<Friend> friends;
 
 
@@ -79,7 +93,7 @@ public class User {
      *
      * @return The unique identifier for the user.
      */
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
@@ -88,7 +102,7 @@ public class User {
      *
      * @param id The unique identifier for the user.
      */
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

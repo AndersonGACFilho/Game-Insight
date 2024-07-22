@@ -12,9 +12,20 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
 
+/**
+ * This class represents a global exception handler.
+ * <p>
+ * This class is responsible for handling exceptions that are not handled by the controllers.
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Handle the ResourceNotFoundException.
+     * @param ex the exception.
+     * @param request the request.
+     * @return the response entity.
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<StandardError> handleResourceNotFoundException(ResourceNotFoundException ex,
@@ -30,6 +41,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    /**
+     * Handle the DataIntegrityViolationException.
+     * @param ex the exception.
+     * @param request the request.
+     * @return the response entity.
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<StandardError> handleDataIntegrityViolationException(DataIntegrityViolationException ex,

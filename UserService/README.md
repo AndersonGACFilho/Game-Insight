@@ -78,7 +78,7 @@ Here are the available API endpoints. For detailed request and response formats,
       "password": "password"
     }
     ```
-- **Response:** `201 Created`
+- **Response:** `201 Created and Location Header`
 
 ### User Login
 

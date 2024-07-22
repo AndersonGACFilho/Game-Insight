@@ -14,12 +14,6 @@ import java.util.Objects;
 public class Game {
 
     /**
-     * The unique identifier for the game.
-     */
-    @Field
-    private String gameId;
-
-    /**
      * The title of the game.
      */
     @Field
@@ -44,24 +38,6 @@ public class Game {
     private List<Achievement> achievements;
 
     // Getters and setters
-
-    /**
-     * Gets the unique identifier for the game.
-     *
-     * @return The unique identifier for the game.
-     */
-    public String getGameId() {
-        return gameId;
-    }
-
-    /**
-     * Sets the unique identifier for the game.
-     *
-     * @param gameId The unique identifier for the game.
-     */
-    public void setGameId(String gameId) {
-        this.gameId = gameId;
-    }
 
     /**
      * Gets the list of achievements associated with the game.
@@ -186,8 +162,7 @@ public class Game {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Game game = (Game) o;
-        return Objects.equals(gameId, game.gameId) &&
-            Objects.equals(title, game.title) &&
+        return Objects.equals(title, game.title) &&
             Objects.equals(genre, game.genre) &&
             Objects.equals(thumbnail, game.thumbnail) &&
             Objects.equals(achievements, game.achievements);
@@ -200,7 +175,7 @@ public class Game {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(gameId, title, genre,
+        return Objects.hash( title, genre,
                 thumbnail, achievements);
     }
 
@@ -213,7 +188,6 @@ public class Game {
     @Override
     public String toString() {
         return "Game{" +
-                "gameId='" + gameId + '\'' +
                 ", title='" + title + '\'' +
                 ", genre='" + genre + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +

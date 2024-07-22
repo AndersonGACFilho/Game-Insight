@@ -24,6 +24,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 
+/**
+ * This class represents the user controller.
+ * <p>
+ * This class is responsible for handling the user operations.
+ */
 @RestController()
 @RequestMapping("/users")
 public class UserController {

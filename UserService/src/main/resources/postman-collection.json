@@ -9,6 +9,21 @@
 	"item": [
 		{
 			"name": "Create User",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"start_timestamp\",Date.now());\r",
+							"let today = new Date();\r",
+							"today = today.toTimeString;\r",
+							"pm.collectionVariables.set(\"birthdate\", today);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
 			"request": {
 				"auth": {
 					"type": "noauth"
@@ -22,7 +37,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password\"\n}"
+					"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe{{start_timestamp}}@example.com\",\n  \"password\": \"password\",\n  \"profile\":\n  { \n        \"firstName\": \"John\",\n        \"lastName\": \"Doe\",\n        \"birthdate\": {{birthdate}},\n        \"phoneNumber\": {{start_timestamp}}\n  }\n}"
 				},
 				"url": {
 					"raw": "{{base_url}}/users/register",
@@ -51,6 +66,16 @@
 						"type": "text/javascript",
 						"packages": {}
 					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
 				}
 			],
 			"request": {
@@ -66,7 +91,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password\"\n}"
+					"raw": "{\n  \"email\": \"john.doe{{start_timestamp}}@example.com\",\n  \"password\": \"password\"\n}"
 				},
 				"url": {
 					"raw": "{{base_url}}/users/login",
@@ -167,46 +192,11 @@
 		}
 	],
 	"auth": {
-		"type": "jwt",
-		"jwt": [
+		"type": "bearer",
+		"bearer": [
 			{
-				"key": "secret",
-				"value": "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiJqb2huLmRvZUBleGFtcGxlLmNvbSIsImlhdCI6MTcyMTUzODkxMywiZXhwIjoxNzIxNjI1MzEzfQ.HTmTfsgMEV49uACSEJ7gMWWUhcPv2TGbPDAkjiPsHW-G4VsUYrB4mhR6_JUlmRMF",
-				"type": "string"
-			},
-			{
-				"key": "algorithm",
-				"value": "HS256",
-				"type": "string"
-			},
-			{
-				"key": "isSecretBase64Encoded",
-				"value": false,
-				"type": "boolean"
-			},
-			{
-				"key": "payload",
-				"value": "{}",
-				"type": "string"
-			},
-			{
-				"key": "addTokenTo",
-				"value": "header",
-				"type": "string"
-			},
-			{
-				"key": "headerPrefix",
-				"value": "Bearer",
-				"type": "string"
-			},
-			{
-				"key": "queryParamKey",
-				"value": "token",
-				"type": "string"
-			},
-			{
-				"key": "header",
-				"value": "{}",
+				"key": "token",
+				"value": "{{token}}",
 				"type": "string"
 			}
 		]
@@ -240,7 +230,17 @@
 		},
 		{
 			"key": "token",
-			"value": ""
+			"value": "0"
+		},
+		{
+			"key": "start_timestamp",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "birthdate",
+			"value": "0",
+			"type": "string"
 		}
 	]
 }

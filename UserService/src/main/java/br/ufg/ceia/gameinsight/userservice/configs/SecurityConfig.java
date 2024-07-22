@@ -17,6 +17,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Configures the security filter chain.
+     *
+     * @param http The http security.
+     * @return The security filter chain.
+     * @throws Exception If an error occurs.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable) // Desabilitar CSRF
@@ -32,6 +39,11 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Configures the JWT authentication filter.
+     *
+     * @return The JWT authentication filter.
+     */
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter();

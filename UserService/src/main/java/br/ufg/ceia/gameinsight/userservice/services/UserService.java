@@ -34,6 +34,9 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SequenceGeneratorService sequenceGeneratorService;
+
     public User getUser() {
         // Get the authenticated user
         logger.info("Getting the authenticated user");
@@ -78,6 +81,12 @@ public class UserService {
             // Save the user
             logger.info("Saving the user");
             logger.info("User: " + user.getEmail());
+
+            // Set the user id
+            logger.info("Setting the user id");
+            logger.info("User: " + user.getId());
+            user.setId(sequenceGeneratorService.generateSequence(User.SEQUENCE_NAME));
+            logger.info("New id: " + user.getId());
             // Hash the password
             logger.info("Hashing the password");
             user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
@@ -87,7 +96,8 @@ public class UserService {
             return userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
             logger.error("Error saving the user");
-            throw new DataIntegrityViolationException("The user already with email: " + user.getEmail());
+            logger.error(e.getMessage());
+            throw new DataIntegrityViolationException("The user already with email: " + user.getEmail(), e);
         }
     }
 

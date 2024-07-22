@@ -28,15 +28,32 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
+/**
+ * The security configuration for the application.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    /**
+     * The logger.
+     */
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 
+    /**
+     * The JWT secret.
+     */
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    /**
+     * Configures the JWT authentication filter.
+     *
+     * @param request The HTTP request.
+     * @param response The HTTP response.
+     * @param filterChain The filter chain.
+     * @throws ServletException If an error occurs.
+     * @throws IOException If an error occurs.
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -65,6 +82,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /**
+     * Parses the token.
+     *
+     * @param token The token to be parsed.
+     * @return The claims.
+     */
     private Claims parseToken(String token) {
         try {
             // Parse the token
