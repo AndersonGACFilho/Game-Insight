@@ -1,8 +1,10 @@
 package br.ufg.ceia.gameinsight.userservice.controllers;
 
 import br.ufg.ceia.gameinsight.userservice.configs.JwtResponse;
+import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import br.ufg.ceia.gameinsight.userservice.dtos.LoginRequest;
+import br.ufg.ceia.gameinsight.userservice.dtos.MarketplaceProfileDto;
 import br.ufg.ceia.gameinsight.userservice.dtos.UserDto;
 import br.ufg.ceia.gameinsight.userservice.exceptions.BadCredentialsException;
 import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
@@ -23,6 +25,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * This class represents the user controller.
@@ -119,5 +123,42 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 new BadCredentialsException("Invalid email or password"));
         }
+    }
+
+     /**
+     * Adds a marketplace profile to the logged user.
+     *
+     * @param marketplaceProfileDto The marketplace profile DTO.
+     * @return The updated user.
+     */
+    @PostMapping("/marketplace")
+    public ResponseEntity<UserDto> addMarketplaceProfile(@RequestBody MarketplaceProfileDto marketplaceProfileDto) {
+        MarketplaceProfile marketplaceProfile = new MarketplaceProfile();
+        marketplaceProfile.setUsername(marketplaceProfileDto.getUsername());
+        marketplaceProfile.setMarketplaceType(marketplaceProfileDto.getMarketplaceType());
+        /*marketplaceProfile.setGames(marketplaceProfileDto.getGames());*/
+        User updatedUser = userService.addMarketplaceProfile(marketplaceProfile);
+        return ResponseEntity.ok(new UserDto(updatedUser));
+    }
+
+    /**
+     * Removes a marketplace profile from the logged user.
+     *
+     * @param username The marketplace profile username.
+     * @return The updated user.
+     */
+    @DeleteMapping("/marketplace/{username}")
+    public ResponseEntity<UserDto> removeMarketplaceProfile(@PathVariable String username) {
+        User updatedUser = userService.removeMarketplaceProfile(username);
+        return ResponseEntity.ok(new UserDto(updatedUser));
+    }
+
+    /**
+     * Update user marketplace profile by marketplace profile username.
+     */
+    @PutMapping("/marketplace/{username}")
+    public ResponseEntity<UserDto> getUserByMarketplaceProfileUsername(@RequestBody MarketplaceProfileDto marketplaceProfileDto, @PathVariable String username) {
+        User updatedUser = userService.updateMarketplaceProfile(username, marketplaceProfileDto);
+        return ResponseEntity.ok(new UserDto(updatedUser));
     }
 }

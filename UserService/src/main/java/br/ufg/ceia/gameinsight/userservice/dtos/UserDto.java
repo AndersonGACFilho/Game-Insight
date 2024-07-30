@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
+import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
+import br.ufg.ceia.gameinsight.userservice.dtos.MarketplaceProfileDto;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @brief Data Transfer Object for User
@@ -35,6 +39,28 @@ public class UserDto implements Serializable{
      */
     private UserProfile userProfile;
 
+    public List<MarketplaceProfileDto> getMarketplaceProfiles() {
+        return marketplaceProfiles;
+    }
+
+    public void setMarketplaceProfiles(List<MarketplaceProfile> marketplaceProfiles) {
+        // Verifica se a lista é nula antes de tentar converter
+        if (marketplaceProfiles != null) {
+            // Converte a lista de MarketplaceProfile para MarketplaceProfileDto
+            this.marketplaceProfiles = marketplaceProfiles.stream()
+                    .map(MarketplaceProfileDto::fromMarketplaceProfile)
+                    .collect(Collectors.toList());
+        } else {
+            // Se a lista for nula, define marketplaceProfiles como uma lista vazia
+            this.marketplaceProfiles = List.of();
+        }
+    }
+
+    /**
+     * The marketplace profiles associated with the user (e.g., Steam, PlayStation, Xbox).
+     */
+    private List<MarketplaceProfileDto> marketplaceProfiles;
+
     /**
      * Default constructor
      */
@@ -50,6 +76,7 @@ public class UserDto implements Serializable{
         this.username = user.getName();
         this.email = user.getEmail();
         this.userProfile = user.getProfile();
+        this.setMarketplaceProfiles(user.getMarketplaceProfiles());
     }
 
     /**
@@ -128,6 +155,7 @@ public class UserDto implements Serializable{
         userDto.setUsername(user.getName());
         userDto.setEmail(user.getEmail());
         userDto.setUserProfile(user.getProfile());
+        userDto.setMarketplaceProfiles(user.getMarketplaceProfiles());
         return userDto;
     }
 }

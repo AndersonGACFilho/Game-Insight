@@ -55,4 +55,14 @@ public interface UserRepository extends MongoRepository<User, String> {
      * @return A page of users with names that contain the specified name.
      */
     Page<User> findByNameContaining(String name, Pageable pageable);
+
+    Optional<User> findByMarketplaceProfilesUsername(String marketplaceUsername);
+
+    /**
+     * Finds all users with a marketplace profile type.
+     *
+     * @param marketplaceType The type of the marketplace profile.
+     * @return A list of users with the specified marketplace profile type.
+     */
+    List<User> findByMarketplaceProfilesMarketplaceType(String marketplaceType);
 }

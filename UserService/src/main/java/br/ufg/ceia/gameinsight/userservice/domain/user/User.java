@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.ArrayList;
 
 /**
  * This class represents the User entity.
@@ -220,7 +221,7 @@ public class User implements Serializable {
      * @return The marketplace profiles associated with the user.
      */
     public List<MarketplaceProfile> getMarketplaceProfiles() {
-        return marketplaceProfiles;
+        return marketplaceProfiles != null ? marketplaceProfiles : new ArrayList<MarketplaceProfile>();
     }
 
     /**
