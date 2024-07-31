@@ -94,4 +94,93 @@ class MarketplaceTests {
         verify(userService, times(0)).addMarketplaceProfile(any(MarketplaceProfile.class));
     }
 
+    @Test
+    void testRemoveMarketplaceProfile_Success() {
+        // Arrange
+        when(userService.removeMarketplaceProfile(any(String.class))).thenReturn(mockUser);
+
+        // Act
+        ResponseEntity<UserDto> response = userController.removeMarketplaceProfile(mockMarketplaceProfileDto.getUsername());
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(mockUser.getEmail(), response.getBody().getEmail());
+        verify(userService, times(1)).removeMarketplaceProfile(any(String.class));
+    }
+
+    @Test
+    void testRemoveMarketplaceProfile_UserNotFound() {
+        // Arrange
+        when(userService.removeMarketplaceProfile(any(String.class))).thenThrow(new ResourceNotFoundException("User not found"));
+
+        // Act
+        ResponseEntity<UserDto> response = userController.removeMarketplaceProfile(mockMarketplaceProfileDto.getUsername());
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody()); // Expecting null body when user is not found
+
+        verify(userService, times(1)).removeMarketplaceProfile(any(String.class));
+    }
+
+    @Test
+    void testRemoveMarketplaceProfile_ProfileNotFound() {
+        // Arrange
+        when(userService.removeMarketplaceProfile(any(String.class))).thenThrow(new ResourceNotFoundException("Marketplace profile not found"));
+
+        // Act
+        ResponseEntity<UserDto> response = userController.removeMarketplaceProfile(mockMarketplaceProfileDto.getUsername());
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody()); // Expecting null body when profile is not found
+
+        verify(userService, times(1)).removeMarketplaceProfile(any(String.class));
+    }
+
+    @Test
+    void testUpdateMarketplaceProfile_Success() {
+        // Arrange
+        when(userService.updateMarketplaceProfile(any(String.class), any(MarketplaceProfileDto.class))).thenReturn(mockUser);
+
+        // Act
+        ResponseEntity<UserDto> response = userController.updateByMarketplaceProfileUsername(mockMarketplaceProfileDto, mockMarketplaceProfileDto.getUsername());
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(mockUser.getEmail(), response.getBody().getEmail());
+        verify(userService, times(1)).updateMarketplaceProfile(any(String.class), any(MarketplaceProfileDto.class));
+    }
+
+    @Test
+    void testUpdateMarketplaceProfile_UserNotFound() {
+        // Arrange
+        when(userService.updateMarketplaceProfile(any(String.class), any(MarketplaceProfileDto.class))).thenThrow(new ResourceNotFoundException("User not found"));
+
+        // Act
+        ResponseEntity<UserDto> response = userController.updateByMarketplaceProfileUsername(mockMarketplaceProfileDto, mockMarketplaceProfileDto.getUsername());
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody()); // Expecting null body when user is not found
+
+        verify(userService, times(1)).updateMarketplaceProfile(any(String.class), any(MarketplaceProfileDto.class));
+    }
+
+    @Test
+    void testUpdateMarketplaceProfile_ProfileNotFound() {
+        // Arrange
+        when(userService.updateMarketplaceProfile(any(String.class), any(MarketplaceProfileDto.class))).thenThrow(new ResourceNotFoundException("Marketplace profile not found"));
+
+        // Act
+        ResponseEntity<UserDto> response = userController.updateByMarketplaceProfileUsername(mockMarketplaceProfileDto, mockMarketplaceProfileDto.getUsername());
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody()); // Expecting null body when profile is not found
+
+        verify(userService, times(1)).updateMarketplaceProfile(any(String.class), any(MarketplaceProfileDto.class));
+    }
 }
