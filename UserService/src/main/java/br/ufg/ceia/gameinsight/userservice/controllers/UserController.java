@@ -153,8 +153,12 @@ public class UserController {
      */
     @DeleteMapping("/marketplace/{username}")
     public ResponseEntity<UserDto> removeMarketplaceProfile(@PathVariable String username) {
-        User updatedUser = userService.removeMarketplaceProfile(username);
-        return ResponseEntity.ok(new UserDto(updatedUser));
+        try {
+            User updatedUser = userService.removeMarketplaceProfile(username);
+            return ResponseEntity.ok(new UserDto(updatedUser));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     /**
@@ -162,7 +166,11 @@ public class UserController {
      */
     @PutMapping("/marketplace/{username}")
     public ResponseEntity<UserDto> updateByMarketplaceProfileUsername(@RequestBody MarketplaceProfileDto marketplaceProfileDto, @PathVariable String username) {
-        User updatedUser = userService.updateMarketplaceProfile(username, marketplaceProfileDto);
-        return ResponseEntity.ok(new UserDto(updatedUser));
+        try {
+            User updatedUser = userService.updateMarketplaceProfile(username, marketplaceProfileDto);
+            return ResponseEntity.ok(new UserDto(updatedUser));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }
