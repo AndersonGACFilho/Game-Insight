@@ -131,15 +131,19 @@ public class UserController {
      * @param marketplaceProfileDto The marketplace profile DTO.
      * @return The updated user.
      */
-    @PostMapping("/marketplace")
-    public ResponseEntity<UserDto> addMarketplaceProfile(@RequestBody MarketplaceProfileDto marketplaceProfileDto) {
-        MarketplaceProfile marketplaceProfile = new MarketplaceProfile();
-        marketplaceProfile.setUsername(marketplaceProfileDto.getUsername());
-        marketplaceProfile.setMarketplaceType(marketplaceProfileDto.getMarketplaceType());
-        /*marketplaceProfile.setGames(marketplaceProfileDto.getGames());*/
-        User updatedUser = userService.addMarketplaceProfile(marketplaceProfile);
-        return ResponseEntity.ok(new UserDto(updatedUser));
-    }
+     @PostMapping("/marketplace")
+     public ResponseEntity<UserDto> addMarketplaceProfile(@RequestBody MarketplaceProfileDto marketplaceProfileDto) {
+         try {
+             User user = userService.getUser(); // Ensure we get the user first
+             MarketplaceProfile marketplaceProfile = new MarketplaceProfile();
+             marketplaceProfile.setUsername(marketplaceProfileDto.getUsername());
+             marketplaceProfile.setMarketplaceType(marketplaceProfileDto.getMarketplaceType());
+             User updatedUser = userService.addMarketplaceProfile(marketplaceProfile);
+             return ResponseEntity.ok(new UserDto(updatedUser));
+         } catch (ResourceNotFoundException e) {
+             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Return 404 if user is not found
+         }
+     }
 
     /**
      * Removes a marketplace profile from the logged user.
@@ -157,7 +161,7 @@ public class UserController {
      * Update user marketplace profile by marketplace profile username.
      */
     @PutMapping("/marketplace/{username}")
-    public ResponseEntity<UserDto> getUserByMarketplaceProfileUsername(@RequestBody MarketplaceProfileDto marketplaceProfileDto, @PathVariable String username) {
+    public ResponseEntity<UserDto> updateByMarketplaceProfileUsername(@RequestBody MarketplaceProfileDto marketplaceProfileDto, @PathVariable String username) {
         User updatedUser = userService.updateMarketplaceProfile(username, marketplaceProfileDto);
         return ResponseEntity.ok(new UserDto(updatedUser));
     }
