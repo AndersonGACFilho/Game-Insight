@@ -112,6 +112,19 @@ public class MarketplaceProfile {
     public void removeGame(Game game) {
         this.games.remove(game);
     }
+    
+    public MarketplaceType getMarketplaceType() {
+        return marketplaceType;
+    }
+
+    /**
+     * Sets the username of the user on Marketplace.
+     *
+     * @param username The username of the user on Marketplace.
+     */
+    public void setMarketplaceType(MarketplaceType marketplaceType) {
+        this.marketplaceType = marketplaceType;
+    }
 
     // Equals and HashCode
 
