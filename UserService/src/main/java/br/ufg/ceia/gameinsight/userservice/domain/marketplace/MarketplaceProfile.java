@@ -1,6 +1,7 @@
 package br.ufg.ceia.gameinsight.userservice.domain.marketplace;
 
 import br.ufg.ceia.gameinsight.userservice.domain.games.Game;
+import org.graalvm.nativeimage.Platform;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;

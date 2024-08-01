@@ -1,6 +1,7 @@
 package br.ufg.ceia.gameinsight.userservice.services;
 
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
+import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
 import br.ufg.ceia.gameinsight.userservice.repositories.UserRepository;
 import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
 import com.mongodb.MongoException;
@@ -132,5 +133,17 @@ public class UserService {
         // Update the user
         logger.info("Updating the user");
         return userRepository.save(existingUser);
+    }
+
+    public UserProfile getUserProfile() {
+        User user = getUser();
+        return user.getProfile();
+    }
+
+    public UserProfile updateUserProfile(UserProfile userProfile) {
+        User user = getUser();
+        user.setProfile(userProfile);
+        userRepository.save(user);
+        return userProfile;
     }
 }

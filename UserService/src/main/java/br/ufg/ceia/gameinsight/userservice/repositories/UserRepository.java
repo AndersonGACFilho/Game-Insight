@@ -13,7 +13,7 @@ import java.util.Optional;
  * <p>
  * This interface provides methods to interact with the User entity in the database.
  */
-public interface UserRepository extends MongoRepository<User, String> {
+public interface UserRepository extends MongoRepository<User, Long> {
 
     /**
      * Finds all users.
