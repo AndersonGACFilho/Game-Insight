@@ -1,7 +1,9 @@
 package br.ufg.ceia.gameinsight.userservice.services;
 
+import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
+import br.ufg.ceia.gameinsight.userservice.dtos.MarketplaceProfileDto;
 import br.ufg.ceia.gameinsight.userservice.repositories.UserRepository;
 import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
 import com.mongodb.MongoException;
@@ -16,6 +18,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents the service for the User entity.
@@ -145,5 +150,60 @@ public class UserService {
         user.setProfile(userProfile);
         userRepository.save(user);
         return userProfile;
+    }
+
+
+    /**
+     * Adds a marketplace profile to the authenticated user.
+     *
+     * @param marketplaceProfile The marketplace profile to add.
+     * @return The updated user.
+     */
+    public User addMarketplaceProfile(MarketplaceProfile marketplaceProfile) {
+        User user = getUser();
+
+        // Obtém a lista de perfis do marketplace ou inicializa uma nova se for nula
+        List<MarketplaceProfile> marketplaceProfiles = user.getMarketplaceProfiles();
+        if (marketplaceProfiles == null) {
+            marketplaceProfiles = new ArrayList<>();
+        }
+
+        // Adiciona o novo perfil à lista
+        marketplaceProfiles.add(marketplaceProfile);
+
+        // Define a lista atualizada na entidade User
+        user.setMarketplaceProfiles(marketplaceProfiles);
+
+        // Salva e retorna o usuário atualizado
+        return userRepository.save(user);
+    }
+
+    /**
+     * Removes a marketplace profile from the authenticated user by username.
+     *
+     * @param username The marketplace profile username to remove.
+     * @return The updated user.
+     */
+    public User removeMarketplaceProfile(String username) {
+        User user = getUser();
+        user.getMarketplaceProfiles().removeIf(profile -> profile.getUsername().equals(username));
+        return userRepository.save(user);
+    }
+
+    public User updateMarketplaceProfile(String username, MarketplaceProfile updatedMarketProfile) {
+        // Recupera o usuário (assumindo que este método já está implementado)
+        User user = getUser();
+
+        // Obtém a lista de perfis de marketplace
+        List<MarketplaceProfile> marketplaceProfiles = user.getMarketplaceProfiles();
+
+        // Encontra o índice do perfil de marketplace com o username correspondente
+        for (int i = 0; i < marketplaceProfiles.size(); i++) {
+            if (marketplaceProfiles.get(i).getUsername().equals(username)) {
+                marketplaceProfiles.set(i, updatedMarketProfile);
+                break;
+            }
+        }
+        return userRepository.save(user);
     }
 }
