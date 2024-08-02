@@ -188,6 +188,82 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Update User Profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"Lucius\",\n    \"lastName\": \"Castus\",\n    \"birthdate\": \"1990-01-01T00:00:00.000Z\",\n    \"phoneNumber\": \"+1234567890\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/users/me/profile",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"me",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User Profile",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{jwt_token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/users/me/profile",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"users",
+						"me",
+						"profile"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
