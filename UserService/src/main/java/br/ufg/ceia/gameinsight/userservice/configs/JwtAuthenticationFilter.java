@@ -20,14 +20,6 @@ import java.io.IOException;
 import java.security.Key;
 import java.util.Collections;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 /**
  * The security configuration for the application.
  */
@@ -65,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Get the user email
                 logger.info("Getting the user email");
                 String userEmail = claims.getSubject();
-                logger.info("User email: " + userEmail);
+                logger.info("User email: {}", userEmail);
                 // Create the authentication
                 logger.info("Creating the authentication");
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -94,7 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.info("Parsing the token");
             Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
             // Get the claims
-            logger.info("Key: " + key.toString());
+            logger.info("Key: {}", key);
             // Create the parser
             JwtParser parser = Jwts.parser()
                     .setSigningKey(key)

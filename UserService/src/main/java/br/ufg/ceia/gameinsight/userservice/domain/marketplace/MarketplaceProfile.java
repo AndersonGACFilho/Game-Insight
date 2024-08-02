@@ -1,7 +1,7 @@
 package br.ufg.ceia.gameinsight.userservice.domain.marketplace;
 
 import br.ufg.ceia.gameinsight.userservice.domain.games.Game;
-//import org.graalvm.nativeimage.Platform;
+import org.graalvm.nativeimage.Platform;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
@@ -111,6 +111,19 @@ public class MarketplaceProfile {
      */
     public void removeGame(Game game) {
         this.games.remove(game);
+    }
+    
+    public MarketplaceType getMarketplaceType() {
+        return marketplaceType;
+    }
+
+    /**
+     * Sets the username of the user on Marketplace.
+     *
+     * @param username The username of the user on Marketplace.
+     */
+    public void setMarketplaceType(MarketplaceType marketplaceType) {
+        this.marketplaceType = marketplaceType;
     }
 
     // Equals and HashCode

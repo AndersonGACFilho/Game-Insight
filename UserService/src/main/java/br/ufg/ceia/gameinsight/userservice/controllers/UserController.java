@@ -1,9 +1,11 @@
 package br.ufg.ceia.gameinsight.userservice.controllers;
 
 import br.ufg.ceia.gameinsight.userservice.configs.JwtResponse;
+import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
 import br.ufg.ceia.gameinsight.userservice.dtos.LoginRequest;
+import br.ufg.ceia.gameinsight.userservice.dtos.MarketplaceProfileDto;
 import br.ufg.ceia.gameinsight.userservice.dtos.UserDto;
 import br.ufg.ceia.gameinsight.userservice.dtos.UserProfileDto;
 import br.ufg.ceia.gameinsight.userservice.exceptions.BadCredentialsException;
@@ -14,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,10 +66,20 @@ public class UserController {
     public ResponseEntity<Void> createUser(@RequestBody User user) {
         // Create a new user
         logger.info("Creating a new user: " + user.getEmail());
-        User createdUser = userService.createUser(user);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-                .buildAndExpand(createdUser.getId()).toUri();
-        return ResponseEntity.created(location).build();
+        // Check if the user is valid
+        if (user.getEmail() == null || user.getPassword() == null
+            || user.getEmail().isBlank() || user.getPassword().isBlank()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        try {
+            User createdUser = userService.createUser(user);
+            URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                    .buildAndExpand(createdUser.getId()).toUri();
+            return ResponseEntity.created(location).build();
+        }
+        catch (DataIntegrityViolationException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
     /**
@@ -135,5 +148,59 @@ public class UserController {
         logger.info("Updating the user profile");
         UserProfile updatedProfile = userService.updateUserProfile(userProfileDto.toUserProfile());
         return ResponseEntity.ok(new UserProfileDto(updatedProfile));
+    }
+
+
+    /**
+     * Adds a marketplace profile to the logged user.
+     *
+     * @param marketplaceProfileDto The marketplace profile DTO.
+     * @return The updated user.
+     */
+    @PostMapping("/marketplace")
+    public ResponseEntity<UserDto> addMarketplaceProfile(@RequestBody MarketplaceProfileDto marketplaceProfileDto) {
+        try {
+            User user = userService.getUser(); // Ensure we get the user first
+            MarketplaceProfile marketplaceProfile = new MarketplaceProfile();
+            marketplaceProfile.setUsername(marketplaceProfileDto.getUsername());
+            marketplaceProfile.setMarketplaceType(marketplaceProfileDto.getMarketplaceType());
+            User updatedUser = userService.addMarketplaceProfile(marketplaceProfile);
+            return ResponseEntity.ok(new UserDto(updatedUser));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); // Return 404 if user is not found
+        }
+    }
+
+    /**
+     * Removes a marketplace profile from the logged user.
+     *
+     * @param username The marketplace profile username.
+     * @return The updated user.
+     */
+    @DeleteMapping("/marketplace/{username}")
+    public ResponseEntity<Void> removeMarketplaceProfile(@PathVariable String username) {
+        try {
+            User updatedUser = userService.removeMarketplaceProfile(username);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
+    /**
+     * Update user marketplace profile by marketplace profile username.
+     */
+    @PutMapping("/marketplace/{username}")
+    public ResponseEntity<Void> updateByMarketplaceProfileUsername(
+            @RequestBody MarketplaceProfile marketplaceProfileDto,
+            @PathVariable String username)
+    {
+        try {
+            User updatedUser = userService.updateMarketplaceProfile(username, marketplaceProfileDto);
+            return ResponseEntity.noContent().build();
+
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 }
