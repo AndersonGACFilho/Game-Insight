@@ -97,6 +97,24 @@ public class UserController {
     }
 
     /**
+     * Updates the logged user.
+     *
+     * @param user The user to be updated.
+     */
+    @PutMapping("/me")
+    public ResponseEntity<Void> updateUser(@RequestBody User user) {
+        // Update the user
+        logger.info("Updating the logged user");
+        // Check if the user is valid
+        try {
+            userService.updateUser(user);
+            return ResponseEntity.noContent().build();
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
+
+    /**
      * Get all users.
      *
      * @param page of the page (number of the page).
@@ -150,6 +168,25 @@ public class UserController {
         return ResponseEntity.ok(new UserProfileDto(updatedProfile));
     }
 
+    /**
+     * Get all marketplace profiles of the logged user.
+     *
+     * @return The marketplace profiles of the logged user.
+     */
+    @GetMapping("/marketplace")
+    public ResponseEntity<Page<MarketplaceProfileDto>> getMarketplaceProfiles(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "24") int size,
+            @RequestParam(defaultValue = "username") String sortBy,
+            @RequestParam(defaultValue = "asc") String order) {
+        try {
+            Page<MarketplaceProfile> marketplaceProfiles =
+                    userService.getMarketplaceProfiles(page, size, sortBy, order);
+            return ResponseEntity.ok(marketplaceProfiles.map(MarketplaceProfileDto::new));
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
 
     /**
      * Adds a marketplace profile to the logged user.

@@ -1,7 +1,9 @@
 package br.ufg.ceia.gameinsight.userservice.repositories;
 
+import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -55,4 +57,13 @@ public interface UserRepository extends MongoRepository<User, Long> {
      * @return A page of users with names that contain the specified name.
      */
     Page<User> findByNameContaining(String name, Pageable pageable);
+
+    /**
+     * Finds all users with an email address that contains the specified email address.
+     *
+     * @param id The email address to search for.
+     * @param pageRequest The pagination information.
+     * @return A page of users with email addresses that contain the specified email address.
+     */
+    Page<MarketplaceProfile> findMarketplaceProfilesById(Long id, Pageable pageRequest);
 }

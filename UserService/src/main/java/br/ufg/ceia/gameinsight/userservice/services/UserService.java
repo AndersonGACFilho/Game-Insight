@@ -11,16 +11,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 
 /**
  * This class represents the service for the User entity.
@@ -34,12 +35,16 @@ public class UserService {
      * The logger.
      */
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     /**
      * The repository for the user entity.
      */
     @Autowired
     private UserRepository userRepository;
 
+    /**
+     * The service that generates unique identifiers.
+     */
     @Autowired
     private SequenceGeneratorService sequenceGeneratorService;
 
@@ -86,17 +91,22 @@ public class UserService {
         try {
             // Save the user
             logger.info("Saving the user");
-            logger.info("User: " + user.getEmail());
 
             // Set the user id
             logger.info("Setting the user id");
-            logger.info("User: " + user.getId());
             user.setId(sequenceGeneratorService.generateSequence(User.SEQUENCE_NAME));
-            logger.info("New id: " + user.getId());
+
             // Hash the password
             logger.info("Hashing the password");
             user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
-            logger.info("User: " + user.getPassword());
+
+            // Created At
+            logger.info("Setting the created at date on the create user service");
+            user.setCreatedAt(new Date());
+            // Updated At
+            logger.info("Setting the updated at date on the create user service");
+            user.setUpdatedAt(new Date());
+
             // Save the user
             logger.info("Saving the user");
             return userRepository.save(user);
@@ -123,35 +133,88 @@ public class UserService {
     /**
      * Updates the user.
      *
-     * @param userId The user id.
      * @param user The user to be updated.
-     * @return The updated user.
      */
-    public User updateUser(String userId, User user) {
+    public void updateUser(User user) {
         // Get the existing user
         logger.info("Getting the existing user");
-        User existingUser = getUser(userId);
-        // Set the id of the existing user to the new user
-        logger.info("Setting the id of the existing user to the new user");
-        existingUser.setId(user.getId());
+        User existingUser = getUser();
 
-        // Update the user
+        // Update the user if it is not null
         logger.info("Updating the user");
-        return userRepository.save(existingUser);
+        if (user.getName() != null && !user.getName().isBlank()) {
+            existingUser.setName(user.getName());
+        }
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            existingUser.setEmail(user.getEmail());
+        }
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            existingUser.setPassword(user.getPassword());
+            logger.info("Hashing the new password");
+            existingUser.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+        }
+        // Updated At
+        logger.info("Setting the updated at date on the update user service");
+        Date date = new Date();
+        user.setUpdatedAt(date);
+
+        // Save the user
+        logger.info("Updating the user");
+        userRepository.save(existingUser);
     }
 
+    /**
+     * Gets the user profile.
+     *
+     * @return The user profile.
+     */
     public UserProfile getUserProfile() {
         User user = getUser();
         return user.getProfile();
     }
 
+    /**
+     * Updates the user profile.
+     *
+     * @param userProfile The user profile to update.
+     * @return The updated user profile.
+     */
     public UserProfile updateUserProfile(UserProfile userProfile) {
         User user = getUser();
         user.setProfile(userProfile);
-        userRepository.save(user);
-        return userProfile;
+
+        // Updated At
+        logger.info("Setting the updated at date on the user on the update user profile service");
+        Date date = new Date();
+        user.setUpdatedAt(date);
+
+        return userRepository.save(user).getProfile();
     }
 
+    /**
+     * Gets all marketplace profiles of the authenticated user.
+     *
+     * @param page The page number.
+     * @param size The page size.
+     * @param sortBy The field to sort by.
+     * @param order The order to sort by.
+     * @return The marketplace profiles of the authenticated user.
+     */
+    public Page<MarketplaceProfile> getMarketplaceProfiles(int page, int size, String sortBy, String order) {
+        User user = getUser();
+        List<MarketplaceProfile> marketplaceProfiles = user.getMarketplaceProfiles();
+        // Apply sorting
+        Sort.Direction direction = Sort.Direction.fromString(order);
+        Sort sort = Sort.by(direction, sortBy);
+
+        // Apply pagination
+        Pageable pageable = PageRequest.of(page, size, sort);
+        int start = Math.min((int)pageable.getOffset(), marketplaceProfiles.size());
+        int end = Math.min((start + pageable.getPageSize()), marketplaceProfiles.size());
+        List<MarketplaceProfile> paginatedList = marketplaceProfiles.subList(start, end);
+
+        return new PageImpl<>(paginatedList, pageable, marketplaceProfiles.size());
+    }
 
     /**
      * Adds a marketplace profile to the authenticated user.
@@ -162,19 +225,16 @@ public class UserService {
     public User addMarketplaceProfile(MarketplaceProfile marketplaceProfile) {
         User user = getUser();
 
-        // Obtém a lista de perfis do marketplace ou inicializa uma nova se for nula
+        // Get the list of marketplace profiles
         List<MarketplaceProfile> marketplaceProfiles = user.getMarketplaceProfiles();
-        if (marketplaceProfiles == null) {
-            marketplaceProfiles = new ArrayList<>();
-        }
 
-        // Adiciona o novo perfil à lista
+        // Add the new marketplace profile
         marketplaceProfiles.add(marketplaceProfile);
 
-        // Define a lista atualizada na entidade User
+        // Set the updated marketplace profiles
         user.setMarketplaceProfiles(marketplaceProfiles);
 
-        // Salva e retorna o usuário atualizado
+        // Save the user and return it
         return userRepository.save(user);
     }
 
@@ -186,24 +246,36 @@ public class UserService {
      */
     public User removeMarketplaceProfile(String username) {
         User user = getUser();
-        user.getMarketplaceProfiles().removeIf(profile -> profile.getUsername().equals(username));
-        return userRepository.save(user);
+        // Remove the marketplace profile with the given username
+        boolean itWasRemoved =
+                user.getMarketplaceProfiles().removeIf(profile -> profile.getUsername().equals(username));
+        // Save the user and return it
+        return itWasRemoved ? userRepository.save(user) : user;
     }
 
+    /**
+     * Updates a marketplace profile of the authenticated user.
+     *
+     * @param username The username of the marketplace profile to update.
+     * @param updatedMarketProfile The updated marketplace profile.
+     * @return The updated user.
+     */
     public User updateMarketplaceProfile(String username, MarketplaceProfile updatedMarketProfile) {
-        // Recupera o usuário (assumindo que este método já está implementado)
         User user = getUser();
 
-        // Obtém a lista de perfis de marketplace
+        // Get the list of marketplace profiles
         List<MarketplaceProfile> marketplaceProfiles = user.getMarketplaceProfiles();
 
-        // Encontra o índice do perfil de marketplace com o username correspondente
+        // Update the marketplace profile
         for (int i = 0; i < marketplaceProfiles.size(); i++) {
             if (marketplaceProfiles.get(i).getUsername().equals(username)) {
+                // Set the updated marketplace profiles
                 marketplaceProfiles.set(i, updatedMarketProfile);
-                break;
+                return userRepository.save(user);
             }
         }
-        return userRepository.save(user);
+
+        // Save the user and return it
+        return user;
     }
 }

@@ -3,6 +3,7 @@ package br.ufg.ceia.gameinsight.userservice;
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
 import br.ufg.ceia.gameinsight.userservice.dtos.LoginRequest;
+import br.ufg.ceia.gameinsight.userservice.dtos.UserProfileDto;
 import br.ufg.ceia.gameinsight.userservice.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
@@ -161,7 +162,6 @@ public class LoginAndRegisterTests {
         logger.info("JWT Token: {}", jwtToken);
     }
 
-
     /**
      * Tests failed authentication with invalid credentials.
      *
@@ -204,6 +204,40 @@ public class LoginAndRegisterTests {
     }
 
     /**
+     * Tests updating the authenticated user's profile.
+     *
+     * <p>This test updates the authenticated user's profile and verifies that the changes
+     * are correctly persisted in the database.</p>
+     *
+     * @throws Exception if any error occurs during the request
+     */
+    @Test
+    @Order(7)
+    public void testUpdateAuthenticatedUserProfile() throws Exception {
+        // Create a new UserProfileDto with updated information
+        UserProfileDto updatedProfile = new UserProfileDto();
+        updatedProfile.setFirstName("Updated");
+        updatedProfile.setLastName("UserUpdated");
+        updatedProfile.setPhoneNumber("456");
+
+        // Send PUT request to update the authenticated user's profile
+        mockMvc.perform(put("/users/me/profile")
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updatedProfile)))
+                .andExpect(status().isOk()) // Expecting HTTP 200 OK
+                .andExpect(jsonPath("$.firstName").value("Updated")) // Verify updated first name
+                .andExpect(jsonPath("$.lastName").value("UserUpdated")) // Verify updated last name
+                .andExpect(jsonPath("$.phoneNumber").value("456")); // Verify updated phone number
+
+        // Verify that the profile was updated in the repository
+        UserProfile savedProfile = userRepository.findByEmail(user.getEmail()).orElseThrow().getProfile();
+        Assertions.assertEquals("Updated", savedProfile.getFirstName());
+        Assertions.assertEquals("UserUpdated", savedProfile.getLastName());
+        Assertions.assertEquals("456", savedProfile.getPhoneNumber());
+    }
+
+    /**
      * Tests retrieval of all users.
      *
      * <p>This test uses the JWT token to fetch a list of all users in the system.</p>
@@ -211,7 +245,7 @@ public class LoginAndRegisterTests {
      * @throws Exception if any error occurs during the request
      */
     @Test
-    @Order(7)
+    @Order(8)
     public void testGetAllUsers() throws Exception {
         // Send GET request to retrieve all users
         mockMvc.perform(get("/users/all")
