@@ -1,27 +1,20 @@
-# Use uma imagem oficial do Maven para construir o aplicativo
-FROM maven:3.8.6-openjdk-21-slim AS build
+# Estágio 1: Build
+FROM maven:3.8.6-openjdk-18-slim AS build
 
-# Defina o diretório de trabalho
-WORKDIR /UserService
-
-# Copie o arquivo pom.xml e as dependências do Maven
-COPY pom.xml .
-COPY src ./src
-
-# Empacote a aplicação
-RUN mvn clean package -DskipTests
-
-# Use uma imagem do OpenJDK para rodar a aplicação
-FROM openjdk:21-jdk-slim
+# Copie todos os arquivos para o contêiner
+COPY . .
 
 # Defina o diretório de trabalho no contêiner
 WORKDIR /UserService
 
-# Copie o JAR gerado pelo Maven na etapa anterior
-COPY --from=build /app/target/UserService-0.0.1-SNAPSHOT.jar /app/UserService.jar
+# Liste os arquivos e diretórios para inspeção
+RUN ls -R
+
+# Empacote a aplicação
+RUN mvn clean package -DskipTests
 
 # Exponha a porta da aplicação
 EXPOSE 8080
 
 # Comando para rodar a aplicação
-ENTRYPOINT ["java", "-jar", "UserService.jar"]
+ENTRYPOINT ["java", "-jar", "target/UserService-0.0.1-SNAPSHOT.jar"]
