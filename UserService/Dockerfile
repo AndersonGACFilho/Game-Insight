@@ -2,10 +2,7 @@
 FROM maven:3.8.6-openjdk-18-slim AS build
 
 # Copie todos os arquivos para o contêiner
-COPY . .
-
-# Defina o diretório de trabalho no contêiner
-WORKDIR /UserService
+COPY .. .
 
 # Liste os arquivos e diretórios para inspeção
 RUN ls -R
