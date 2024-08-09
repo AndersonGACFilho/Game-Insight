@@ -37,8 +37,7 @@ release.properties
 *.iml
 
 # Ignore .idea directories in subfolders
-**/.idea
-
+**/.idea/
 
 # macOS-specific ignores
 .DS_Store
