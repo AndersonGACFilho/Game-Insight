@@ -2,6 +2,9 @@ package br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.parts;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Represents the storage of a user's PC.
  * <br>
@@ -13,7 +16,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
  *     <li>The type of the storage.</li>
  * </ul>
  */
-public class Storage {
+public class Storage implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * The size of the storage.
@@ -34,9 +42,11 @@ public class Storage {
      * Creates a Storage object with the given size.
      *
      * @param size The size of the storage.
+     * @param type The type of the storage.
      */
-    public Storage(int size) {
+    public Storage(int size, String type) {
         this.size = size;
+        this.type = type;
     }
 
     /**

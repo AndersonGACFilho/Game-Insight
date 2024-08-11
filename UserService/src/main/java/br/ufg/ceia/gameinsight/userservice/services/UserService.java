@@ -289,4 +289,22 @@ public class UserService {
         user.setUserPc(newUserPc);
         userRepository.save(user);
     }
+
+    /**
+     * Removes the PC configuration from the authenticated user.
+     */
+    public void removeUserPc() {
+        User user = getUser();
+        user.setUserPc(null);
+        userRepository.save(user);
+    }
+
+    /**
+     * Gets the PC configuration of the authenticated user.
+     * @return The PC configuration of the authenticated user.
+     */
+    public UserPc getUserPc() {
+        User user = getUser();
+        return user.getUserPc();
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,7 @@ public class User implements Serializable {
     /**
      * The serial version UID.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -35,7 +37,7 @@ public class User implements Serializable {
      * The unique identifier for the user.
      */
     @Id
-    private Long id;
+    private long id;
 
     /**
      * The name of the user.

@@ -1,5 +1,8 @@
 package br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.parts;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Represents the operational system of a user's PC.
  * <br>
@@ -7,7 +10,12 @@ package br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.parts;
  * <br>
  * This class includes the operational system of the user's PC.
  */
-public class OperationalSystem {
+public class OperationalSystem implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
     /**
      * The name of the operational system.
      */

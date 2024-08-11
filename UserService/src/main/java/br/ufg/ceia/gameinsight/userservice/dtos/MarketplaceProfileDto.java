@@ -4,6 +4,7 @@ import br.ufg.ceia.gameinsight.userservice.domain.games.Game;
 import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
 import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceType;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * It is used to send MarketplaceProfile data to the client.
  */
 public class MarketplaceProfileDto implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**

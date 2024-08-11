@@ -1,5 +1,6 @@
 package br.ufg.ceia.gameinsight.userservice.dtos;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  * @see br.ufg.ceia.gameinsight.userservice.dtos;
  */
 public class UserDto implements Serializable{
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -39,6 +41,11 @@ public class UserDto implements Serializable{
      */
     private UserProfile userProfile;
 
+    /**
+     * The marketplace profiles associated with the user (e.g., Steam, PlayStation, Xbox).
+     */
+    private List<MarketplaceProfileDto> marketplaceProfiles;
+
     public List<MarketplaceProfileDto> getMarketplaceProfiles() {
         return marketplaceProfiles;
     }
@@ -55,11 +62,6 @@ public class UserDto implements Serializable{
             this.marketplaceProfiles = List.of();
         }
     }
-
-    /**
-     * The marketplace profiles associated with the user (e.g., Steam, PlayStation, Xbox).
-     */
-    private List<MarketplaceProfileDto> marketplaceProfiles;
 
     /**
      * Default constructor
