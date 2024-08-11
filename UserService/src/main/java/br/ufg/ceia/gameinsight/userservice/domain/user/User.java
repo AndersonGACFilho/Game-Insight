@@ -1,12 +1,11 @@
 package br.ufg.ceia.gameinsight.userservice.domain.user;
 import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
+import br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.UserPc;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.FieldType;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -85,6 +84,12 @@ public class User implements Serializable {
      */
     @Field
     private List<Friend> friends;
+
+    /**
+     * Pc Configuration
+     */
+    @Field
+    private UserPc userPc;
 
 
     // Getters and setters
@@ -249,6 +254,24 @@ public class User implements Serializable {
      */
     public void setFriends(List<Friend> friends) {
         this.friends = friends;
+    }
+
+    /**
+     * Gets the PC configuration of the user.
+     *
+     * @return The PC configuration of the user.
+     */
+    public UserPc getUserPc() {
+        return userPc;
+    }
+
+    /**
+     * Sets the PC configuration of the user.
+     *
+     * @param userPc The PC configuration of the user.
+     */
+    public void setUserPc(UserPc userPc) {
+        this.userPc = userPc;
     }
 
     // Adders and removers

@@ -3,6 +3,7 @@ package br.ufg.ceia.gameinsight.userservice.services;
 import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
+import br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.UserPc;
 import br.ufg.ceia.gameinsight.userservice.dtos.MarketplaceProfileDto;
 import br.ufg.ceia.gameinsight.userservice.repositories.UserRepository;
 import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
@@ -277,5 +278,15 @@ public class UserService {
 
         // Save the user and return it
         return user;
+    }
+
+    /**
+     * Add a PC configuration to the authenticated user.
+     * @param newUserPc The PC configuration to add.
+     */
+    public void addUserPc( UserPc newUserPc) {
+        User user = getUser();
+        user.setUserPc(newUserPc);
+        userRepository.save(user);
     }
 }
