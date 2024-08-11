@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -13,7 +15,12 @@ import java.util.List;
  * <p>
  * This class holds details about a friend of the user.
  */
-public class Friend {
+public class Friend implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
     /**
      * The name of the friend.
      */

@@ -3,6 +3,9 @@ package br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig;
 import br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.parts.*;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * This class represents the User's PC Data into the User collection.
  * <p>
@@ -18,7 +21,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
  * <li>The storage of the User's PC </li>
  * <li>The DirectX version of the User's PC </li>
  */
-public class UserPc {
+public class UserPc implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
     /**
      * The OS of the User's PC.
      */

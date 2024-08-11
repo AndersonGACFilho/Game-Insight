@@ -2,6 +2,9 @@ package br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.parts;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * This class represents the User's CPU
  * <br>
@@ -12,7 +15,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
  *     <li>name</li>
  * </ul>
  */
-public class CPU {
+public class CPU implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
     /**
      * The name of the CPU
      */

@@ -2,6 +2,9 @@ package br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.parts;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Represents the RAM of a user's PC.
  * <br>
@@ -14,7 +17,12 @@ import org.springframework.data.mongodb.core.mapping.Field;
  *     <li>The RAM's type.</li>
  * </ul>
  */
-public class RAM {
+public class RAM implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * The amount of RAM in the user's PC.

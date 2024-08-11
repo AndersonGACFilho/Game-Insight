@@ -1,5 +1,8 @@
 package br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.parts;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * Represents the GPU of a user's PC.
  * <br>
@@ -7,7 +10,12 @@ package br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.parts;
  * <br>
  * This class includes the GPU of the user's PC.
  */
-public class GPU {
+public class GPU implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
     /**
      * The name of the GPU.
      */

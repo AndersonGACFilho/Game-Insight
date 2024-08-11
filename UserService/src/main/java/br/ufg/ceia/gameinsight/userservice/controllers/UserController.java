@@ -181,6 +181,26 @@ public class UserController {
     }
 
     /**
+     * Remove the user pc configuration from the logged user.
+     */
+    @DeleteMapping("/pc")
+    public ResponseEntity<Void> removeUserPc() {
+        userService.removeUserPc();
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Get the user pc configuration of the logged user.
+     *
+     * @return The user pc configuration of the logged user.
+     */
+    @GetMapping("/pc")
+    public ResponseEntity<UserPc> getUserPc() {
+        UserPc userPc = userService.getUserPc();
+        return ResponseEntity.ok(userPc);
+    }
+
+    /**
      * Get all marketplace profiles of the logged user.
      *
      * @return The marketplace profiles of the logged user.
