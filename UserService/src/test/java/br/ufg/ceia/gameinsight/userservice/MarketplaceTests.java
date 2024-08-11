@@ -7,12 +7,15 @@ import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import br.ufg.ceia.gameinsight.userservice.dtos.MarketplaceProfileDto;
 import br.ufg.ceia.gameinsight.userservice.dtos.UserDto;
 import br.ufg.ceia.gameinsight.userservice.exceptions.ResourceNotFoundException;
+import br.ufg.ceia.gameinsight.userservice.repositories.UserRepository;
 import br.ufg.ceia.gameinsight.userservice.services.UserService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,11 +29,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
- * Integration tests for marketplace profile-related operations in the User Service.
+ * Integration tests for marketplace profile-related operations in the User
+ * Service.
  *
  * <p>This class tests functionalities related to adding, removing, and updating
  * marketplace profiles for users.</p>
  */
+@SpringBootTest
+@AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MarketplaceTests {
 
     @InjectMocks
@@ -38,6 +46,9 @@ class MarketplaceTests {
 
     @Mock
     private UserService userService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Mock
     private SecurityContext securityContext;
@@ -52,7 +63,8 @@ class MarketplaceTests {
     /**
      * Sets up the test environment before each test.
      *
-     * <p>This method initializes mock objects and configures the security context
+     * <p>This method initializes mock objects and configures the security
+     * context
      * for authentication.</p>
      */
     @BeforeEach
@@ -86,54 +98,67 @@ class MarketplaceTests {
     /**
      * Tests successful addition of a marketplace profile.
      *
-     * <p>This test verifies that a marketplace profile can be successfully added to a user.</p>
+     * <p>This test verifies that a marketplace profile can be successfully
+     * added to a user.</p>
      */
     @Test
     void testAddMarketplaceProfile_Success() {
         // Arrange: Set up mock responses for userService methods
         when(userService.getUser()).thenReturn(mockUser);
-        when(userService.addMarketplaceProfile(any(MarketplaceProfile.class))).thenReturn(mockUser);
+        when(userService.addMarketplaceProfile(any(MarketplaceProfile.class)))
+                .thenReturn(mockUser);
 
         // Act: Call the controller method to add a marketplace profile
-        ResponseEntity<UserDto> response = userController.addMarketplaceProfile(mockMarketplaceProfileDto);
+        ResponseEntity<UserDto> response = userController
+                .addMarketplaceProfile(mockMarketplaceProfileDto);
 
         // Assert: Verify the response and interactions with the userService
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(mockUser.getEmail(), response.getBody().getEmail());
-        verify(userService, times(1)).addMarketplaceProfile(any(MarketplaceProfile.class));
+        verify(userService, times(1))
+                .addMarketplaceProfile(any(MarketplaceProfile.class));
     }
 
     /**
      * Tests addition of a marketplace profile when the user is not found.
      *
-     * <p>This test verifies that the appropriate response is returned when the user
+     * <p>This test verifies that the appropriate response is returned when the
+     * user
      * is not found during the addition of a marketplace profile.</p>
      */
     @Test
     void testAddMarketplaceProfile_UserNotFound() {
-        // Arrange: Set up mock response for userService.getUser to throw an exception
-        when(userService.getUser()).thenThrow(new ResourceNotFoundException("User not found"));
+        // Arrange: Set up mock response for userService.getUser to throw an
+        // exception
+        when(userService.getUser()).thenThrow(
+                new ResourceNotFoundException("User not found"));
 
         // Act: Call the controller method to add a marketplace profile
-        ResponseEntity<UserDto> response = userController.addMarketplaceProfile(mockMarketplaceProfileDto);
+        ResponseEntity<UserDto> response = userController
+                .addMarketplaceProfile(mockMarketplaceProfileDto);
 
         // Assert: Verify the response and interactions with the userService
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody()); // Expecting null body when user is not found
+        assertNull(response.getBody()); // Expecting null body when user is not
+        // found
         verify(userService, times(1)).getUser();
-        verify(userService, times(0)).addMarketplaceProfile(any(MarketplaceProfile.class));
+        verify(userService, times(0))
+                .addMarketplaceProfile(any(MarketplaceProfile.class));
     }
 
     /**
      * Tests successful removal of a marketplace profile.
      *
-     * <p>This test verifies that a marketplace profile can be successfully removed from a user.</p>
+     * <p>This test verifies that a marketplace profile can be successfully
+     * removed from a user.</p>
      */
     @Test
     void testRemoveMarketplaceProfile_Success() {
-        // Arrange: Set up mock response for userService.removeMarketplaceProfile
-        when(userService.removeMarketplaceProfile(any(String.class))).thenReturn(mockUser);
+        // Arrange: Set up mock response for userService
+        // .removeMarketplaceProfile
+        when(userService.removeMarketplaceProfile(any(String.class)))
+                .thenReturn(mockUser);
 
         // Act: Call the controller method to remove a marketplace profile
         ResponseEntity<Void> response = userController.removeMarketplaceProfile(
@@ -141,28 +166,35 @@ class MarketplaceTests {
 
         // Assert: Verify the response and interactions with the userService
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-        verify(userService, times(1)).removeMarketplaceProfile(any(String.class));
+        verify(userService, times(1))
+                .removeMarketplaceProfile(any(String.class));
     }
 
     /**
      * Tests removal of a marketplace profile when the user is not found.
      *
-     * <p>This test verifies that the appropriate response is returned when the user
+     * <p>This test verifies that the appropriate response is returned when the
+     * user
      * is not found during the removal of a marketplace profile.</p>
      */
     @Test
     void testRemoveMarketplaceProfile_UserNotFound() {
-        // Arrange: Set up mock response for userService.removeMarketplaceProfile to throw an exception
+        // Arrange: Set up mock response for userService
+        // .removeMarketplaceProfile to throw an exception
         when(userService.removeMarketplaceProfile(any(String.class))).thenThrow(
                 new ResourceNotFoundException("User not found"));
 
         // Act: Call the controller method to remove a marketplace profile
-        ResponseEntity<Void> response = userController.removeMarketplaceProfile(mockMarketplaceProfileDto.getUsername());
+        ResponseEntity<Void> response = userController
+                .removeMarketplaceProfile(mockMarketplaceProfileDto
+                        .getUsername());
 
         // Assert: Verify the response and interactions with the userService
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody()); // Expecting null body when user is not found
-        verify(userService, times(1)).removeMarketplaceProfile(any(String.class));
+        assertNull(response.getBody()); // Expecting null body when user
+        // is not found
+        verify(userService, times(1))
+                .removeMarketplaceProfile(any(String.class));
     }
 
     /**
@@ -173,32 +205,41 @@ class MarketplaceTests {
      */
     @Test
     void testRemoveMarketplaceProfile_ProfileNotFound() {
-        // Arrange: Set up mock response for userService.removeMarketplaceProfile to throw an exception
+        // Arrange: Set up mock response for userService
+        // .removeMarketplaceProfile to throw an exception
         when(userService.removeMarketplaceProfile(any(String.class))).thenThrow(
                 new ResourceNotFoundException("Marketplace profile not found"));
 
         // Act: Call the controller method to remove a marketplace profile
-        ResponseEntity<Void> response = userController.removeMarketplaceProfile(mockMarketplaceProfileDto.getUsername());
+        ResponseEntity<Void> response = userController
+                .removeMarketplaceProfile(mockMarketplaceProfileDto
+                        .getUsername());
 
         // Assert: Verify the response and interactions with the userService
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody()); // Expecting null body when profile is not found
-        verify(userService, times(1)).removeMarketplaceProfile(any(String.class));
+        assertNull(response.getBody()); // Expecting null body when profile is
+        // not found
+        verify(userService, times(1))
+                .removeMarketplaceProfile(any(String.class));
     }
 
     /**
      * Tests successful update of a marketplace profile.
      *
-     * <p>This test verifies that a marketplace profile can be successfully updated for a user.</p>
+     * <p>This test verifies that a marketplace profile can be successfully
+     * updated for a user.</p>
      */
     @Test
     void testUpdateMarketplaceProfile_Success() {
-        // Arrange: Set up mock response for userService.updateMarketplaceProfile
-        when(userService.updateMarketplaceProfile(any(String.class), any(MarketplaceProfile.class))).thenReturn(
+        // Arrange: Set up mock response for userService
+        // .updateMarketplaceProfile
+        when(userService.updateMarketplaceProfile(any(String.class),
+                any(MarketplaceProfile.class))).thenReturn(
                 mockUser);
 
         // Act: Call the controller method to update a marketplace profile
-        ResponseEntity<Void> response = userController.updateByMarketplaceProfileUsername(mockMarketplaceProfile,
+        ResponseEntity<Void> response = userController
+                .updateByMarketplaceProfileUsername(mockMarketplaceProfile,
                 mockMarketplaceProfileDto.getUsername());
 
         // Assert: Verify the response and interactions with the userService
@@ -208,23 +249,29 @@ class MarketplaceTests {
     /**
      * Tests update of a marketplace profile when the user is not found.
      *
-     * <p>This test verifies that the appropriate response is returned when the user
+     * <p>This test verifies that the appropriate response is returned when the
+     * user
      * is not found during the update of a marketplace profile.</p>
      */
     @Test
     void testUpdateMarketplaceProfile_UserNotFound() {
-        // Arrange: Set up mock response for userService.updateMarketplaceProfile to throw an exception
-        when(userService.updateMarketplaceProfile(any(String.class), any(MarketplaceProfile.class))).thenThrow(
+        // Arrange: Set up mock response for userService
+        // .updateMarketplaceProfile to throw an exception
+        when(userService.updateMarketplaceProfile(any(String.class),
+                any(MarketplaceProfile.class))).thenThrow(
                 new ResourceNotFoundException("User not found"));
 
         // Act: Call the controller method to update a marketplace profile
-        ResponseEntity<Void> response = userController.updateByMarketplaceProfileUsername(mockMarketplaceProfile,
+        ResponseEntity<Void> response = userController
+                .updateByMarketplaceProfileUsername(mockMarketplaceProfile,
                 mockMarketplaceProfileDto.getUsername());
 
         // Assert: Verify the response and interactions with the userService
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody()); // Expecting null body when user is not found
-        verify(userService, times(1)).updateMarketplaceProfile(any(String.class), any(
+        assertNull(response.getBody()); // Expecting null body when user is not
+        // found
+        verify(userService, times(1))
+                .updateMarketplaceProfile(any(String.class), any(
                 MarketplaceProfile.class));
     }
 
@@ -236,17 +283,30 @@ class MarketplaceTests {
      */
     @Test
     void testUpdateMarketplaceProfile_ProfileNotFound() {
-        // Arrange: Set up mock response for userService.updateMarketplaceProfile to throw an exception
-        when(userService.updateMarketplaceProfile(any(String.class), any(MarketplaceProfile.class))).thenThrow(
+        // Arrange: Set up mock response for userService
+        // .updateMarketplaceProfile to throw an exception
+        when(userService.updateMarketplaceProfile(any(String.class),
+                any(MarketplaceProfile.class))).thenThrow(
                 new ResourceNotFoundException("Marketplace profile not found"));
 
         // Act: Call the controller method to update a marketplace profile
-        ResponseEntity<Void> response = userController.updateByMarketplaceProfileUsername(mockMarketplaceProfile,
+        ResponseEntity<Void> response = userController
+                .updateByMarketplaceProfileUsername(mockMarketplaceProfile,
                 mockMarketplaceProfileDto.getUsername());
 
         // Assert: Verify the response and interactions with the userService
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody()); // Expecting null body when profile is not found
-        verify(userService, times(1)).updateMarketplaceProfile(any(String.class), any(MarketplaceProfile.class));
+        assertNull(response.getBody()); // Expecting null body when profile is
+        // not found
+        verify(userService, times(1))
+                .updateMarketplaceProfile(any(String.class),
+                        any(MarketplaceProfile.class));
+    }
+
+    @AfterAll
+    public void tearDown() {
+        // Remove the test user from the repository
+        userRepository.findByEmail(this.mockUser.getEmail())
+                .ifPresent(userRepository::delete);
     }
 }

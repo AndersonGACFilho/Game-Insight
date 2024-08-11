@@ -153,6 +153,7 @@ public class UserPcConfigurationTests {
 
     @AfterAll
     public void tearDown() {
-        userRepository.delete(user);
+        // Remove the test user from the repository
+        userRepository.findByEmail(this.user.getEmail()).ifPresent(userRepository::delete);
     }
 }
