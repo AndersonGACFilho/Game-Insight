@@ -2,11 +2,13 @@ package br.ufg.ceia.gameinsight.userservice.dtos;
 
 import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
 public class UserProfileDto implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String firstName;

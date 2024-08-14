@@ -3,6 +3,8 @@ package br.ufg.ceia.gameinsight.userservice.domain.marketplace;
 import br.ufg.ceia.gameinsight.userservice.domain.games.Game;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
@@ -11,7 +13,12 @@ import java.util.Objects;
  * <p>
  * This class holds the Marketplace profile details of the user.
  */
-public class MarketplaceProfile {
+public class MarketplaceProfile implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * The username of the user on Marketplace.
@@ -117,9 +124,8 @@ public class MarketplaceProfile {
     }
 
     /**
-     * Sets the username of the user on Marketplace.
-     *
-     * @param username The username of the user on Marketplace.
+     * Sets the type of the Marketplace.
+     * @param marketplaceType The type of the Marketplace.
      */
     public void setMarketplaceType(MarketplaceType marketplaceType) {
         this.marketplaceType = marketplaceType;

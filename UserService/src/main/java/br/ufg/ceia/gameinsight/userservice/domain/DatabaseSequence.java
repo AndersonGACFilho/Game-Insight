@@ -18,7 +18,7 @@ public class DatabaseSequence {
     /**
      * The sequence number.
      */
-    private long seq;
+    private Long seq;
 
     public DatabaseSequence() {}
 
@@ -30,11 +30,11 @@ public class DatabaseSequence {
         this.id = id;
     }
 
-    public long getSeq() {
+    public Long getSeq() {
         return seq;
     }
 
-    public void setSeq(long seq) {
+    public void setSeq(Long seq) {
         this.seq = seq;
     }
 }

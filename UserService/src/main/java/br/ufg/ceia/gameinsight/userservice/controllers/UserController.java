@@ -4,6 +4,7 @@ import br.ufg.ceia.gameinsight.userservice.configs.JwtResponse;
 import br.ufg.ceia.gameinsight.userservice.domain.marketplace.MarketplaceProfile;
 import br.ufg.ceia.gameinsight.userservice.domain.user.User;
 import br.ufg.ceia.gameinsight.userservice.domain.user.UserProfile;
+import br.ufg.ceia.gameinsight.userservice.domain.user.pcConfig.UserPc;
 import br.ufg.ceia.gameinsight.userservice.dtos.LoginRequest;
 import br.ufg.ceia.gameinsight.userservice.dtos.MarketplaceProfileDto;
 import br.ufg.ceia.gameinsight.userservice.dtos.UserDto;
@@ -68,7 +69,7 @@ public class UserController {
         logger.info("Creating a new user: " + user.getEmail());
         // Check if the user is valid
         if (user.getEmail() == null || user.getPassword() == null
-            || user.getEmail().isBlank() || user.getPassword().isBlank()) {
+                || user.getEmail().isBlank() || user.getPassword().isBlank()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         try {
@@ -76,14 +77,14 @@ public class UserController {
             URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                     .buildAndExpand(createdUser.getId()).toUri();
             return ResponseEntity.created(location).build();
-        }
-        catch (DataIntegrityViolationException e) {
+        } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
 
     /**
      * Gets the logged user.
+     *
      * @return The logged user.
      */
     @GetMapping("/me")
@@ -117,10 +118,10 @@ public class UserController {
     /**
      * Get all users.
      *
-     * @param page of the page (number of the page).
-     * @param size of the page (number of users).
+     * @param page   of the page (number of the page).
+     * @param size   of the page (number of users).
      * @param sortBy of the page (field name).
-     * @param order of the page (ASC or DESC).
+     * @param order  of the page (ASC or DESC).
      * @return Page of users.
      */
     @GetMapping("/all")
@@ -150,7 +151,7 @@ public class UserController {
         } catch (Exception e) {
             logger.error("Error authenticating the user", e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
-                new BadCredentialsException("Invalid email or password"));
+                    new BadCredentialsException("Invalid email or password"));
         }
     }
 
@@ -166,6 +167,37 @@ public class UserController {
         logger.info("Updating the user profile");
         UserProfile updatedProfile = userService.updateUserProfile(userProfileDto.toUserProfile());
         return ResponseEntity.ok(new UserProfileDto(updatedProfile));
+    }
+
+    /**
+     * Add the user pc configuration to the logged user.
+     *
+     * @param userPc The user pc configuration.
+     */
+    @PostMapping("/pc")
+    public ResponseEntity<Void> addUserPc(@RequestBody UserPc userPc) {
+        userService.addUserPc(userPc);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Remove the user pc configuration from the logged user.
+     */
+    @DeleteMapping("/pc")
+    public ResponseEntity<Void> removeUserPc() {
+        userService.removeUserPc();
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Get the user pc configuration of the logged user.
+     *
+     * @return The user pc configuration of the logged user.
+     */
+    @GetMapping("/pc")
+    public ResponseEntity<UserPc> getUserPc() {
+        UserPc userPc = userService.getUserPc();
+        return ResponseEntity.ok(userPc);
     }
 
     /**
@@ -230,8 +262,7 @@ public class UserController {
     @PutMapping("/marketplace/{username}")
     public ResponseEntity<Void> updateByMarketplaceProfileUsername(
             @RequestBody MarketplaceProfile marketplaceProfileDto,
-            @PathVariable String username)
-    {
+            @PathVariable String username) {
         try {
             User updatedUser = userService.updateMarketplaceProfile(username, marketplaceProfileDto);
             return ResponseEntity.noContent().build();

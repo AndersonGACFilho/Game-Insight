@@ -2,6 +2,8 @@ package br.ufg.ceia.gameinsight.userservice.domain.games;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +13,12 @@ import java.util.Objects;
  * <p>
  * This class holds details about a game associated with a user's profile.
  */
-public class Game {
+public class Game implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * The title of the game.

@@ -2,6 +2,8 @@ package br.ufg.ceia.gameinsight.userservice.domain.games;
 
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
@@ -10,7 +12,12 @@ import java.util.Objects;
  * <p>
  * This class holds details about an achievement in a game.
  */
-public class Achievement {
+public class Achievement implements Serializable {
+    /**
+     * The serial version UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * The unique identifier for the achievement.
