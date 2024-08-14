@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/Game-Insight.iml" filepath="$PROJECT_DIR$/.idea/Game-Insight.iml" />
-      <module fileurl="file://$PROJECT_DIR$/GameService/GameService.iml" filepath="$PROJECT_DIR$/GameService/GameService.iml" />
-      <module fileurl="file://$PROJECT_DIR$/UserService/UserService.iml" filepath="$PROJECT_DIR$/UserService/UserService.iml" />
     </modules>
   </component>
 </project>

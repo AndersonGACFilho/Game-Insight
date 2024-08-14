@@ -29,7 +29,7 @@ services:
       - "8081:8080"
       environment:
         - POSTGRES_HOST=host.docker.internal
-        - POSTGRES_PORT=5432
+        - POSTGRES_PORT=5440
         - POSTGRES_DB=gamedb
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
@@ -41,7 +41,7 @@ services:
       image: postgres:13
       container_name: postgres
       ports:
-          - "5432:5432"
+          - "5440:5432"
       environment:
           - POSTGRES_USER=postgres
           - POSTGRES_PASSWORD=postgres
