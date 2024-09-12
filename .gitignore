@@ -33,8 +33,10 @@ pom.xml.next
 release.properties
 
 # Ignore IntelliJ IDEA project files
-.idea/
+.idea/*
 *.iml
+*.iws
+*.ipr
 
 # Ignore .idea directories in subfolders
 **/.idea/
