@@ -136,6 +136,92 @@
 				],
 				"body": {
 					"mode": "raw",
+					"raw": "fields category,checksum,created_at,date,game,human,m,platform,region,status,updated_at,y;",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.igdb.com/v4/release_dates",
+					"protocol": "https",
+					"host": [
+						"api",
+						"igdb",
+						"com"
+					],
+					"path": [
+						"v4",
+						"release_dates"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Franchises",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Client-ID",
+						"value": "{{twitch_client_id}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{twitch_access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "fields checksum,created_at,games,name,slug,updated_at,url;",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.igdb.com/v4/franchises",
+					"protocol": "https",
+					"host": [
+						"api",
+						"igdb",
+						"com"
+					],
+					"path": [
+						"v4",
+						"franchises"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Release Dates",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Client-ID",
+						"value": "{{twitch_client_id}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{twitch_access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
 					"raw": "fields category,checksum,created_at,date,game,human,m,platform,region,status,updated_at,y;\r\nwhere game = {{gameId}}",
 					"options": {
 						"raw": {
@@ -180,6 +266,49 @@
 				"body": {
 					"mode": "raw",
 					"raw": "fields * where id = 32550;",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.igdb.com/v4/age_rating_content_descriptions",
+					"protocol": "https",
+					"host": [
+						"api",
+						"igdb",
+						"com"
+					],
+					"path": [
+						"v4",
+						"age_rating_content_descriptions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Age Rating Content Descriptions",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Client-ID",
+						"value": "{{twitch_client_id}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{twitch_access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "fields category,checksum,description;",
 					"options": {
 						"raw": {
 							"language": "text"
@@ -268,7 +397,8 @@
 						"exec": [
 							"var jsonData = pm.response.json();\r",
 							"var logo = jsonData[0].logo;\r",
-							"pm.collectionVariables.set(\"companyLogo\",company);"
+							"pm.collectionVariables.set(\"companyLogo\", logo);\r",
+							""
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -460,6 +590,49 @@
 			"response": []
 		},
 		{
+			"name": "Themes",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Client-ID",
+						"value": "{{twitch_client_id}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{twitch_access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "fields checksum,created_at,name,slug,updated_at,url;",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.igdb.com/v4/themes",
+					"protocol": "https",
+					"host": [
+						"api",
+						"igdb",
+						"com"
+					],
+					"path": [
+						"v4",
+						"themes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Covers",
 			"event": [
 				{
@@ -560,6 +733,49 @@
 			"response": []
 		},
 		{
+			"name": "Player Perspectives",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Client-ID",
+						"value": "{{twitch_client_id}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{twitch_access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "fields checksum,created_at,name,slug,updated_at,url;",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.igdb.com/v4/player_perspectives",
+					"protocol": "https",
+					"host": [
+						"api",
+						"igdb",
+						"com"
+					],
+					"path": [
+						"v4",
+						"player_perspectives"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Game Modes",
 			"request": {
 				"method": "POST",
@@ -603,7 +819,7 @@
 			"response": []
 		},
 		{
-			"name": "Game Versions",
+			"name": "Game Localizations",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -622,7 +838,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "fields checksum,created_at,features,game,games,updated_at,url;",
+					"raw": "fields checksum,cover,created_at,game,name,region,updated_at;",
 					"options": {
 						"raw": {
 							"language": "text"
@@ -630,7 +846,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://api.igdb.com/v4/game_versions",
+					"raw": "https://api.igdb.com/v4/game_localizations",
 					"protocol": "https",
 					"host": [
 						"api",
@@ -639,7 +855,93 @@
 					],
 					"path": [
 						"v4",
-						"game_versions"
+						"game_localizations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Regions",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Client-ID",
+						"value": "{{twitch_client_id}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{twitch_access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "fields category,checksum,created_at,identifier,name,updated_at;",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.igdb.com/v4/regions",
+					"protocol": "https",
+					"host": [
+						"api",
+						"igdb",
+						"com"
+					],
+					"path": [
+						"v4",
+						"regions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Languages",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Client-ID",
+						"value": "{{twitch_client_id}}"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{twitch_access_token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "fields checksum,created_at,locale,name,native_name,updated_at;",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://api.igdb.com/v4/languages",
+					"protocol": "https",
+					"host": [
+						"api",
+						"igdb",
+						"com"
+					],
+					"path": [
+						"v4",
+						"languages"
 					]
 				}
 			},
@@ -681,77 +983,4 @@
 						"com"
 					],
 					"path": [
-						"v4",
-						"platforms"
-					]
-				}
-			},
-			"response": []
-		}
-	],
-	"auth": {
-		"type": "inherit"
-	},
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"packages": {},
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "twitch_client_secret",
-			"value": "aj4ypryl391p1hu58jlpb1mktuojov"
-		},
-		{
-			"key": "twitch_client_id",
-			"value": "dqo79q2m2xekhsb38anwwa9fodctel"
-		},
-		{
-			"key": "twitch_access_token",
-			"value": "{{access_token}}"
-		},
-		{
-			"key": "coverImage",
-			"value": "0",
-			"type": "string"
-		},
-		{
-			"key": "companyLogo",
-			"value": "",
-			"type": "string"
-		},
-		{
-			"key": "gameId",
-			"value": ""
-		},
-		{
-			"key": "companyId",
-			"value": ""
-		},
-		{
-			"key": "imageLogoCompany",
-			"value": "0"
-		},
-		{
-			"key": "companyLogoImage",
-			"value": ""
-		}
-	]
-}
+						"
