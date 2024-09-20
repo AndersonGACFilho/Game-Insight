@@ -77,9 +77,7 @@ public class UserProfileTests {
         user.setPassword(userPassword);
         user.setName("Test User");
         UserProfile userProfile = new UserProfile();
-        userProfile.setFirstName("Test");
-        userProfile.setLastName("User");
-        userProfile.setPhoneNumber("123");
+        userProfile.setBirthdate(new Date());
         user.setProfile(userProfile);
 
         // Register the user
@@ -125,9 +123,7 @@ public class UserProfileTests {
         mockMvc.perform(get("/users/me/profile")
                         .header("Authorization", "Bearer " + jwtToken))
                 .andExpect(status().isOk()) // Expecting HTTP 200 OK
-                .andExpect(jsonPath("$.firstName").value(user.getProfile().getFirstName())) // Verify first name
-                .andExpect(jsonPath("$.lastName").value(user.getProfile().getLastName())) // Verify last name
-                .andExpect(jsonPath("$.phoneNumber").value(user.getProfile().getPhoneNumber())); // Verify phone number
+                .andExpect(jsonPath("$.birthdate").exists()); // Verify that the birthdate is present
     }
 
     /**
@@ -143,30 +139,23 @@ public class UserProfileTests {
     public void testUpdateUserProfile() throws Exception {
         // Create a new UserProfileDto with updated information
         UserProfileDto updatedProfile = new UserProfileDto();
-        updatedProfile.setFirstName("Updated");
-        updatedProfile.setLastName("User");
 
         // Parse the birthdate to set in the updated profile
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         Date birthdate = dateFormat.parse("2000-01-01T00:00:00.000Z");
         updatedProfile.setBirthdate(birthdate);
-        updatedProfile.setPhoneNumber("456");
-
         // Send PUT request to update user profile
         mockMvc.perform(put("/users/me/profile")
                         .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedProfile)))
                 .andExpect(status().isOk()) // Expecting HTTP 200 OK
-                .andExpect(jsonPath("$.firstName").value(updatedProfile.getFirstName())) // Verify updated first name
-                .andExpect(jsonPath("$.lastName").value(updatedProfile.getLastName())) // Verify updated last name
-                .andExpect(jsonPath("$.phoneNumber").value(updatedProfile.getPhoneNumber())); // Verify updated phone number
+                .andExpect(jsonPath("$.birthdate").value("2000-01-01T00:00:00.000+0000"));
+        // Verify that the birthdate was updated
 
         // Verify that the profile was updated in the repository
         UserProfile savedProfile = userRepository.findByEmail(user.getEmail()).orElseThrow().getProfile();
-        Assertions.assertEquals(updatedProfile.getFirstName(), savedProfile.getFirstName());
-        Assertions.assertEquals(updatedProfile.getLastName(), savedProfile.getLastName());
-        Assertions.assertEquals(updatedProfile.getPhoneNumber(), savedProfile.getPhoneNumber());
+        Assertions.assertEquals(birthdate, savedProfile.getBirthdate());
     }
 
     /**
