@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import java.util.Date;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -53,7 +55,8 @@ public class LoginAndRegisterTests {
 
     /**
      * Initializes a test user with a unique email before all tests are executed.
-     */
+     */// Add this import
+
     @BeforeAll
     public void setup() {
         user = new User();
@@ -62,12 +65,9 @@ public class LoginAndRegisterTests {
         user.setPassword(userPassword);
         user.setName("Test User");
         UserProfile userProfile = new UserProfile();
-        userProfile.setFirstName("Test");
-        userProfile.setLastName("User");
-        userProfile.setPhoneNumber("123");
+        userProfile.setBirthdate(new Date());
         user.setProfile(userProfile);
     }
-
     /**
      * Tests the registration of a new user.
      *
@@ -216,9 +216,7 @@ public class LoginAndRegisterTests {
     public void testUpdateAuthenticatedUserProfile() throws Exception {
         // Create a new UserProfileDto with updated information
         UserProfileDto updatedProfile = new UserProfileDto();
-        updatedProfile.setFirstName("Updated");
-        updatedProfile.setLastName("UserUpdated");
-        updatedProfile.setPhoneNumber("456");
+        updatedProfile.setBirthdate(new Date());
 
         // Send PUT request to update the authenticated user's profile
         mockMvc.perform(put("/users/me/profile")
@@ -226,15 +224,11 @@ public class LoginAndRegisterTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedProfile)))
                 .andExpect(status().isOk()) // Expecting HTTP 200 OK
-                .andExpect(jsonPath("$.firstName").value("Updated")) // Verify updated first name
-                .andExpect(jsonPath("$.lastName").value("UserUpdated")) // Verify updated last name
-                .andExpect(jsonPath("$.phoneNumber").value("456")); // Verify updated phone number
+                .andExpect(jsonPath("$.birthdate").value(updatedProfile.getBirthdate().toString())); // Verify updated birthdate
 
         // Verify that the profile was updated in the repository
         UserProfile savedProfile = userRepository.findByEmail(user.getEmail()).orElseThrow().getProfile();
-        Assertions.assertEquals("Updated", savedProfile.getFirstName());
-        Assertions.assertEquals("UserUpdated", savedProfile.getLastName());
-        Assertions.assertEquals("456", savedProfile.getPhoneNumber());
+        Assertions.assertEquals(updatedProfile.getBirthdate(), savedProfile.getBirthdate());
     }
 
     /**
