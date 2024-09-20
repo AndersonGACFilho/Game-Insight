@@ -1,0 +1,15 @@
+{
+  "userApiUrl" : "http://10.0.2.2:8080/users",
+  "gameApiUrl" : "http://10.0.2.2:8081/games",
+
+  "userApiEndpoints" : {
+    "register" : "/register",
+    "user" : "/me",
+    "login" : "/login",
+    "logout" : "/logout",
+    "update" : "/me",
+    "delete" : "/me",
+    "userProfile" : "/me/profile",
+    "marketplace" : "/marketplace"
+  }
+}

@@ -22,66 +22,12 @@ public class UserProfile implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The first name of the user.
-     */
-    @Field
-    private String firstName;
-
-    /**
-     * The last name of the user.
-     */
-    @Field
-    private String lastName;
-
-    /**
      * The birthdate of the user.
      */
     @Field
     private Date birthdate;
 
-    /**
-     * The phone number of the user.
-     */
-    @Indexed(unique = true)
-    private String phoneNumber;
-
     // Getters and setters
-
-    /**
-     * Gets the first name of the user.
-     *
-     * @return The first name of the user.
-     */
-    public String getFirstName() {
-        return firstName;
-    }
-
-    /**
-     * Sets the first name of the user.
-     *
-     * @param firstName The first name of the user.
-     */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    /**
-     * Gets the last name of the user.
-     *
-     * @return The last name of the user.
-     */
-    public String getLastName() {
-        return lastName;
-    }
-
-    /**
-     * Sets the last name of the user.
-     *
-     * @param lastName The last name of the user.
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
 
     /**
      * Gets the birthdate of the user.
@@ -101,24 +47,6 @@ public class UserProfile implements Serializable {
         this.birthdate = birthdate;
     }
 
-    /**
-     * Gets the phone number of the user.
-     *
-     * @return The phone number of the user.
-     */
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    /**
-     * Sets the phone number of the user.
-     *
-     * @param phoneNumber The phone number of the user.
-     */
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     // Equals, hashCode and toString
 
     /**
@@ -132,10 +60,7 @@ public class UserProfile implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserProfile that = (UserProfile) o;
-        return firstName.equals(that.firstName) &&
-                lastName.equals(that.lastName) &&
-                birthdate.equals(that.birthdate) &&
-                phoneNumber.equals(that.phoneNumber);
+        return birthdate.equals(that.birthdate);
     }
 
     /**
@@ -145,7 +70,7 @@ public class UserProfile implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, birthdate, phoneNumber);
+        return Objects.hash(birthdate);
     }
 
     /**
@@ -156,10 +81,7 @@ public class UserProfile implements Serializable {
     @Override
     public String toString() {
         return "UserProfile{" +
-                "firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", birthdate=" + birthdate +
-                ", phoneNumber='" + phoneNumber + '\'' +
+                "birthdate=" + birthdate +
                 '}';
     }
 }
