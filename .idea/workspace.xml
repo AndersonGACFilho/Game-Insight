@@ -4,74 +4,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/.metadata" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/analysis_options.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/assets/config/config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/assets/images/icons/logo/logo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/assets/images/icons/logo/logo.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/assets/images/icons/sup_navbar/trophy/trophy_selected.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/assets/images/icons/sup_navbar/trophy/trophy_unselected.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/assets/images/icons/sup_navbar/user.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/ios/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Components/Games/category.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Components/Games/game-element.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Components/HomePage/top-ten-list.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Components/NavBar/Superior/appbar.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Config/config.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Screens/forgot-passoword-screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Screens/home-screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Screens/login-screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Screens/registration-screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/Theme/themes.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/lib/main.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/pubspec.lock" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/game_insight_mobile_interface/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Game-Insight.iml" beforeDir="false" />
+    <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="Removing the previous app">
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/company_game/CompanyGame.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/Requirement.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserService/src/main/java/br/ufg/ceia/gameinsight/userservice/domain/user/UserProfile.java" beforeDir="false" afterPath="$PROJECT_DIR$/UserService/src/main/java/br/ufg/ceia/gameinsight/userservice/domain/user/UserProfile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserService/src/main/java/br/ufg/ceia/gameinsight/userservice/dtos/UserProfileDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/UserService/src/main/java/br/ufg/ceia/gameinsight/userservice/dtos/UserProfileDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserService/src/main/resources/postman-collection.json" beforeDir="false" afterPath="$PROJECT_DIR$/UserService/src/main/resources/postman-collection.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserService/src/test/java/br/ufg/ceia/gameinsight/userservice/LoginAndRegisterTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/UserService/src/test/java/br/ufg/ceia/gameinsight/userservice/LoginAndRegisterTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/UserService/src/test/java/br/ufg/ceia/gameinsight/userservice/UserProfileTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/UserService/src/test/java/br/ufg/ceia/gameinsight/userservice/UserProfileTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/app.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/app/(tabs)/_layout.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/app/(tabs)/explore.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/app/(tabs)/index.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/app/+html.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/app/+not-found.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/app/_layout.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/fonts/SpaceMono-Regular.ttf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/images/adaptive-icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/images/favicon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/images/icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/images/partial-react-logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/images/react-logo.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/images/react-logo@2x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/images/react-logo@3x.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/assets/images/splash.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/babel.config.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/Collapsible.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/ExternalLink.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/HelloWave.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/ParallaxScrollView.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/ThemedText.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/ThemedView.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/__tests__/ThemedText-test.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/__tests__/__snapshots__/ThemedText-test.tsx.snap" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/components/navigation/TabBarIcon.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/constants/Colors.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/hooks/useColorScheme.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/hooks/useColorScheme.web.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/hooks/useThemeColor.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/package.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/scripts/reset-project.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/game-insight-mobile-app/tsconfig.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/localization/Localization.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/localization/Localization.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,10 +25,16 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Dart File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -140,6 +86,12 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.game_mode" />
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.localization" />
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.company.company_game" />
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.requirement" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\Screens" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\assets\images\icons\logo" />
@@ -148,17 +100,25 @@
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\assets\icons\logo" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ander\IdeaProjects\game_insight\GameService\src\main\java\br\ufg\ceia\gameinsight\gameservice" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\Components" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\Theme" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\assets\images" />
-      <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface" />
     </key>
   </component>
   <component name="RunManager" selected="Docker.docker-compose.yml: Compose Deployment">
     <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter" nameIsGenerated="true">
       <option name="filePath" value="$PROJECT_DIR$/game_insight_mobile_interface/lib/main.dart" />
       <method v="2" />
+    </configuration>
+    <configuration name="GameServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="GameService" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="br.ufg.ceia.gameinsight.gameservice.GameServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
       <deployment type="docker-compose.yml">
@@ -177,6 +137,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
         <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
       </list>
     </recent_temporary>
@@ -201,14 +162,29 @@
       <workItem from="1726716765622" duration="646000" />
       <workItem from="1726837214592" duration="895000" />
     </task>
+    <task id="LOCAL-00001" summary="Removing the previous app">
+      <option name="closed" value="true" />
+      <created>1726839295790</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1726839295790</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.dart" />
     <option featureType="dependencySupport" implementationName="executable:docker" />
     <option featureType="com.intellij.configurationType" implementationName="FlutterRunConfigurationType" />
     <option featureType="dependencySupport" implementationName="executable:kubectl" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Updating the services" />
+    <MESSAGE value="Removing the previous app" />
+    <option name="LAST_COMMIT_MESSAGE" value="Removing the previous app" />
   </component>
 </project>
