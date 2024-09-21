@@ -5,13 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="Removing the previous app">
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/company_game/CompanyGame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/Requirement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/Company.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/region/Region.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/system/SystemRequirement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/system/parts/Api.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/system/parts/CPU.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/system/parts/GPU.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/system/parts/OperationSystem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/system/parts/RAM.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/system/parts/Storage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/platform/Platform.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/localization/Localization.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/localization/Localization.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/company_game/CompanyGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/company_game/CompanyGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/franchise/Franchise.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/franchise/Franchise.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_theme/GameTheme.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_theme/GameTheme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/genre/Genre.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/genre/Genre.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/player_perspective/PlayerPerspective.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/player_perspective/PlayerPerspective.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/release_date/ReleaseDate.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/release_date/ReleaseDate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/Requirement.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/requirement/Requirement.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,36 +75,42 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Docker.docker-compose.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
-    &quot;Flutter.main.dart.executor&quot;: &quot;Debug&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Anderson&quot;,
-    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ander/IdeaProjects/game_insight&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
+    "Flutter.main.dart.executor": "Debug",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "com.google.services.firebase.aqiPopupShown": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "Anderson",
+    "io.flutter.reload.alreadyRun": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/ander/IdeaProjects/game_insight",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "show.migrate.to.gradle.popup": "false",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
+    ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system" />
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system.parts" />
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.region" />
       <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.game_mode" />
       <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.localization" />
-      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.company.company_game" />
-      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.requirement" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\Screens" />
@@ -105,6 +125,10 @@
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\Theme" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\assets\images" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.platform" />
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.company.company_game" />
     </key>
   </component>
   <component name="RunManager" selected="Docker.docker-compose.yml: Compose Deployment">
@@ -161,6 +185,8 @@
       <workItem from="1726714805634" duration="181000" />
       <workItem from="1726716765622" duration="646000" />
       <workItem from="1726837214592" duration="895000" />
+      <workItem from="1726943982797" duration="6682000" />
+      <workItem from="1726951505745" duration="177000" />
     </task>
     <task id="LOCAL-00001" summary="Removing the previous app">
       <option name="closed" value="true" />
