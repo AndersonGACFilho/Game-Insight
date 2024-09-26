@@ -3,10 +3,7 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.release_date;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.region.Region;
 import br.ufg.ceia.gameinsight.gameservice.domain.platform.Platform;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
@@ -18,7 +15,8 @@ import java.sql.Date;
  * <p>
  * This class holds details about the release date of a game.
  */
-@Repository
+@Entity
+@Table(name = "release_date")
 public class ReleaseDate implements Serializable {
     /**
      * The serial version UID.

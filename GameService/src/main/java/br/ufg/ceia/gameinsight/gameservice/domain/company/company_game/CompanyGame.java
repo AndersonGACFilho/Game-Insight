@@ -2,123 +2,70 @@ package br.ufg.ceia.gameinsight.gameservice.domain.company.company_game;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.company.Company;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.stereotype.Repository;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
-/**
- * This class represents the relationship between a company and a game.
- * The company game is a relationship that represents the games that a company has.
- */
-@Repository
+@Entity
+@Table(name = "company_game")
+@Getter
+@Setter
 public class CompanyGame implements Serializable {
-    /**
-     * The serial version UID.
-     */
-    @Serial
-    private static final long serialVersionUID = 1L;
 
-    /**
-     * The unique identifier of the company game.
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
-    /**
-     * The company associated with the company game.
-     */
-    @ManyToOne
-    private Company company;
-
-    /**
-     * The games associated with the company game.
-     */
     @ManyToMany
-    @JsonIgnore
+    @JoinTable(
+            name = "game_company_game", // Tabela de junção para relação Many-to-Many
+            joinColumns = @JoinColumn(name = "company_game_id"),
+            inverseJoinColumns = @JoinColumn(name = "game_id")
+    )
     private List<Game> games;
 
-    /**
-     * The role of the company in the game.
-     */
+    @ManyToOne
+    @JoinColumn(name = "company_id")
+    private Company company;
+
     private String role;
 
     public CompanyGame() {
     }
 
-    public CompanyGame(long id, Company company, List<Game> games, String role) {
+    public CompanyGame(Long id, List<Game> games, Company company, String role) {
         this.id = id;
-        this.company = company;
         this.games = games;
-        this.role = role;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public Company getCompany() {
-        return company;
-    }
-
-    public void setCompany(Company company) {
         this.company = company;
-    }
-
-    public List<Game> getGames() {
-        return games;
-    }
-
-    public void setGames(List<Game> games) {
-        this.games = games;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
         this.role = role;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void addGame(Game game) {
-        this.games.add(game);
-    }
-
-    public void removeGame(Game game) {
-        this.games.remove(game);
-    }
-
-    public void addCompany(Company company) {
-        this.company = company;
-    }
-
-    public void removeCompany(Company company) {
-        this.company = null;
-    }
-
-    @Override
-    public String toString() {
-        return "CompanyGame{" +
-                "id=" + id +
-                ", company=" + company +
-                ", games=" + games +
-                ", role='" + role + '\'' +
-                '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CompanyGame that)) return false;
-        return getId() == that.getId() && getCompany().equals(that.getCompany()) && getGames().equals(that.getGames()) && getRole().equals(that.getRole());
+        return Objects.equals(id, that.id) &&
+                Objects.equals(games, that.games) &&
+                Objects.equals(company, that.company) &&
+                Objects.equals(role, that.role);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, games, company, role);
+    }
+
+    @Override
+    public String toString() {
+        return "CompanyGame{" +
+                "id=" + id +
+                ", games=" + games +
+                ", company=" + company +
+                ", role='" + role + '\'' +
+                '}';
     }
 }

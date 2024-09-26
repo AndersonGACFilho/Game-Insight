@@ -1,53 +1,40 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.requirement;
 
+import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system.SystemRequirement;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import org.springframework.stereotype.Repository;
-
+import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 
-/**
- * This class represents the requirements of a game.
- * The requirements are the minimum and recommended hardware and software requirements for a game.
- */
-@Repository
+@Entity
+@Table(name = "requirement")
 public class Requirement implements Serializable {
-    /**
-     * The serial version UID.
-     */
     @Serial
     private static final long serialVersionUID = 1L;
 
-    /**
-     * The unique identifier of the requirement.
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * The minimum hardware and software requirements for the game.
-     */
     @OneToOne
     private SystemRequirement minimum;
 
-    /**
-     * The recommended hardware and software requirements for the game.
-     */
     @OneToOne
     private SystemRequirement recommended;
+
+    // Adicionando o relacionamento ManyToOne com Game
+    @ManyToOne
+    @JoinColumn(name = "game_id")
+    private Game game;
 
     public Requirement() {
     }
 
-    public Requirement(Long id, SystemRequirement minimum, SystemRequirement recommended) {
+    public Requirement(Long id, SystemRequirement minimum, SystemRequirement recommended, Game game) {
         this.id = id;
         this.minimum = minimum;
         this.recommended = recommended;
+        this.game = game;
     }
 
     public Long getId() {
@@ -74,4 +61,11 @@ public class Requirement implements Serializable {
         this.recommended = recommended;
     }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 }

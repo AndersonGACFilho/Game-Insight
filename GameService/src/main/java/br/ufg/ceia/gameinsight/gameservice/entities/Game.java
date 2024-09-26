@@ -6,8 +6,8 @@ import org.hibernate.annotations.Type;
 
 import java.util.UUID;
 
-@Entity
-@Table(name = "games")
+@Entity(name = "game_old")
+@Table(name = "game_old")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,4 +32,5 @@ public class Game {
 
     @Column(name = "system_requirements", length = 2000) // SQL não aceita CamelCase
     private String systemRequirements;
+
 }

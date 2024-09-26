@@ -2,21 +2,22 @@ package br.ufg.ceia.gameinsight.gameservice.domain.platform;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
-import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents the platform of a game.
  * The platform is a classification system used to determine the platform for which a game is suitable.
  */
-@Repository
+@Entity
 public class Platform implements Serializable {
     /**
      * The serial version UID.
@@ -54,13 +55,13 @@ public class Platform implements Serializable {
     private List<Game> games;
 
     /**
-     * The constructor of the class.
+     * Default constructor.
      */
     public Platform() {
     }
 
     /**
-     * The constructor of the class.
+     * Constructor with parameters.
      * @param id The unique identifier of the platform.
      * @param name The name of the platform.
      * @param abbreviation The abbreviation of the platform.
@@ -74,7 +75,7 @@ public class Platform implements Serializable {
     }
 
     /**
-     * The constructor of the class.
+     * Constructor without id.
      * @param name The name of the platform.
      * @param abbreviation The abbreviation of the platform.
      * @param generation The generation of the platform.
@@ -180,14 +181,24 @@ public class Platform implements Serializable {
     }
 
     /**
-     * Override the equals' method.
+     * Override the equals method.
      * @param o The object to compare.
      * @return True if the objects are equal, false otherwise.
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Platform platform)) return false;
-        return getId().equals(platform.getId());
+        if (!(o instanceof Platform)) return false;
+        Platform platform = (Platform) o;
+        return Objects.equals(id, platform.id);
+    }
+
+    /**
+     * Override the hashCode method.
+     * @return The hash code of the object.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

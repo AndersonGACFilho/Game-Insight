@@ -2,10 +2,7 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.genre;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
@@ -17,7 +14,8 @@ import java.util.List;
  * <p>
  * This class holds details about the genre of a game.
  */
-@Repository
+@Entity
+@Table(name = "genre")
 public class Genre implements Serializable{
     /**
      * The serial version UID.

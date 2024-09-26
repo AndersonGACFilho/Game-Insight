@@ -1,14 +1,13 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.region;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 /**
  *
  */
-@Repository
+@Entity
+@Table(name = "region")
 public class Region {
     /**
      * The unique identifier of the region.

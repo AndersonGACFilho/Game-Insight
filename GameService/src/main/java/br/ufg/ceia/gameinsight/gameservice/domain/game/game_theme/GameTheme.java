@@ -2,26 +2,20 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.game_theme;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import org.springframework.stereotype.Repository;
-
+import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * This class represents the GameTheme entity.
  * <p>
  * This class holds details about the theme of a game.
  */
-@Repository
+@Entity
+@Table(name = "game_theme")
 public class GameTheme implements Serializable {
-    /**
-     * The serial version UID.
-     */
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -63,6 +57,8 @@ public class GameTheme implements Serializable {
         this.description = description;
     }
 
+    // Getters and Setters
+
     public long getId() {
         return id;
     }
@@ -86,6 +82,7 @@ public class GameTheme implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
+
     public List<Game> getGames() {
         return games;
     }
@@ -108,6 +105,7 @@ public class GameTheme implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", games=" + games +
                 '}';
     }
 
@@ -115,11 +113,12 @@ public class GameTheme implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof GameTheme)) return false;
-
         GameTheme gameTheme = (GameTheme) o;
+        return id == gameTheme.id && name.equals(gameTheme.name) && description.equals(gameTheme.description);
+    }
 
-        if (id != gameTheme.id) return false;
-        if (!name.equals(gameTheme.name)) return false;
-        return description.equals(gameTheme.description);
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description);
     }
 }

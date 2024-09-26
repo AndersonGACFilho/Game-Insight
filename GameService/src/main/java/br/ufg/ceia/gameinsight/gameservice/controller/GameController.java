@@ -1,6 +1,6 @@
 package br.ufg.ceia.gameinsight.gameservice.controller;
 
-import br.ufg.ceia.gameinsight.gameservice.entities.Game;
+import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import br.ufg.ceia.gameinsight.gameservice.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/games")
@@ -40,6 +39,11 @@ public class GameController {
     @GetMapping("/platform")
     public List<Game> getGamesByPlatform(@RequestParam String platform) {
         return gameService.getGamesByPlatform(platform);
+    }
+
+    @GetMapping("/company")
+    public List<Game> getGamesByCompany(@RequestParam String companyName) {
+        return gameService.getGamesByCompany(companyName);
     }
 
     @PostMapping

@@ -1,10 +1,7 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.localization;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.region.Region;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
@@ -14,7 +11,8 @@ import java.io.Serializable;
  * This class represents the localization of a game.
  * The localization is a classification system used to determine the language and region for which a game is suitable.
  */
-@Repository
+@Entity
+@Table(name = "localization")
 public class Localization implements Serializable {
     /**
      * The serial version UID.
