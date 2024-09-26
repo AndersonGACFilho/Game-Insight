@@ -2,10 +2,7 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.franchise;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,7 +10,8 @@ import java.util.List;
 /**
  * Represents a franchise of games.
  */
-@Repository
+@Entity
+@Table(name = "franchise")
 public class Franchise {
     /**
      * The unique identifier of the franchise.

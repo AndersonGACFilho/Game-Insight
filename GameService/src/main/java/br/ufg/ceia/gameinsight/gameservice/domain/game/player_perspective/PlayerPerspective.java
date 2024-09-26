@@ -2,10 +2,7 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.player_perspective;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
@@ -17,7 +14,8 @@ import java.util.List;
  * <p>
  * This class holds details about the perspective of a player in a game.
  */
-@Repository
+@Entity
+@Table(name = "players_perspective")
 public class PlayerPerspective implements Serializable {
     /**
      * The serial version UID.

@@ -1,5 +1,6 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system.parts;
 
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serializable;
@@ -7,7 +8,8 @@ import java.io.Serializable;
 /**
  * Represents the operational system of a system.
  */
-@Repository
+@Entity
+@Table(name = "operation_system")
 public class OperationSystem implements Serializable{
     /**
      * The serial version UID.
@@ -17,6 +19,8 @@ public class OperationSystem implements Serializable{
     /**
      * The unique identifier of the operational system.
      */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**

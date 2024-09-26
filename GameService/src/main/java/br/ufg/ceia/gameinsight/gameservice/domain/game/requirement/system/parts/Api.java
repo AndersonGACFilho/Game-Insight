@@ -1,8 +1,6 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system.parts;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
@@ -14,7 +12,8 @@ import java.util.Objects;
  * <p>
  * Such as DirectX, OpenGL, Vulkan, etc.
  */
-@Repository
+@Entity
+@Table(name = "api")
 public class Api implements Serializable {
 
     /**

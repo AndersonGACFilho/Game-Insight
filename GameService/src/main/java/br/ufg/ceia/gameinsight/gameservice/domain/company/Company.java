@@ -2,8 +2,11 @@ package br.ufg.ceia.gameinsight.gameservice.domain.company;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.company.company_game.CompanyGame;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import org.springframework.stereotype.Repository;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -11,11 +14,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * This class represents the relationship between a company and a game.
- * The company game is a relationship that represents the games that a company has.
+ * This class represents a company involved in game development or publishing.
+ * A company can be associated with multiple games.
  */
-@Repository
+@Entity
 public class Company implements Serializable {
+
     /**
      * The serial version UID.
      */
@@ -23,14 +27,14 @@ public class Company implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The unique identifier of the company game.
+     * The unique identifier of the company.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     /**
-     * The company logo url.
+     * The company logo URL.
      */
     private String logoUrl;
 
@@ -45,15 +49,25 @@ public class Company implements Serializable {
     private String description;
 
     /**
-     * The games that the company has involvement.
+     * The games that the company has involvement with.
      */
     @OneToMany(mappedBy = "company")
     @JsonIgnore
-    List<CompanyGame> companyGames;
+    private List<CompanyGame> companyGames;
 
+    /**
+     * Default constructor.
+     */
     public Company() {
     }
 
+    /**
+     * Constructor with parameters.
+     * @param id The unique identifier of the company.
+     * @param logoUrl The logo URL of the company.
+     * @param name The name of the company.
+     * @param description The description of the company.
+     */
     public Company(long id, String logoUrl, String name, String description) {
         this.id = id;
         this.logoUrl = logoUrl;
@@ -61,52 +75,102 @@ public class Company implements Serializable {
         this.description = description;
     }
 
+    /**
+     * Constructor without id.
+     * @param logoUrl The logo URL of the company.
+     * @param name The name of the company.
+     * @param description The description of the company.
+     */
     public Company(String logoUrl, String name, String description) {
         this.logoUrl = logoUrl;
         this.name = name;
         this.description = description;
     }
 
+    /**
+     * Get the unique identifier of the company.
+     * @return The unique identifier of the company.
+     */
     public long getId() {
         return id;
     }
 
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<CompanyGame> getCompanyGames() {
-        return companyGames;
-    }
-
-    public void setCompanyGames(List<CompanyGame> companyGames) {
-        this.companyGames = companyGames;
-    }
-
+    /**
+     * Set the unique identifier of the company.
+     * @param id The unique identifier of the company.
+     */
     public void setId(long id) {
         this.id = id;
     }
 
+    /**
+     * Get the logo URL of the company.
+     * @return The logo URL of the company.
+     */
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    /**
+     * Set the logo URL of the company.
+     * @param logoUrl The logo URL of the company.
+     */
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
+    }
+
+    /**
+     * Get the name of the company.
+     * @return The name of the company.
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Set the name of the company.
+     * @param name The name of the company.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Get the description of the company.
+     * @return The description of the company.
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * Set the description of the company.
+     * @param description The description of the company.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Get the list of games associated with the company.
+     * @return The list of games associated with the company.
+     */
+    public List<CompanyGame> getCompanyGames() {
+        return companyGames;
+    }
+
+    /**
+     * Set the list of games associated with the company.
+     * @param companyGames The list of games associated with the company.
+     */
+    public void setCompanyGames(List<CompanyGame> companyGames) {
+        this.companyGames = companyGames;
+    }
+
+    /**
+     * Override the toString method.
+     * @return The string representation of the company.
+     */
     @Override
     public String toString() {
         return "Company{" +
@@ -117,16 +181,28 @@ public class Company implements Serializable {
                 '}';
     }
 
+    /**
+     * Override the equals method.
+     * @param o The object to compare.
+     * @return True if the objects are equal, false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Company company)) return false;
-
-        if (id != company.id) return false;
-        if (!Objects.equals(logoUrl, company.logoUrl)) return false;
-        if (!Objects.equals(name, company.name)) return false;
-        if (!Objects.equals(description, company.description)) return false;
-        return Objects.equals(companyGames, company.companyGames);
+        if (!(o instanceof Company)) return false;
+        Company company = (Company) o;
+        return id == company.id &&
+                Objects.equals(logoUrl, company.logoUrl) &&
+                Objects.equals(name, company.name) &&
+                Objects.equals(description, company.description);
     }
 
+    /**
+     * Override the hashCode method.
+     * @return The hash code of the object.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, logoUrl, name, description);
+    }
 }

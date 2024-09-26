@@ -1,9 +1,7 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system.parts.*;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
@@ -14,7 +12,8 @@ import java.util.Objects;
  * This class represents the system requirements of a game.
  * The system requirements are the minimum and recommended hardware and software requirements for a game.
  */
-@Repository
+@Entity
+@Table(name = "system_requirement")
 public class SystemRequirement implements Serializable{
     /**
      * The serial version UID.
