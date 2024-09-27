@@ -2,6 +2,7 @@ package br.ufg.ceia.gameinsight.gameservice.domain.company;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.company.company_game.CompanyGame;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -10,6 +11,8 @@ import jakarta.persistence.OneToMany;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,7 +34,11 @@ public class Company implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
+    private Instant updatedAt;
+
+    private Long igdbId;
 
     /**
      * The company logo URL.
@@ -68,7 +75,7 @@ public class Company implements Serializable {
      * @param name The name of the company.
      * @param description The description of the company.
      */
-    public Company(long id, String logoUrl, String name, String description) {
+    public Company(Long id, String logoUrl, String name, String description) {
         this.id = id;
         this.logoUrl = logoUrl;
         this.name = name;
@@ -91,7 +98,7 @@ public class Company implements Serializable {
      * Get the unique identifier of the company.
      * @return The unique identifier of the company.
      */
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -99,8 +106,16 @@ public class Company implements Serializable {
      * Set the unique identifier of the company.
      * @param id The unique identifier of the company.
      */
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Instant getUpdatedAt() {
+        return (updatedAt);
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**
@@ -168,6 +183,27 @@ public class Company implements Serializable {
     }
 
     /**
+     * Add a game to the list of games associated with the company.
+     * @param companyGame The game to add.
+     */
+    public void addCompanyGame(CompanyGame companyGame) {
+        if (companyGames==null)
+            companyGames = new ArrayList<>();
+        if (!this.companyGames.contains(companyGame))
+            this.companyGames.add(companyGame);
+    }
+
+    /**
+     * Remove a game from the list of games associated with the company.
+     * @param companyGame The game to remove.
+     */
+    public void removeCompanyGame(CompanyGame companyGame) {
+        this.companyGames.remove(companyGame);
+    }
+
+
+
+    /**
      * Override the toString method.
      * @return The string representation of the company.
      */
@@ -205,4 +241,14 @@ public class Company implements Serializable {
     public int hashCode() {
         return Objects.hash(id, logoUrl, name, description);
     }
+
+
+    public Long getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Long igdbId) {
+        this.igdbId = igdbId;
+    }
+
 }

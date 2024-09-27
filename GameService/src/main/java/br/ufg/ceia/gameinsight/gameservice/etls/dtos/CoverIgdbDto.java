@@ -18,7 +18,7 @@ public class CoverIgdbDto implements Serializable{
     /**
      * The url of the cover image.
      */
-    @JsonProperty("url")
+    @JsonProperty(required = false, value = "url")
     private String url;
 
     /**

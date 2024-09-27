@@ -17,6 +17,11 @@ public class Region {
     private Long id;
 
     /**
+     * The Igdb identifier of the region.
+     */
+    private Long igdbId;
+
+    /**
      * The name of the region.
      */
     private String name;

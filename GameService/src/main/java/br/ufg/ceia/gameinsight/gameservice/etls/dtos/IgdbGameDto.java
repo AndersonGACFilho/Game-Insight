@@ -19,170 +19,193 @@ public class IgdbGameDto implements Serializable {
     /**
      * Id of the game in the IGDB API
      */
+    @JsonProperty("id")
     private Long id;
 
     /**
      * Age ratings ids of the game
      */
-    @JsonProperty("age_ratings")
+    @JsonProperty(required = false, value = "age_ratings")
     private List<Long> ageRatings;
 
     /**
      * Alternative names ids of the game
      */
-    @JsonProperty("alternative_names")
+    @JsonProperty(required = false, value = "alternative_names")
     private List<Long> alternativeNames;
+
+    /**
+     * The Francises associated with the game
+     */
+    @JsonProperty(required = false, value = "franchises")
+    private List<Long> franchises;
 
     /**
      * Id of the category of the game
      */
+    @JsonProperty(required = false, value = "category")
     private Integer category;
 
     /**
      * Id of the cover of the game
      */
+    @JsonProperty(required = false, value = "cover")
     private Long cover;
 
     /**
      * Creation date of the game
      */
-    @JsonProperty("created_at")
+    @JsonProperty(required = false, value = "created_at")
     private Long createdAt;
 
     /**
      * External games ids of the game
      */
-    @JsonProperty("external_games")
+    @JsonProperty(required = false, value = "external_games")
     private List<Long> externalGames;
 
     /**
      * First release date of the game
      */
-    @JsonProperty("first_release_date")
+    @JsonProperty(required = false, value = "first_release_date")
     private Long firstReleaseDate;
 
     /**
      * Game modes ids of the game
      */
-    @JsonProperty("game_modes")
+    @JsonProperty(required = false, value = "game_modes")
     private List<Integer> gameModes;
 
     /**
      * Genres ids of the game
      */
+    @JsonProperty(required = false, value = "genres")
     private List<Integer> genres;
 
     /**
      * Involved companies ids of the game
      */
-    @JsonProperty("involved_companies")
+    @JsonProperty(required = false, value = "involved_companies")
     private List<Long> involvedCompanies;
 
     /**
      * Keywords ids of the game
      */
+    @JsonProperty(required = false, value = "keywords")
     private List<Long> keywords;
 
     /**
      * Name of the game
      */
+    @JsonProperty(required = false, value = "name")
     private String name;
 
     /**
      * Platforms ids of the game
      */
+    @JsonProperty(required = false, value = "platforms")
     private List<Integer> platforms;
 
     /**
      * Player perspectives ids of the game
      */
-    @JsonProperty("player_perspectives")
+    @JsonProperty(required = false, value = "player_perspectives")
     private List<Integer> playerPerspectives;
 
     /**
      * Release dates ids of the game
      */
-    @JsonProperty("release_dates")
+    @JsonProperty(required = false, value = "release_dates")
     private List<Long> releaseDates;
 
     /**
      * Screenshots ids of the game
      */
+    @JsonProperty(required = false, value = "screenshots")
     private List<Long> screenshots;
 
     /**
      * Similar games ids of the game
      */
-    @JsonProperty("similar_games")
+    @JsonProperty(required = false, value = "similar_games")
     private List<Long> similarGames;
 
     /**
      * Slug of the game
      */
+    @JsonProperty(required = false, value = "slug")
     private String slug;
 
     /**
      * Storyline of the game
      */
+    @JsonProperty(required = false, value = "storyline")
     private String storyline;
 
     /**
      * Summary of the game
      */
+    @JsonProperty(required = false, value = "summary")
     private String summary;
 
     /**
      * Tags ids of the game
      */
+    @JsonProperty(required = false, value = "tags")
     private List<Integer> tags;
 
     /**
      * Themes ids of the game
      */
+    @JsonProperty(required = false, value = "themes")
     private List<Integer> themes;
 
     /**
      * Update date of the game
      */
-    @JsonProperty("updated_at")
+    @JsonProperty(required = false, value = "updated_at")
     private Long updatedAt;
 
     /**
      * URL of the game
      */
+    @JsonProperty(required = false, value = "url")
     private String url;
 
     /**
      * Videos ids of the game
      */
+    @JsonProperty(required = false, value = "videos")
     private List<Long> videos;
 
     /**
      * Websites ids of the game
      */
+    @JsonProperty(required = false, value = "websites")
     private List<Long> websites;
 
     /**
      * Checksum of the game
      */
+    @JsonProperty(required = false, value = "checksum")
     private String checksum;
 
     /**
      * Game localizations ids of the game
      */
-    @JsonProperty("game_localizations")
+    @JsonProperty(required = false, value = "game_localizations")
     private List<Long> gameLocalizations;
 
     /**
      * Total rating of the game
      */
-    @JsonProperty("total_rating")
+    @JsonProperty(required = false, value = "total_rating")
     private float totalRating;
 
     /**
      * Total rating count of the game
      */
-    @JsonProperty("total_rating_count")
+    @JsonProperty(required = false, value = "total_rating_count")
     private int totalRatingCount;
 
     // Getters and Setters for all the fields
@@ -433,6 +456,14 @@ public class IgdbGameDto implements Serializable {
 
     public void setTotalRatingCount(int totalRatingCount) {
         this.totalRatingCount = totalRatingCount;
+    }
+
+    public List<Long> getFranchises() {
+        return franchises;
+    }
+
+    public void setFranchises(List<Long> franchises) {
+        this.franchises = franchises;
     }
 
     @Override

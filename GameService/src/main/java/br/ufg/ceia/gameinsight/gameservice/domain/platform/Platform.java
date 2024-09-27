@@ -48,13 +48,6 @@ public class Platform implements Serializable {
     private String generation;
 
     /**
-     * The games associated with the platform.
-     */
-    @ManyToMany
-    @JsonIgnore
-    private List<Game> games;
-
-    /**
      * Default constructor.
      */
     public Platform() {
@@ -148,22 +141,6 @@ public class Platform implements Serializable {
      */
     public void setGeneration(String generation) {
         this.generation = generation;
-    }
-
-    /**
-     * Get the games associated with the platform.
-     * @return The games associated with the platform.
-     */
-    public List<Game> getGames() {
-        return games;
-    }
-
-    /**
-     * Set the games associated with the platform.
-     * @param games The games associated with the platform.
-     */
-    public void setGames(List<Game> games) {
-        this.games = games;
     }
 
     /**

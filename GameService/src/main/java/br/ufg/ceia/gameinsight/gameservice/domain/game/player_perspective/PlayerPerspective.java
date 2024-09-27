@@ -28,7 +28,7 @@ public class PlayerPerspective implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     /**
      * The name of the player perspective.
@@ -40,17 +40,10 @@ public class PlayerPerspective implements Serializable {
      */
     private String description;
 
-    /**
-     * The games associated with the player perspective.
-     */
-    @ManyToMany
-    @JsonIgnore
-    private List<Game> games;
-
     public PlayerPerspective() {
     }
 
-    public PlayerPerspective(long id, String name, String description) {
+    public PlayerPerspective(Long id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -58,6 +51,30 @@ public class PlayerPerspective implements Serializable {
 
     public PlayerPerspective(String name, String description) {
         this.name = name;
+        this.description = description;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
         this.description = description;
     }
 }

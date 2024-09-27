@@ -1,5 +1,6 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.localization;
 
+import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.region.Region;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
@@ -40,6 +41,12 @@ public class Localization implements Serializable {
      */
     @ManyToOne
     private Region region;
+
+    /**
+     * The game associated with the localization.
+     */
+    @ManyToOne
+    private Game game;
 
     public Localization() {
     }
@@ -87,6 +94,14 @@ public class Localization implements Serializable {
         this.description = description;
     }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
     @Override
     public String toString() {
         return "Localization{" +
@@ -94,6 +109,7 @@ public class Localization implements Serializable {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", region=" + region +
+                ", game=" + game.getTitle() +
                 '}';
     }
 

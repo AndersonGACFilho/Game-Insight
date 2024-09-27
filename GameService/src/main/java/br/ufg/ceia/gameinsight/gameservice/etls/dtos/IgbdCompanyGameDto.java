@@ -1,75 +1,69 @@
-package br.ufg.ceia.gameinsight.gameservice.domain.company.company_game;
+package br.ufg.ceia.gameinsight.gameservice.etls.dtos;
 
-import br.ufg.ceia.gameinsight.gameservice.domain.company.Company;
-import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
 import java.util.Objects;
 
-@Entity
-@Table(name = "company_game")
-@Getter
-@Setter
-public class CompanyGame implements Serializable {
+public class IgbdCompanyGameDto implements Serializable {
+    @Serial
+    private static final Long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("id")
     private Long id;
 
-    private Long igdbId;
+    @JsonProperty(required = false, value = "company")
+    private Long company;
 
-    private Instant updatedAt;
+    @JsonProperty(required = false, value = "game")
+    private Long game;
 
-    @ManyToOne
-    private Game game;
-
-    @ManyToOne
-    @JoinColumn(name = "company_id")
-    private Company company;
+    @JsonProperty(required = false, value = "updated_at")
+    private Long updatedAt;
 
     /**
      * The role of the company in the game.
      */
-    @JsonProperty("publisher")
+    @JsonProperty(required = false, value = "publisher")
     private boolean isPublisher;
 
     /**
      * The role of the company in the game.
      */
-    @JsonProperty("developer")
+    @JsonProperty(required = false, value = "developer")
     private boolean isDeveloper;
 
     /**
      * The role of the company in the game.
      */
-    @JsonProperty("porting")
+    @JsonProperty(required = false, value = "porting")
     private boolean isPorter;
 
     /**
      * The role of the company in the game.
      */
-    @JsonProperty("supporting")
+    @JsonProperty(required = false, value = "supporting")
     private boolean isSupporter;
 
-    public CompanyGame() {
+    public IgbdCompanyGameDto() {
     }
 
-    public CompanyGame(Long id, Game game, Company company, String role) {
+    public IgbdCompanyGameDto(Long id, Long company, Long game, boolean isPublisher, boolean isDeveloper, boolean isPorter, boolean isSupporter) {
         this.id = id;
-        this.game = game;
         this.company = company;
+        this.game = game;
+        this.isPublisher = isPublisher;
+        this.isDeveloper = isDeveloper;
+        this.isPorter = isPorter;
+        this.isSupporter = isSupporter;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CompanyGame that)) return false;
+        if (!(o instanceof IgbdCompanyGameDto that)) return false;
         return Objects.equals(id, that.id) &&
                 Objects.equals(game, that.game) &&
                 Objects.equals(company, that.company) &&
@@ -88,7 +82,7 @@ public class CompanyGame implements Serializable {
     public String toString() {
         return "CompanyGame{" +
                 "id=" + id +
-                ", game=" + game +
+                ", games=" + game +
                 ", company=" + company +
                 ", isPublisher=" + isPublisher +
                 ", isDeveloper=" + isDeveloper +
@@ -105,28 +99,20 @@ public class CompanyGame implements Serializable {
         this.id = id;
     }
 
-    public Long getIgdbId() {
-        return igdbId;
-    }
-
-    public void setIgdbId(Long igdbId) {
-        this.igdbId = igdbId;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public void setGame(Game game) {
-        this.game = game;
-    }
-
-    public Company getCompany() {
+    public Long getCompany() {
         return company;
     }
 
-    public void setCompany(Company company) {
+    public void setCompany(Long company) {
         this.company = company;
+    }
+
+    public Long getGame() {
+        return game;
+    }
+
+    public void setGame(Long game) {
+        this.game = game;
     }
 
     public boolean isPublisher() {
@@ -159,5 +145,13 @@ public class CompanyGame implements Serializable {
 
     public void setSupporter(boolean supporter) {
         isSupporter = supporter;
+    }
+
+    public Instant getUpdatedAt() {
+        return Instant.ofEpochSecond(updatedAt);
+    }
+
+    public void setUpdatedAt(Long updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

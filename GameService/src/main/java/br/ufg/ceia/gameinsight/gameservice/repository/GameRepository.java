@@ -9,6 +9,11 @@ import java.util.List;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long> {
 
+    Game findByIGDBId(Long igdbId);
+
+    // Buscar jogos por título
+    Game findByTitle(String title);
+
     // Buscar jogos por título parcial
     List<Game> findByTitleContaining(String title);
 

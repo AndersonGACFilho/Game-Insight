@@ -58,7 +58,7 @@ public class GameService {
         game.setCover(gameDetails.getCover());
         game.setReleaseDates(gameDetails.getReleaseDates());
         game.setAgeRatings(gameDetails.getAgeRatings());
-        game.setStoryLine(gameDetails.getStoryLine());
+        game.setSummary(gameDetails.getSummary());
         game.setGenres(gameDetails.getGenres());
         game.setThemes(gameDetails.getThemes());
         game.setFranchises(gameDetails.getFranchises());

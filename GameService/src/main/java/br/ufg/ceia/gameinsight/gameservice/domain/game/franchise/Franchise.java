@@ -2,9 +2,11 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.franchise;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -18,7 +20,7 @@ public class Franchise {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     /**
      * The name of the franchise.
@@ -28,10 +30,16 @@ public class Franchise {
     /**
      * The description of the franchise.
      */
-    private String description;
+    private String slug;
 
     /**
-     * The list of games associated with the franchise.
+     * The instant that the franchise was updated.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
+
+    /**
+     * The games associated with the franchise.
      */
     @ManyToMany
     @JsonIgnore
@@ -43,15 +51,15 @@ public class Franchise {
     public Franchise(long id, String name, String description) {
         this.id = id;
         this.name = name;
-        this.description = description;
+        this.slug = description;
     }
 
     public Franchise(String name, String description) {
         this.name = name;
-        this.description = description;
+        this.slug = description;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -59,8 +67,28 @@ public class Franchise {
         return name;
     }
 
-    public String getDescription() {
-        return description;
+    public String setSlug() {
+        return slug;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public List<Game> getGames() {

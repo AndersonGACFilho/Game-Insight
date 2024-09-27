@@ -32,6 +32,8 @@ services:
         - POSTGRES_PORT=5440
         - POSTGRES_DB=gamedb
         - POSTGRES_USER=postgres
+        - IGDB_CLIENT_ID=dqo79q2m2xekhsb38anwwa9fodctel
+        - IGDB_CLIENT_SECRET=aj4ypryl391p1hu58jlpb1mktuojov
         - POSTGRES_PASSWORD=postgres
         - SPRING_PROFILES_ACTIVE=prod
       depends_on:

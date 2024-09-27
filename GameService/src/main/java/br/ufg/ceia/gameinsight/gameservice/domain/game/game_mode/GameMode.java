@@ -25,7 +25,7 @@ public class GameMode implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     /**
      * The name of the game mode.
@@ -38,9 +38,9 @@ public class GameMode implements Serializable {
     private String description;
 
     /**
-     * The games associated with the game mode.
+     * The list of games associated with the game mode.
      */
-    @ManyToMany
+    @ManyToMany(mappedBy = "gameModes")
     @JsonIgnore
     private List<Game> games;
 
@@ -60,8 +60,12 @@ public class GameMode implements Serializable {
 
     // Getters and Setters
 
-    public long getId() {
+    public  Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -28,7 +28,7 @@ public class Genre implements Serializable{
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     /**
      * The name of the genre.
@@ -41,9 +41,9 @@ public class Genre implements Serializable{
     private String slug;
 
     /**
-     * The games associated with the genre.
+     * The list of games associated with the genre.
      */
-    @ManyToMany
+    @ManyToMany(mappedBy = "genres")
     @JsonIgnore
     private List<Game> games;
 
@@ -61,11 +61,11 @@ public class Genre implements Serializable{
         this.slug = slug;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
