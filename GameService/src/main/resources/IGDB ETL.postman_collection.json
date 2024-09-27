@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "73101d69-af60-45d0-81d8-29133f2c4afd",
+		"name": "IGDB ETL",
+		"description": "Collection for UserService API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19034392"
+	},
+	"item": [
+		{
+			"name": "RunETL",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var DateToSearch = new Date(\"2024-09-25T00:00:00Z\");\r",
+							"// Get the Unix timestamp in seconds\r",
+							"var Timestamp = DateToSearch.getTime();\r",
+							"// Set the collection variable\r",
+							"pm.collectionVariables.set(\"timeToSearch\", Timestamp);\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/api/igdb/etl?dateToStart={{timeToSearch}}&searchType=updated_at",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"igdb",
+						"etl"
+					],
+					"query": [
+						{
+							"key": "dateToStart",
+							"value": "{{timeToSearch}}"
+						},
+						{
+							"key": "searchType",
+							"value": "updated_at"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8081"
+		},
+		{
+			"key": "email",
+			"value": ""
+		},
+		{
+			"key": "birthdate",
+			"value": ""
+		},
+		{
+			"key": "timeToSearch",
+			"value": "timeToSearch"
+		}
+	]
+}
