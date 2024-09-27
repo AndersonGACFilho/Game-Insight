@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the Localization data in the database.
  */
 @Repository
-public interface LocalizationRepository extends JpaRepository<Localization, Long> {
+public interface LocalizationRepository extends JpaRepository<Localization, Integer> {
 
     /**
      * Find a Localization by its name.
@@ -19,5 +19,12 @@ public interface LocalizationRepository extends JpaRepository<Localization, Long
      * @return the Localization
      */
     Localization findByName(String name);
+
+    /**
+     * Find a Localization by igdbId.
+     * @param igdbId
+     * @return the Localization
+     */
+    Localization findByIgdbId(Integer igdbId);
 
 }

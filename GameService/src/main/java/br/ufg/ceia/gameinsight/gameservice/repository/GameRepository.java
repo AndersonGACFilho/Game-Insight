@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface GameRepository extends JpaRepository<Game, Long> {
+public interface GameRepository extends JpaRepository<Game, Integer> {
 
-    Game findByIGDBId(Long igdbId);
+    Game findByIGDBId(Integer igdbId);
 
     // Buscar jogos por título
     Game findByTitle(String title);

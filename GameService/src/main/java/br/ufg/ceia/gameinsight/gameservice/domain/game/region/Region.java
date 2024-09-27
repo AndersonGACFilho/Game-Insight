@@ -14,12 +14,12 @@ public class Region {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The Igdb identifier of the region.
      */
-    private Long igdbId;
+    private Integer igdbId;
 
     /**
      * The name of the region.
@@ -42,7 +42,7 @@ public class Region {
     public Region() {
     }
 
-    public Region(Long id, String name, String identifier, String category) {
+    public Region(Integer id, String name, String identifier, String category) {
         this.id = id;
         this.name = name;
         this.identifier = identifier;
@@ -55,7 +55,7 @@ public class Region {
         this.category = category;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -83,7 +83,7 @@ public class Region {
         this.category = category;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -102,5 +102,13 @@ public class Region {
         if (this == o) return true;
         if (!(o instanceof Region region)) return false;
         return id.equals(region.id) && name.equals(region.name) && identifier.equals(region.identifier) && category.equals(region.category);
+    }
+
+    public void setIgdbId(Integer regionIgdbId) {
+        this.igdbId = Integer.valueOf(regionIgdbId);
+    }
+
+    public Integer getIgdbId() {
+        return Math.toIntExact(igdbId);
     }
 }

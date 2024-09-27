@@ -11,13 +11,13 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the genre data in the database.
  */
 @Repository
-public interface CompanyGameRepository extends JpaRepository<CompanyGame, Long> {
+public interface CompanyGameRepository extends JpaRepository<CompanyGame, Integer> {
 
     /**
      * Find by igdb id.
      * @param igdbId
      * @return the CompanyGame
      */
-    CompanyGame findByIgdbId(Long igdbId);
+    CompanyGame findByIgdbId(Integer igdbId);
 
 }

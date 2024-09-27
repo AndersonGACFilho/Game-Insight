@@ -33,12 +33,17 @@ public class ReleaseDate implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The igdb identifier of the release date.
+     */
+    private Integer igdbId;
 
     /**
      * The release date of the game.
      */
-    private long date;
+    private Integer date;
 
     /**
      * The game associated with the release date.
@@ -61,12 +66,12 @@ public class ReleaseDate implements Serializable {
     public ReleaseDate() {
     }
 
-    public ReleaseDate(long id, long date) {
+    public ReleaseDate(Integer id, Integer date) {
         this.id = id;
         this.date = date;
     }
 
-    public ReleaseDate(long date) {
+    public ReleaseDate(Integer date) {
         this.date = date;
     }
 
@@ -88,4 +93,51 @@ public class ReleaseDate implements Serializable {
             && region.equals(that.region);
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
+    }
+
+    public Integer getDate() {
+        return date;
+    }
+
+    public void setDate(Integer date) {
+        this.date = date;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
+    }
+
+    public Region getRegion() {
+        return region;
+    }
+
+    public void setRegion(Region region) {
+        this.region = region;
+    }
 }

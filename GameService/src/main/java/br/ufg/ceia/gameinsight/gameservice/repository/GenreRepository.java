@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the genre data in the database.
  */
 @Repository
-public interface GenreRepository extends JpaRepository<Genre, Long> {
+public interface GenreRepository extends JpaRepository<Genre, Integer> {
 
     /**
      * Find a genre by its name.
@@ -19,5 +19,12 @@ public interface GenreRepository extends JpaRepository<Genre, Long> {
      * @return the genre
      */
     Genre findByName(String name);
+
+    /**
+     * Find a genre by the igdb identifier.
+     * @param igdbId
+     * @return the genre
+     */
+    Genre findByIgdbId(Integer igdbId);
 
 }

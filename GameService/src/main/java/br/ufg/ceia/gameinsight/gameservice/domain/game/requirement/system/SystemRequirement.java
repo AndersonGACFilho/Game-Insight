@@ -26,7 +26,7 @@ public class SystemRequirement implements Serializable{
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The operating system required for the game.
@@ -75,7 +75,7 @@ public class SystemRequirement implements Serializable{
      * @param storage The storage required for the game.
      * @param api The Api required for the game.
      */
-    public SystemRequirement(Long id, OperationSystem operationSystem, CPU cpu, GPU gpu, RAM ram, Storage storage, Api api) {
+    public SystemRequirement(Integer id, OperationSystem operationSystem, CPU cpu, GPU gpu, RAM ram, Storage storage, Api api) {
         this.id = id;
         this.operationSystem = operationSystem;
         this.cpu = cpu;
@@ -89,7 +89,7 @@ public class SystemRequirement implements Serializable{
      * Get the unique identifier of the system requirement.
      * @return The unique identifier of the system requirement.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -145,7 +145,7 @@ public class SystemRequirement implements Serializable{
      * Set the unique identifier of the system requirement.
      * @param id The unique identifier of the system requirement.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

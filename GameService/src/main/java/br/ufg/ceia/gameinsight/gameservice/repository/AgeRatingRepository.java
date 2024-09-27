@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AgeRatingRepository extends JpaRepository<AgeRating, Long> {
+public interface AgeRatingRepository extends JpaRepository<AgeRating, Integer> {
     AgeRating findByName(String name);
+
+    AgeRating findByIgdbId(Integer igdbId);
 }

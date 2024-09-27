@@ -15,7 +15,7 @@ import java.util.Optional;
  * <p>
  * This interface provides methods to interact with the User entity in the database.
  */
-public interface UserRepository extends MongoRepository<User, Long> {
+public interface UserRepository extends MongoRepository<User, Integer> {
 
     /**
      * Finds all users.
@@ -65,5 +65,5 @@ public interface UserRepository extends MongoRepository<User, Long> {
      * @param pageRequest The pagination information.
      * @return A page of users with email addresses that contain the specified email address.
      */
-    Page<MarketplaceProfile> findMarketplaceProfilesById(Long id, Pageable pageRequest);
+    Page<MarketplaceProfile> findMarketplaceProfilesById(Integer id, Pageable pageRequest);
 }

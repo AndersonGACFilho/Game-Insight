@@ -37,7 +37,7 @@ public class User implements Serializable {
      * The unique identifier for the user.
      */
     @Id
-    private long id;
+    private Integer id;
 
     /**
      * The name of the user.
@@ -101,7 +101,7 @@ public class User implements Serializable {
      *
      * @return The unique identifier for the user.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -110,7 +110,7 @@ public class User implements Serializable {
      *
      * @param id The unique identifier for the user.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

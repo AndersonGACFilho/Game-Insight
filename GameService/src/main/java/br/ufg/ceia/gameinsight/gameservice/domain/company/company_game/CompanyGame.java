@@ -20,9 +20,9 @@ public class CompanyGame implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
-    private Long igdbId;
+    private Integer igdbId;
 
     private Instant updatedAt;
 
@@ -60,7 +60,7 @@ public class CompanyGame implements Serializable {
     public CompanyGame() {
     }
 
-    public CompanyGame(Long id, Game game, Company company, String role) {
+    public CompanyGame(Integer id, Game game, Company company, String role) {
         this.id = id;
         this.game = game;
         this.company = company;
@@ -97,19 +97,19 @@ public class CompanyGame implements Serializable {
                 '}';
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Long getIgdbId() {
+    public Integer getIgdbId() {
         return igdbId;
     }
 
-    public void setIgdbId(Long igdbId) {
+    public void setIgdbId(Integer igdbId) {
         this.igdbId = igdbId;
     }
 

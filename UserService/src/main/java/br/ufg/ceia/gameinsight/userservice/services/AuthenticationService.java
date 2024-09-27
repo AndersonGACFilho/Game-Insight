@@ -45,7 +45,7 @@ public class AuthenticationService {
      * The expiration time for the JWT token.
      */
     @Value("${jwt.expiration}")
-    private Long jwtExpiration;
+    private Integer jwtExpiration;
 
     /**
      * Authenticates the user.

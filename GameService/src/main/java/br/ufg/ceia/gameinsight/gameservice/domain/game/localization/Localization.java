@@ -26,7 +26,13 @@ public class Localization implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The igdb identifier of the localization.
+     */
+    private Integer igdbId;
+
     /**
      * The name of the localization.
      */
@@ -51,7 +57,7 @@ public class Localization implements Serializable {
     public Localization() {
     }
 
-    public Localization(Long id, String name, String description, Region region) {
+    public Localization(Integer id, String name, String description, Region region) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -62,7 +68,7 @@ public class Localization implements Serializable {
         this.description = description;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -82,7 +88,7 @@ public class Localization implements Serializable {
         this.region = region;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -101,6 +107,15 @@ public class Localization implements Serializable {
     public void setGame(Game game) {
         this.game = game;
     }
+
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
+    }
+
 
     @Override
     public String toString() {

@@ -27,7 +27,7 @@ public class Api implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The name of the API.
@@ -42,17 +42,17 @@ public class Api implements Serializable {
     public Api() {
     }
 
-    public Api(Long id, String name, String version) {
+    public Api(Integer id, String name, String version) {
         this.id = id;
         this.name = name;
         this.version = version;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

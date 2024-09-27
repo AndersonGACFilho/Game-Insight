@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the platform data in the database.
  */
 @Repository
-public interface RegionRepository extends JpaRepository<Region, Long> {
+public interface RegionRepository extends JpaRepository<Region, Integer> {
 
     /**
      * Find a Region by its name.
@@ -25,6 +25,6 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
      * @param igdbId
      * @return the Region
      */
-    Region findByIgdbId(Long igdbId);
+    Region findByIgdbId(Integer igdbId);
 
 }

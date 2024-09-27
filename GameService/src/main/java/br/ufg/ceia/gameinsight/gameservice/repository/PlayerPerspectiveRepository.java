@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the platform data in the database.
  */
 @Repository
-public interface PlayerPerspectiveRepository extends JpaRepository<PlayerPerspective, Long> {
+public interface PlayerPerspectiveRepository extends JpaRepository<PlayerPerspective, Integer> {
 
     /**
      * Find a PlayerPerspective by its name.
@@ -19,5 +19,12 @@ public interface PlayerPerspectiveRepository extends JpaRepository<PlayerPerspec
      * @return the platform
      */
     PlayerPerspective findByName(String name);
+
+    /**
+     * Find a PlayerPerspective by the igdb identifier.
+     * @param igdbId
+     * @return the platform
+     */
+    PlayerPerspective findByIgdbId(Integer igdbId);
 
 }

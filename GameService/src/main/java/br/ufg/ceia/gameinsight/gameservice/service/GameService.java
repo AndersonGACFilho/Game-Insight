@@ -25,7 +25,7 @@ public class GameService {
         return gameRepository.findAll();
     }
 
-    public Game getGameById(Long id) {
+    public Game getGameById(Integer id) {
         return gameRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Game not found with id: " + id));
     }
@@ -50,7 +50,7 @@ public class GameService {
         return gameRepository.save(game);
     }
 
-    public Game updateGame(Long id, Game gameDetails) {
+    public Game updateGame(Integer id, Game gameDetails) {
         Game game = getGameById(id);
 
         // Atualizar os detalhes do jogo
@@ -76,7 +76,7 @@ public class GameService {
         return gameRepository.save(game);
     }
 
-    public void deleteGame(Long id) {
+    public void deleteGame(Integer id) {
         Game game = getGameById(id);
         gameRepository.delete(game);
     }

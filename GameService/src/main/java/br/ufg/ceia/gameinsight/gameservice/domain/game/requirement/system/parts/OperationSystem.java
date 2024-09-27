@@ -21,7 +21,7 @@ public class OperationSystem implements Serializable{
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The name of the operational system.
@@ -39,7 +39,7 @@ public class OperationSystem implements Serializable{
      * @param id The unique identifier of the operational system.
      * @param name The name of the operational system.
      */
-    public OperationSystem(Long id, String name) {
+    public OperationSystem(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -48,7 +48,7 @@ public class OperationSystem implements Serializable{
      * Returns the unique identifier of the operational system.
      * @return The unique identifier of the operational system.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -56,7 +56,7 @@ public class OperationSystem implements Serializable{
      * Sets the unique identifier of the operational system.
      * @param id The unique identifier of the operational system.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

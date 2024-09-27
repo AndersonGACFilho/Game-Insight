@@ -13,7 +13,7 @@ public class IgdbGameLocalizationDto implements Serializable{
     private String name;
 
     @JsonProperty(required = false, value = "region")
-    private long region;
+    private Integer region;
 
     // Getters and Setters
 
@@ -25,11 +25,11 @@ public class IgdbGameLocalizationDto implements Serializable{
         this.name = name;
     }
 
-    public long getRegion() {
+    public Integer getRegion() {
         return region;
     }
 
-    public void setRegion(long region) {
+    public void setRegion(Integer region) {
         this.region = region;
     }
 
@@ -54,7 +54,7 @@ public class IgdbGameLocalizationDto implements Serializable{
     public IgdbGameLocalizationDto() {
     }
 
-    public IgdbGameLocalizationDto(String name, long region) {
+    public IgdbGameLocalizationDto(String name, Integer region) {
         this.name = name;
         this.region = region;
     }

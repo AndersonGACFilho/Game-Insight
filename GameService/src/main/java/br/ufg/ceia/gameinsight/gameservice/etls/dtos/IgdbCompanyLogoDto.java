@@ -7,10 +7,10 @@ import java.io.Serializable;
 
 public class IgdbCompanyLogoDto implements Serializable {
     @Serial
-    private static final Long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @JsonProperty("id")
-    private Long id;
+    private Integer id;
 
     @JsonProperty(required = false, value = "url")
     private String url;
@@ -18,17 +18,17 @@ public class IgdbCompanyLogoDto implements Serializable {
     public IgdbCompanyLogoDto() {
     }
 
-    public IgdbCompanyLogoDto(Long id, String url, Long cloudinaryId) {
+    public IgdbCompanyLogoDto(Integer id, String url, Integer cloudinaryId) {
         this.id = id;
         this.url = url;
     }
 
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

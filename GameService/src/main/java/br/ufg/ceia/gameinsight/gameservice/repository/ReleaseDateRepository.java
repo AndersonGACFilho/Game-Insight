@@ -8,10 +8,12 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ReleaseDateRepository extends JpaRepository<ReleaseDate, Long> {
-    ReleaseDate findByGameId(Long gameId);
+public interface ReleaseDateRepository extends JpaRepository<ReleaseDate, Integer> {
+    ReleaseDate findByGameId(Integer gameId);
 
-    ReleaseDate findByGameIdAndPlatformId(Long gameId, Long platformId);
+    ReleaseDate findByGameIdAndPlatformId(Integer gameId, Integer platformId);
 
     List<ReleaseDate> findAllByGame(Game game);
+
+    ReleaseDate findByIgdbId(Integer igdbId);
 }

@@ -28,7 +28,12 @@ public class Genre implements Serializable{
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The Igdb identifier of the region.
+     */
+    private Integer igdbId;
 
     /**
      * The name of the genre.
@@ -50,7 +55,7 @@ public class Genre implements Serializable{
     public Genre() {
     }
 
-    public Genre(long id, String name, String slug) {
+    public Genre(Integer id, String name, String slug) {
         this.id = id;
         this.name = name;
         this.slug = slug;
@@ -61,12 +66,20 @@ public class Genre implements Serializable{
         this.slug = slug;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
     }
 
     public String getName() {

@@ -28,7 +28,12 @@ public class PlayerPerspective implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The Igdb identifier of the player perspective.
+     */
+    private Integer igdbId;
 
     /**
      * The name of the player perspective.
@@ -43,7 +48,7 @@ public class PlayerPerspective implements Serializable {
     public PlayerPerspective() {
     }
 
-    public PlayerPerspective(Long id, String name, String description) {
+    public PlayerPerspective(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -54,11 +59,11 @@ public class PlayerPerspective implements Serializable {
         this.description = description;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -76,5 +81,13 @@ public class PlayerPerspective implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
     }
 }

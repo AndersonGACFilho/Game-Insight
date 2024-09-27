@@ -12,7 +12,7 @@ import org.springframework.ui.context.Theme;
  * This interface provides methods to access the GameTheme data in the database.
  */
 @Repository
-public interface ThemeRepository extends JpaRepository<GameTheme, Long> {
+public interface ThemeRepository extends JpaRepository<GameTheme, Integer> {
 
     /**
      * Find a GameTheme by its name.
@@ -20,5 +20,12 @@ public interface ThemeRepository extends JpaRepository<GameTheme, Long> {
      * @return the platform
      */
     GameTheme findByName(String name);
+
+    /**
+     * Find a GameTheme by the igdb identifier.
+     * @param igdbId
+     * @return the platform
+     */
+    GameTheme findByIgdbId(Integer igdbId);
 
 }

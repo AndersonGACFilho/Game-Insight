@@ -25,7 +25,12 @@ public class AgeRating implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The Igdb identifier of the age rating.
+     */
+    private Integer igdbId;
 
     /**
      * The name of the age rating.
@@ -58,7 +63,7 @@ public class AgeRating implements Serializable {
      * @param description The description of the age rating.
      * @param region The region of the age rating.
      */
-    public AgeRating(Long id, String name, String description, Region region) {
+    public AgeRating(Integer id, String name, String description, Region region) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -79,11 +84,11 @@ public class AgeRating implements Serializable {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -109,6 +114,14 @@ public class AgeRating implements Serializable {
 
     public void setRegion(Region region) {
         this.region = region;
+    }
+
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
     }
 
     @Override

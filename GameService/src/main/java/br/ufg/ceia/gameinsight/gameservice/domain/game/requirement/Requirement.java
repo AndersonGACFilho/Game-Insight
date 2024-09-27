@@ -14,7 +14,7 @@ public class Requirement implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @OneToOne
     private SystemRequirement minimum;
@@ -30,18 +30,18 @@ public class Requirement implements Serializable {
     public Requirement() {
     }
 
-    public Requirement(Long id, SystemRequirement minimum, SystemRequirement recommended, Game game) {
+    public Requirement(Integer id, SystemRequirement minimum, SystemRequirement recommended, Game game) {
         this.id = id;
         this.minimum = minimum;
         this.recommended = recommended;
         this.game = game;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

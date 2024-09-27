@@ -24,7 +24,7 @@ public class GPU implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The name of the GPU.
@@ -43,7 +43,7 @@ public class GPU implements Serializable {
      * @param id   The unique identifier of the GPU.
      * @param name The name of the GPU.
      */
-    public GPU(Long id, String name) {
+    public GPU(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -53,7 +53,7 @@ public class GPU implements Serializable {
      *
      * @return The unique identifier of the GPU.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -62,7 +62,7 @@ public class GPU implements Serializable {
      *
      * @param id The unique identifier of the GPU.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

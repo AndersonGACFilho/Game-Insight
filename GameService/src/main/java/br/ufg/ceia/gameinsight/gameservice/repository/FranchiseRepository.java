@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the Franchise data in the database.
  */
 @Repository
-public interface FranchiseRepository extends JpaRepository<Franchise, Long> {
+public interface FranchiseRepository extends JpaRepository<Franchise, Integer> {
 
     /**
      * Find a Franchise by its name.
@@ -19,5 +19,12 @@ public interface FranchiseRepository extends JpaRepository<Franchise, Long> {
      * @return the Franchise
      */
     Franchise findByName(String name);
+
+    /**
+     * Find a Franchise by igdbId.
+     * @param igdbId
+     * @return the Franchise
+     */
+    Franchise findByIgdbId(Integer igdbId);
 
 }

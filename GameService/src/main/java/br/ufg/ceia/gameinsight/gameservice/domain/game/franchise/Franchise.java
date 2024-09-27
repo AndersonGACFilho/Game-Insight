@@ -20,7 +20,12 @@ public class Franchise {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The igdb identifier of the franchise.
+     */
+    private Integer igdbId;
 
     /**
      * The name of the franchise.
@@ -48,7 +53,7 @@ public class Franchise {
     public Franchise() {
     }
 
-    public Franchise(long id, String name, String description) {
+    public Franchise(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.slug = description;
@@ -59,7 +64,7 @@ public class Franchise {
         this.slug = description;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -71,7 +76,7 @@ public class Franchise {
         return slug;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -105,5 +110,13 @@ public class Franchise {
 
     public void removeGame(Game game) {
         this.games.remove(game);
+    }
+
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
     }
 }

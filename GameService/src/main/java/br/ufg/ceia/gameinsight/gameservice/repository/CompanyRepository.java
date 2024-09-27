@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the Company data in the database.
  */
 @Repository
-public interface CompanyRepository extends JpaRepository<Company, Long> {
+public interface CompanyRepository extends JpaRepository<Company, Integer> {
 
     /**
      * Find a Company by its name.
@@ -25,6 +25,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
      * @param igdbId
      * @return the Company
      */
-    Company findByIgdbId(Long igdbId);
+    Company findByIgdbId(Integer igdbId);
+
 
 }

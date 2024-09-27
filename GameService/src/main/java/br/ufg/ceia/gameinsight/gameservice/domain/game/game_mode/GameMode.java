@@ -25,7 +25,12 @@ public class GameMode implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The Igdb identifier of the region.
+     */
+    private Integer igdbId;
 
     /**
      * The name of the game mode.
@@ -47,7 +52,7 @@ public class GameMode implements Serializable {
     public GameMode() {
     }
 
-    public GameMode(long id, String name, String description) {
+    public GameMode(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -60,11 +65,11 @@ public class GameMode implements Serializable {
 
     // Getters and Setters
 
-    public  Long getId() {
+    public  Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -98,6 +103,14 @@ public class GameMode implements Serializable {
 
     public void removeGame(Game game) {
         this.games.remove(game);
+    }
+
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
     }
 
     @Override

@@ -19,7 +19,7 @@ public class ReleaseDateIgdbDto implements Serializable{
      * The identifier of the release date.
      */
     @JsonProperty(required = false, value = "id")
-    private long id;
+    private Integer id;
 
     /**
      * The release date of the game.
@@ -49,11 +49,11 @@ public class ReleaseDateIgdbDto implements Serializable{
         this.region = region;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

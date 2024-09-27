@@ -73,7 +73,7 @@ class MarketplaceTests {
 
         // Set up mock user
         mockUser = new User();
-        mockUser.setId(1L); // Long ID type
+        mockUser.setId(1L); // Integer ID type
         mockUser.setEmail("test@example.com");
         mockUser.setMarketplaceProfiles(new ArrayList<>());
 

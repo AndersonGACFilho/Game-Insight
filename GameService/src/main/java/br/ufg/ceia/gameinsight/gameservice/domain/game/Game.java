@@ -44,12 +44,12 @@ public class Game implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
 
     /**
      * @brief The IGDB identifier for the game.
      */
-    private long IGDBId;
+    private Integer IGDBId;
 
     /**
      * @brief The title of the game.
@@ -180,7 +180,7 @@ public class Game implements Serializable {
      * @param platforms The platforms the game is available on.
      * @param requirements The system requirements for the game.
      */
-    public Game(long id, String title, String cover, List<ReleaseDate> releaseDates,
+    public Game(Integer id, String title, String cover, List<ReleaseDate> releaseDates,
                 List<AgeRating> ageRatings, String summary, List<Genre> genres,
                 List<GameTheme> themes, List<Franchise> franchises, List<GameMode> gameModes,
                 List<PlayerPerspective> playerPerspectives, List<Localization> localizations,
@@ -270,11 +270,11 @@ public class Game implements Serializable {
         return Objects.hash(id, title, cover, releaseDates, ageRatings, summary, genres, themes, franchises, gameModes, playerPerspectives, localizations, rating, ratingCount, involvedCompanies, platforms, requirements);
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -503,11 +503,11 @@ public class Game implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public long getIGDBId() {
+    public Integer getIGDBId() {
         return IGDBId;
     }
 
-    public void setIGDBId(long IGDBId) {
+    public void setIGDBId(Integer IGDBId) {
         this.IGDBId = IGDBId;
     }
 }

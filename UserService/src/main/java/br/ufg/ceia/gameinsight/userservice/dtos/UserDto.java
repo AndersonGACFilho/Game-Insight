@@ -24,7 +24,7 @@ public class UserDto implements Serializable{
     /**
      * The unique identifier for the user.
      */
-    private Long id;
+    private Integer id;
 
     /**
      * The username of the user.
@@ -85,7 +85,7 @@ public class UserDto implements Serializable{
      * Get the user ID
      * @return the user ID
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -93,7 +93,7 @@ public class UserDto implements Serializable{
      * Set the user ID
      * @param id the user ID
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

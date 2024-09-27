@@ -9,19 +9,19 @@ import java.util.Objects;
 
 public class IgbdCompanyGameDto implements Serializable {
     @Serial
-    private static final Long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @JsonProperty("id")
-    private Long id;
+    private Integer id;
 
     @JsonProperty(required = false, value = "company")
-    private Long company;
+    private Integer company;
 
     @JsonProperty(required = false, value = "game")
-    private Long game;
+    private Integer game;
 
     @JsonProperty(required = false, value = "updated_at")
-    private Long updatedAt;
+    private Integer updatedAt;
 
     /**
      * The role of the company in the game.
@@ -50,7 +50,7 @@ public class IgbdCompanyGameDto implements Serializable {
     public IgbdCompanyGameDto() {
     }
 
-    public IgbdCompanyGameDto(Long id, Long company, Long game, boolean isPublisher, boolean isDeveloper, boolean isPorter, boolean isSupporter) {
+    public IgbdCompanyGameDto(Integer id, Integer company, Integer game, boolean isPublisher, boolean isDeveloper, boolean isPorter, boolean isSupporter) {
         this.id = id;
         this.company = company;
         this.game = game;
@@ -91,27 +91,27 @@ public class IgbdCompanyGameDto implements Serializable {
                 '}';
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Long getCompany() {
+    public Integer getCompany() {
         return company;
     }
 
-    public void setCompany(Long company) {
+    public void setCompany(Integer company) {
         this.company = company;
     }
 
-    public Long getGame() {
+    public Integer getGame() {
         return game;
     }
 
-    public void setGame(Long game) {
+    public void setGame(Integer game) {
         this.game = game;
     }
 
@@ -151,7 +151,7 @@ public class IgbdCompanyGameDto implements Serializable {
         return Instant.ofEpochSecond(updatedAt);
     }
 
-    public void setUpdatedAt(Long updatedAt) {
+    public void setUpdatedAt(Integer updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -24,7 +24,12 @@ public class GameTheme implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The Igdb identifier of the region.
+     */
+    private Integer igdbId;
 
     /**
      * The name of the game theme.
@@ -46,7 +51,7 @@ public class GameTheme implements Serializable {
     public GameTheme() {
     }
 
-    public GameTheme(long id, String name, String description) {
+    public GameTheme(Integer id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -59,11 +64,11 @@ public class GameTheme implements Serializable {
 
     // Getters and Setters
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -89,6 +94,14 @@ public class GameTheme implements Serializable {
 
     public void setGames(List<Game> games) {
         this.games = games;
+    }
+
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
     }
 
     public void addGame(Game game) {

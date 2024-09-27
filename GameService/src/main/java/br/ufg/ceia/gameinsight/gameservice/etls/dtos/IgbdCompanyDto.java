@@ -11,10 +11,10 @@ public class IgbdCompanyDto implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @JsonProperty("id")
-    private long id;
+    private Integer id;
 
     @JsonProperty(required = false, value = "updated_at")
-    private long updatedAt;
+    private Integer updatedAt;
 
     @JsonProperty(required = false, value = "name")
     private String name;
@@ -23,7 +23,7 @@ public class IgbdCompanyDto implements Serializable {
     private String description;
 
     @JsonProperty(required = false, value = "logo")
-    private long logo;
+    private Integer logo;
 
     /**
      * The constructor.
@@ -39,18 +39,18 @@ public class IgbdCompanyDto implements Serializable {
      * @param description The description.
      * @param logo The logo.
      */
-    public IgbdCompanyDto(long id, String name, String description, long logo) {
+    public IgbdCompanyDto(Integer id, String name, String description, Integer logo) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.logo = logo;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -70,11 +70,11 @@ public class IgbdCompanyDto implements Serializable {
         this.description = description;
     }
 
-    public long getLogo() {
+    public Integer getLogo() {
         return logo;
     }
 
-    public void setLogo(long logo) {
+    public void setLogo(Integer logo) {
         this.logo = logo;
     }
 
@@ -82,7 +82,7 @@ public class IgbdCompanyDto implements Serializable {
         return Instant.ofEpochSecond(updatedAt);
     }
 
-    public void setUpdatedAt(long updatedAt) {
+    public void setUpdatedAt(Integer updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

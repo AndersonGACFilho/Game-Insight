@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the platform data in the database.
  */
 @Repository
-public interface PlatformRepository extends JpaRepository<Platform, Long> {
+public interface PlatformRepository extends JpaRepository<Platform, Integer> {
 
     /**
      * Find a platform by its name.
@@ -19,5 +19,12 @@ public interface PlatformRepository extends JpaRepository<Platform, Long> {
      * @return the platform
      */
     Platform findByName(String name);
+
+    /**
+     * Find a platform by igdbId.
+     * @param igdbId
+     * @return the platform
+     */
+    Platform findByIgdbId(Integer igdbId);
 
 }

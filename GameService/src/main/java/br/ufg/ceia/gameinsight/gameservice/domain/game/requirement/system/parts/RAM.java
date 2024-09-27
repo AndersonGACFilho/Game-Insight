@@ -23,7 +23,7 @@ public class RAM implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The name of the RAM.
@@ -41,7 +41,7 @@ public class RAM implements Serializable {
      * @param id The unique identifier of the RAM.
      * @param name The name of the RAM.
      */
-    public RAM(Long id, String name) {
+    public RAM(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -50,7 +50,7 @@ public class RAM implements Serializable {
      * Returns the unique identifier of the RAM.
      * @return The unique identifier of the RAM.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -58,7 +58,7 @@ public class RAM implements Serializable {
      * Sets the unique identifier of the RAM.
      * @param id The unique identifier of the RAM.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

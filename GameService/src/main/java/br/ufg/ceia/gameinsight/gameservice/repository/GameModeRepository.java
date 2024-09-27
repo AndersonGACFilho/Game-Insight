@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
  * This interface provides methods to access the GameMode data in the database.
  */
 @Repository
-public interface GameModeRepository extends JpaRepository<GameMode, Long> {
+public interface GameModeRepository extends JpaRepository<GameMode, Integer> {
 
     /**
      * Find a GameMode by its name.
@@ -19,5 +19,12 @@ public interface GameModeRepository extends JpaRepository<GameMode, Long> {
      * @return the GameMode
      */
     GameMode findByName(String name);
+
+    /**
+     * Find a GameMode by the igdb identifier.
+     * @param igdbId
+     * @return the GameMode
+     */
+    GameMode findByIgdbId(Integer igdbId);
 
 }

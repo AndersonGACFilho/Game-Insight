@@ -20,25 +20,25 @@ public class IgdbGameDto implements Serializable {
      * Id of the game in the IGDB API
      */
     @JsonProperty("id")
-    private Long id;
+    private Integer id;
 
     /**
      * Age ratings ids of the game
      */
     @JsonProperty(required = false, value = "age_ratings")
-    private List<Long> ageRatings;
+    private List<Integer> ageRatings;
 
     /**
      * Alternative names ids of the game
      */
     @JsonProperty(required = false, value = "alternative_names")
-    private List<Long> alternativeNames;
+    private List<Integer> alternativeNames;
 
     /**
      * The Francises associated with the game
      */
     @JsonProperty(required = false, value = "franchises")
-    private List<Long> franchises;
+    private List<Integer> franchises;
 
     /**
      * Id of the category of the game
@@ -50,25 +50,25 @@ public class IgdbGameDto implements Serializable {
      * Id of the cover of the game
      */
     @JsonProperty(required = false, value = "cover")
-    private Long cover;
+    private Integer cover;
 
     /**
      * Creation date of the game
      */
     @JsonProperty(required = false, value = "created_at")
-    private Long createdAt;
+    private Integer createdAt;
 
     /**
      * External games ids of the game
      */
     @JsonProperty(required = false, value = "external_games")
-    private List<Long> externalGames;
+    private List<Integer> externalGames;
 
     /**
      * First release date of the game
      */
     @JsonProperty(required = false, value = "first_release_date")
-    private Long firstReleaseDate;
+    private Integer firstReleaseDate;
 
     /**
      * Game modes ids of the game
@@ -86,13 +86,13 @@ public class IgdbGameDto implements Serializable {
      * Involved companies ids of the game
      */
     @JsonProperty(required = false, value = "involved_companies")
-    private List<Long> involvedCompanies;
+    private List<Integer> involvedCompanies;
 
     /**
      * Keywords ids of the game
      */
     @JsonProperty(required = false, value = "keywords")
-    private List<Long> keywords;
+    private List<Integer> keywords;
 
     /**
      * Name of the game
@@ -116,19 +116,19 @@ public class IgdbGameDto implements Serializable {
      * Release dates ids of the game
      */
     @JsonProperty(required = false, value = "release_dates")
-    private List<Long> releaseDates;
+    private List<Integer> releaseDates;
 
     /**
      * Screenshots ids of the game
      */
     @JsonProperty(required = false, value = "screenshots")
-    private List<Long> screenshots;
+    private List<Integer> screenshots;
 
     /**
      * Similar games ids of the game
      */
     @JsonProperty(required = false, value = "similar_games")
-    private List<Long> similarGames;
+    private List<Integer> similarGames;
 
     /**
      * Slug of the game
@@ -164,7 +164,7 @@ public class IgdbGameDto implements Serializable {
      * Update date of the game
      */
     @JsonProperty(required = false, value = "updated_at")
-    private Long updatedAt;
+    private Integer updatedAt;
 
     /**
      * URL of the game
@@ -176,13 +176,13 @@ public class IgdbGameDto implements Serializable {
      * Videos ids of the game
      */
     @JsonProperty(required = false, value = "videos")
-    private List<Long> videos;
+    private List<Integer> videos;
 
     /**
      * Websites ids of the game
      */
     @JsonProperty(required = false, value = "websites")
-    private List<Long> websites;
+    private List<Integer> websites;
 
     /**
      * Checksum of the game
@@ -194,7 +194,7 @@ public class IgdbGameDto implements Serializable {
      * Game localizations ids of the game
      */
     @JsonProperty(required = false, value = "game_localizations")
-    private List<Long> gameLocalizations;
+    private List<Integer> gameLocalizations;
 
     /**
      * Total rating of the game
@@ -210,27 +210,27 @@ public class IgdbGameDto implements Serializable {
 
     // Getters and Setters for all the fields
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public List<Long> getAgeRatings() {
+    public List<Integer> getAgeRatings() {
         return ageRatings;
     }
 
-    public void setAgeRatings(List<Long> ageRatings) {
+    public void setAgeRatings(List<Integer> ageRatings) {
         this.ageRatings = ageRatings;
     }
 
-    public List<Long> getAlternativeNames() {
+    public List<Integer> getAlternativeNames() {
         return alternativeNames;
     }
 
-    public void setAlternativeNames(List<Long> alternativeNames) {
+    public void setAlternativeNames(List<Integer> alternativeNames) {
         this.alternativeNames = alternativeNames;
     }
 
@@ -242,35 +242,35 @@ public class IgdbGameDto implements Serializable {
         this.category = category;
     }
 
-    public Long getCover() {
+    public Integer getCover() {
         return cover;
     }
 
-    public void setCover(Long cover) {
+    public void setCover(Integer cover) {
         this.cover = cover;
     }
 
-    public Long getCreatedAt() {
+    public Integer getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Long createdAt) {
+    public void setCreatedAt(Integer createdAt) {
         this.createdAt = createdAt;
     }
 
-    public List<Long> getExternalGames() {
+    public List<Integer> getExternalGames() {
         return externalGames;
     }
 
-    public void setExternalGames(List<Long> externalGames) {
+    public void setExternalGames(List<Integer> externalGames) {
         this.externalGames = externalGames;
     }
 
-    public Long getFirstReleaseDate() {
+    public Integer getFirstReleaseDate() {
         return firstReleaseDate;
     }
 
-    public void setFirstReleaseDate(Long firstReleaseDate) {
+    public void setFirstReleaseDate(Integer firstReleaseDate) {
         this.firstReleaseDate = firstReleaseDate;
     }
 
@@ -290,7 +290,7 @@ public class IgdbGameDto implements Serializable {
         this.genres = genres;
     }
 
-    public List<Long> getInvolvedCompanies() {
+    public List<Integer> getInvolvedCompanies() {
         return involvedCompanies;
     }
 
@@ -302,15 +302,15 @@ public class IgdbGameDto implements Serializable {
         return totalRatingCount;
     }
 
-    public void setInvolvedCompanies(List<Long> involvedCompanies) {
+    public void setInvolvedCompanies(List<Integer> involvedCompanies) {
         this.involvedCompanies = involvedCompanies;
     }
 
-    public List<Long> getKeywords() {
+    public List<Integer> getKeywords() {
         return keywords;
     }
 
-    public void setKeywords(List<Long> keywords) {
+    public void setKeywords(List<Integer> keywords) {
         this.keywords = keywords;
     }
 
@@ -338,27 +338,27 @@ public class IgdbGameDto implements Serializable {
         this.playerPerspectives = playerPerspectives;
     }
 
-    public List<Long> getReleaseDates() {
+    public List<Integer> getReleaseDates() {
         return releaseDates;
     }
 
-    public void setReleaseDates(List<Long> releaseDates) {
+    public void setReleaseDates(List<Integer> releaseDates) {
         this.releaseDates = releaseDates;
     }
 
-    public List<Long> getScreenshots() {
+    public List<Integer> getScreenshots() {
         return screenshots;
     }
 
-    public void setScreenshots(List<Long> screenshots) {
+    public void setScreenshots(List<Integer> screenshots) {
         this.screenshots = screenshots;
     }
 
-    public List<Long> getSimilarGames() {
+    public List<Integer> getSimilarGames() {
         return similarGames;
     }
 
-    public void setSimilarGames(List<Long> similarGames) {
+    public void setSimilarGames(List<Integer> similarGames) {
         this.similarGames = similarGames;
     }
 
@@ -402,11 +402,11 @@ public class IgdbGameDto implements Serializable {
         this.themes = themes;
     }
 
-    public Long getUpdatedAt() {
+    public Integer getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Long updatedAt) {
+    public void setUpdatedAt(Integer updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -418,19 +418,19 @@ public class IgdbGameDto implements Serializable {
         this.url = url;
     }
 
-    public List<Long> getVideos() {
+    public List<Integer> getVideos() {
         return videos;
     }
 
-    public void setVideos(List<Long> videos) {
+    public void setVideos(List<Integer> videos) {
         this.videos = videos;
     }
 
-    public List<Long> getWebsites() {
+    public List<Integer> getWebsites() {
         return websites;
     }
 
-    public void setWebsites(List<Long> websites) {
+    public void setWebsites(List<Integer> websites) {
         this.websites = websites;
     }
 
@@ -442,11 +442,11 @@ public class IgdbGameDto implements Serializable {
         this.checksum = checksum;
     }
 
-    public List<Long> getGameLocalizations() {
+    public List<Integer> getGameLocalizations() {
         return gameLocalizations;
     }
 
-    public void setGameLocalizations(List<Long> gameLocalizations) {
+    public void setGameLocalizations(List<Integer> gameLocalizations) {
         this.gameLocalizations = gameLocalizations;
     }
 
@@ -458,11 +458,11 @@ public class IgdbGameDto implements Serializable {
         this.totalRatingCount = totalRatingCount;
     }
 
-    public List<Long> getFranchises() {
+    public List<Integer> getFranchises() {
         return franchises;
     }
 
-    public void setFranchises(List<Long> franchises) {
+    public void setFranchises(List<Integer> franchises) {
         this.franchises = franchises;
     }
 

@@ -30,7 +30,12 @@ public class Platform implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
+
+    /**
+     * The igdb identifier of the platform.
+     */
+    private Integer igdbId;
 
     /**
      * The name of the platform.
@@ -60,7 +65,7 @@ public class Platform implements Serializable {
      * @param abbreviation The abbreviation of the platform.
      * @param generation The generation of the platform.
      */
-    public Platform(Long id, String name, String abbreviation, String generation) {
+    public Platform(Integer id, String name, String abbreviation, String generation) {
         this.id = id;
         this.name = name;
         this.abbreviation = abbreviation;
@@ -83,7 +88,7 @@ public class Platform implements Serializable {
      * Get the unique identifier of the platform.
      * @return The unique identifier of the platform.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -91,7 +96,7 @@ public class Platform implements Serializable {
      * Set the unique identifier of the platform.
      * @param id The unique identifier of the platform.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -141,6 +146,22 @@ public class Platform implements Serializable {
      */
     public void setGeneration(String generation) {
         this.generation = generation;
+    }
+
+    /**
+     * Get the igdb identifier of the platform.
+     * @return The igdb identifier of the platform.
+     */
+    public Integer getIgdbId() {
+        return igdbId;
+    }
+
+    /**
+     * Set the igdb identifier of the platform.
+     * @param igdbId The igdb identifier of the platform.
+     */
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
     }
 
     /**

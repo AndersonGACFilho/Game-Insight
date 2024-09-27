@@ -23,7 +23,7 @@ public class CPU implements Serializable{
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The name of the CPU.
@@ -41,7 +41,7 @@ public class CPU implements Serializable{
      * @param id The unique identifier of the CPU.
      * @param name The name of the CPU.
      */
-    public CPU(Long id, String name) {
+    public CPU(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -50,7 +50,7 @@ public class CPU implements Serializable{
      * Returns the unique identifier of the CPU.
      * @return The unique identifier of the CPU.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -58,7 +58,7 @@ public class CPU implements Serializable{
      * Sets the unique identifier of the CPU.
      * @param id The unique identifier of the CPU.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

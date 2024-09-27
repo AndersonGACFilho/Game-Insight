@@ -23,7 +23,7 @@ public class Storage implements Serializable{
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     /**
      * The name of the storage.
@@ -41,7 +41,7 @@ public class Storage implements Serializable{
      * @param id The unique identifier of the storage.
      * @param name The name of the storage.
      */
-    public Storage(Long id, String name) {
+    public Storage(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
@@ -50,7 +50,7 @@ public class Storage implements Serializable{
      * Returns the unique identifier of the storage.
      * @return The unique identifier of the storage.
      */
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -58,7 +58,7 @@ public class Storage implements Serializable{
      * Sets the unique identifier of the storage.
      * @param id The unique identifier of the storage.
      */
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
