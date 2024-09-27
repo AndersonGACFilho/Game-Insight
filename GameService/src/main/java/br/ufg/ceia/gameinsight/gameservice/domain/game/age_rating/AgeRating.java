@@ -46,7 +46,7 @@ public class AgeRating implements Serializable {
      * The region of the age rating.
      */
     @ManyToOne
-    @JoinColumn(name = "region_id", nullable = false)
+    @JoinColumn(name = "region_id", nullable = true)
     private Region region;
 
     /**

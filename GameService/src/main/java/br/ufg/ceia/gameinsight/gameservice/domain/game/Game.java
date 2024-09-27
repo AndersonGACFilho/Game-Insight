@@ -20,6 +20,7 @@ import javax.swing.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,11 +65,13 @@ public class Game implements Serializable {
     /**
      * @brief The cover image URL of the game.
      */
+    @Column(length = 1024)
     private String cover;
 
     /**
      * @brief The summary or description of the game.
      */
+    @Column(columnDefinition = "TEXT")
     private String summary;
 
     /**
@@ -133,7 +136,7 @@ public class Game implements Serializable {
      * @brief The list of companies involved in the game's development or publishing.
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CompanyGame> involvedCompanies;
+    private List<CompanyGame> involvedCompanies = new ArrayList<>();
 
     /**
      * @brief The list of platforms the game is available on.

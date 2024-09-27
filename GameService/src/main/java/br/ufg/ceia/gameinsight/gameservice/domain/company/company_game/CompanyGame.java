@@ -27,6 +27,7 @@ public class CompanyGame implements Serializable {
     private Instant updatedAt;
 
     @ManyToOne
+    @JoinColumn(name = "game_id")
     private Game game;
 
     @ManyToOne

@@ -3,11 +3,7 @@ package br.ufg.ceia.gameinsight.gameservice.domain.company;
 import br.ufg.ceia.gameinsight.gameservice.domain.company.company_game.CompanyGame;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -43,6 +39,7 @@ public class Company implements Serializable {
     /**
      * The company logo URL.
      */
+    @Column(length = 2000)
     private String logoUrl;
 
     /**
@@ -53,6 +50,7 @@ public class Company implements Serializable {
     /**
      * The company description.
      */
+    @Column(columnDefinition = "TEXT", length = 2000)
     private String description;
 
     /**
