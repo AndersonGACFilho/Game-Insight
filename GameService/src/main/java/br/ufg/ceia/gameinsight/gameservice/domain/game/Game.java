@@ -75,6 +75,12 @@ public class Game implements Serializable {
     private String summary;
 
     /**
+     * @brief The Storyline of the game.
+     */
+    @Column(columnDefinition = "TEXT")
+    private String storyline;
+
+    /**
      * @brief The overall rating of the game.
      */
     private float rating;
@@ -87,7 +93,7 @@ public class Game implements Serializable {
     /**
      * @brief The list of release dates for the game.
      */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "game")
     private List<ReleaseDate> releaseDates;
 
     /**
@@ -135,7 +141,7 @@ public class Game implements Serializable {
     /**
      * @brief The list of companies involved in the game's development or publishing.
      */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "game")
     private List<CompanyGame> involvedCompanies = new ArrayList<>();
 
     /**
@@ -147,7 +153,7 @@ public class Game implements Serializable {
     /**
      * @brief The list of system requirements for the game.
      */
-    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "game")
     private List<Requirement> requirements;
 
     /**
@@ -243,25 +249,16 @@ public class Game implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Game)) return false;
-        Game game = (Game) o;
-        return id == game.id &&
-                Float.compare(game.rating, rating) == 0 &&
-                ratingCount == game.ratingCount &&
+        if (!(o instanceof Game game)) return false;
+        return  Objects.equals(IGDBId , game.IGDBId) &&
                 Objects.equals(title, game.title) &&
                 Objects.equals(cover, game.cover) &&
-                Objects.equals(releaseDates, game.releaseDates) &&
-                Objects.equals(ageRatings, game.ageRatings) &&
                 Objects.equals(summary, game.summary) &&
+                Objects.equals(storyline, game.storyline) &&
                 Objects.equals(genres, game.genres) &&
                 Objects.equals(themes, game.themes) &&
-                Objects.equals(franchises, game.franchises) &&
                 Objects.equals(gameModes, game.gameModes) &&
-                Objects.equals(playerPerspectives, game.playerPerspectives) &&
-                Objects.equals(localizations, game.localizations) &&
-                Objects.equals(involvedCompanies, game.involvedCompanies) &&
-                Objects.equals(platforms, game.platforms) &&
-                Objects.equals(requirements, game.requirements);
+                Objects.equals(playerPerspectives, game.playerPerspectives);
     }
 
     /**
@@ -270,7 +267,7 @@ public class Game implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, cover, releaseDates, ageRatings, summary, genres, themes, franchises, gameModes, playerPerspectives, localizations, rating, ratingCount, involvedCompanies, platforms, requirements);
+        return Objects.hash(title, cover, summary, storyline, genres, themes);
     }
 
     public Integer getId() {
@@ -315,6 +312,22 @@ public class Game implements Serializable {
 
     public int getRatingCount() {
         return ratingCount;
+    }
+
+    public String getStoryline() {
+        return storyline;
+    }
+
+    public void setStoryline(String storyline) {
+        this.storyline = storyline;
+    }
+
+    public List<Game> getSimilarGames() {
+        return similarGames;
+    }
+
+    public void setSimilarGames(List<Game> similarGames) {
+        this.similarGames = similarGames;
     }
 
     public void setRatingCount(int ratingCount) {
@@ -512,5 +525,13 @@ public class Game implements Serializable {
 
     public void setIGDBId(Integer IGDBId) {
         this.IGDBId = IGDBId;
+    }
+
+    public void addSimilarGame(Game game) {
+        this.similarGames.add(game);
+    }
+
+    public void removeSimilarGame(Game game) {
+        this.similarGames.remove(game);
     }
 }

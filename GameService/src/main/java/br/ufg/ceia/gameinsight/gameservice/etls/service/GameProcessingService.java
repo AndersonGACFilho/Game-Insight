@@ -198,8 +198,11 @@ public class GameProcessingService {
             // Set basic game information
             gameEntity.setTitle(game.getName());
             gameEntity.setSummary(game.getSummary());
+            gameEntity.setStoryline(game.getStoryline());
             gameEntity.setRating(game.getTotalRating());
             gameEntity.setRatingCount(game.getTotalRatingCount());
+
+            gameEntity = gameRepository.save(gameEntity);
 
             // Fetch and set platforms
             List<Platform> platformsToAdd = new ArrayList<>();
@@ -268,21 +271,6 @@ public class GameProcessingService {
                 logger.warn("Game '{}' has no age ratings.", game.getName());
             }
             gameEntity.setAgeRatings(ageRatingsToAdd);
-
-            // Fetch and set similar games
-            List<Game> similarGames = new ArrayList<>();
-            if (game.getSimilarGames() != null) {
-                logger.debug("Game '{}' has similar games: {}", game.getName(), game.getSimilarGames());
-                for (Integer similarGameId : game.getSimilarGames()) {
-                    Game similarGameEntity = gameRepository.findByIGDBId(similarGameId);
-                    if (similarGameEntity != null) {
-                        similarGames.add(similarGameEntity);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no similar games.", game.getName());
-            }
-            gameEntity.setSimilarGames(similarGames);
 
             // Fetch and set player perspectives
             List<PlayerPerspective> playerPerspectivesToAdd = new ArrayList<>();
@@ -374,8 +362,29 @@ public class GameProcessingService {
             }
             gameEntity.setInvolvedCompanies(companiesToAdd);
 
-            // Save the game entity (cascading will save associated entities)
+            // Fetch and set similar games
+            List<Game> similarGames = new ArrayList<>();
+            if (game.getSimilarGames() != null) {
+                logger.debug("Game '{}' has similar games: {}", game.getName(), game.getSimilarGames());
+                for (Integer similarGameId : game.getSimilarGames()) {
+                    Game similarGameEntity = gameRepository.findByIGDBId(similarGameId);
+                    if (similarGameEntity != null) {
+                        similarGames.add(similarGameEntity);
+                        if (!similarGameEntity.getSimilarGames().contains(gameEntity)) {
+                            similarGameEntity.addSimilarGame(gameEntity);
+                            gameRepository.save(similarGameEntity);
+                        }
+                        break;
+                    }
+                }
+            } else {
+                logger.warn("Game '{}' has no similar games.", game.getName());
+            }
+            gameEntity.setSimilarGames(similarGames);
+
             gameRepository.save(gameEntity);
+
+            // Save the game entity (cascading will save associated entities)
             logger.info("Game '{}' processed and saved successfully.", game.getName());
         } catch (Exception e) {
             logger.error("Error while processing game: {}", game.getName(), e);
@@ -425,7 +434,7 @@ public class GameProcessingService {
             platform.setIgdbId(platformIgdbId);
 
             // Save and return the platform
-            platformRepository.save(platform);
+            platform = platformRepository.save(platform);
             logger.info("Platform '{}' saved to database.", platform.getName());
             return platform;
         } catch (Exception e) {
@@ -470,7 +479,7 @@ public class GameProcessingService {
             genreFound.setIgdbId(genreId);
 
             // Save and return the genre
-            genreRepository.save(genreFound);
+            genreFound = genreRepository.save(genreFound);
             logger.info("Genre '{}' saved to database.", genreFound.getName());
             return genreFound;
         } catch (Exception e) {
@@ -514,7 +523,7 @@ public class GameProcessingService {
             gameModeFound.setIgdbId(gameModeId);
 
             // Save and return the game mode
-            gameModeRepository.save(gameModeFound);
+            gameModeFound = gameModeRepository.save(gameModeFound);
             logger.info("Game mode '{}' saved to database.", gameModeFound.getName());
             return gameModeFound;
         } catch (Exception e) {
@@ -558,7 +567,7 @@ public class GameProcessingService {
             themeFound.setIgdbId(themeId);
 
             // Save and return the theme
-            themeRepository.save(themeFound);
+            themeFound = themeRepository.save(themeFound);
             logger.info("Theme '{}' saved to database.", themeFound.getName());
             return themeFound;
         } catch (Exception e) {
@@ -602,7 +611,7 @@ public class GameProcessingService {
             playerPerspectiveFound.setIgdbId(playerPerspectiveId);
 
             // Save and return the player perspective
-            playerPerspectiveRepository.save(playerPerspectiveFound);
+            playerPerspectiveFound = playerPerspectiveRepository.save(playerPerspectiveFound);
             logger.info("Player perspective '{}' saved to database.", playerPerspectiveFound.getName());
             return playerPerspectiveFound;
         } catch (Exception e) {
@@ -646,8 +655,8 @@ public class GameProcessingService {
             ageRatingFound.setIgdbId(ageRatingId);
 
             // Save and return the age rating
-            ageRatingRepository.save(ageRatingFound);
-            logger.info("Age rating '{}' saved to database.", ageRatingFound.getName());
+            ageRatingFound = ageRatingRepository.save(ageRatingFound);
+            logger.info("Age rating '{}' saved to database.", ageRatingFound.getDescription());
             return ageRatingFound;
         } catch (Exception e) {
             logger.error("Error while parsing the age rating data for ID: {}", ageRatingId, e);
@@ -692,7 +701,7 @@ public class GameProcessingService {
             franchiseFound.addGame(gameEntity);
 
             // Save and return the franchise
-            franchiseRepository.save(franchiseFound);
+            franchiseFound = franchiseRepository.save(franchiseFound);
             logger.info("Franchise '{}' saved to database.", franchiseFound.getName());
             return franchiseFound;
         } catch (Exception e) {
@@ -743,7 +752,7 @@ public class GameProcessingService {
             newLocalization.setRegion(region);
 
             // Save and return the localization
-            localizationRepository.save(newLocalization);
+            newLocalization = localizationRepository.save(newLocalization);
             logger.info("Localization '{}' saved to database.", newLocalization.getName());
             return newLocalization;
         } catch (Exception e) {
@@ -797,6 +806,8 @@ public class GameProcessingService {
             newCompanyGame.setCompany(company);
 
             // Save and return the company game
+            assert company != null;
+            newCompanyGame = companyGameRepository.save(newCompanyGame);
             logger.info("Involved company '{}' saved to database.", company.getName());
             return newCompanyGame;
         } catch (Exception e) {
@@ -847,7 +858,7 @@ public class GameProcessingService {
             newCompany.addCompanyGame(companyGame);
 
             // Save and return the company
-            companyRepository.save(newCompany);
+            newCompany = companyRepository.save(newCompany);
             logger.info("Company '{}' saved to database.", newCompany.getName());
             return newCompany;
         } catch (Exception e) {
@@ -928,7 +939,7 @@ public class GameProcessingService {
             region.setIgdbId(regionIgdbId);
 
             // Save and return the region
-            regionRepository.save(region);
+            region = regionRepository.save(region);
             logger.info("Region '{}' saved to database.", region.getName());
             return region;
         } catch (Exception e) {
@@ -984,10 +995,13 @@ public class GameProcessingService {
             foundReleaseDate.setPlatform(platform);
 
             Region region = SearchForRegions(foundIgdbReleaseDate.getRegion());
-            foundReleaseDate.setRegion(region);
+            if (region != null) {
+                foundReleaseDate.setRegion(region);
+            }
 
-            // Note: Do not save the ReleaseDate here; it will be saved via cascading when the Game is saved.
-
+            // Save and return the release date
+            foundReleaseDate = releaseDateRepository.save(foundReleaseDate);
+            logger.info("Release date '{}' saved to database.", foundReleaseDate.getDate()) ;
             return foundReleaseDate;
         } catch (Exception e) {
             logger.error("Error while parsing the release date data for ID: {}", releaseDateId, e);

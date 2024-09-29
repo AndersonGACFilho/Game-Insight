@@ -33,11 +33,6 @@ public class AgeRating implements Serializable {
     private Integer igdbId;
 
     /**
-     * The name of the age rating.
-     */
-    private String name;
-
-    /**
      * The description of the age rating.
      */
     private String description;
@@ -59,13 +54,11 @@ public class AgeRating implements Serializable {
      * Constructor with all fields.
      *
      * @param id The unique identifier of the age rating.
-     * @param name The name of the age rating.
      * @param description The description of the age rating.
      * @param region The region of the age rating.
      */
-    public AgeRating(Integer id, String name, String description, Region region) {
+    public AgeRating(Integer id, String description, Region region) {
         this.id = id;
-        this.name = name;
         this.description = description;
         this.region = region;
     }
@@ -73,12 +66,10 @@ public class AgeRating implements Serializable {
     /**
      * Constructor without id (auto-generated).
      *
-     * @param name The name of the age rating.
      * @param description The description of the age rating.
      * @param region The region of the age rating.
      */
-    public AgeRating(String name, String description, Region region) {
-        this.name = name;
+    public AgeRating(String description, Region region) {
         this.description = description;
         this.region = region;
     }
@@ -90,14 +81,6 @@ public class AgeRating implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
@@ -128,7 +111,6 @@ public class AgeRating implements Serializable {
     public String toString() {
         return "AgeRating{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", region=" + region +
                 '}';
@@ -140,13 +122,12 @@ public class AgeRating implements Serializable {
         if (!(o instanceof AgeRating)) return false;
         AgeRating that = (AgeRating) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(name, that.name) &&
                 Objects.equals(description, that.description) &&
                 Objects.equals(region, that.region);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description, region);
+        return Objects.hash(id, description, region);
     }
 }

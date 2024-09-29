@@ -4,14 +4,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="Improving the ETL">
+    <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="Adding the etl postman">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/Company.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/Company.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/company_game/CompanyGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/company_game/CompanyGame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/AgeRatingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/AgeRatingRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +31,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="main" />
+        <entry key="$PROJECT_DIR$" value="Anderson" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -72,7 +71,7 @@
     &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
     &quot;com.google.services.firebase.aqiPopupShown&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Anderson&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/ander/IdeaProjects/game_insight&quot;,
@@ -106,11 +105,11 @@
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\assets\icons\logo" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\ander\IdeaProjects\game_insight\GameService\src\main\resources" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\GameService\src\main\java\br\ufg\ceia\gameinsight\gameservice" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\Components" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\Theme" />
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib" />
-      <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\assets\images" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="br.ufg.ceia.gameinsight.gameservice.etls.dtos" />
@@ -176,6 +175,7 @@
       <workItem from="1726837214592" duration="895000" />
       <workItem from="1726943982797" duration="6682000" />
       <workItem from="1726951505745" duration="177000" />
+      <workItem from="1727642154689" duration="5192000" />
     </task>
     <task id="LOCAL-00001" summary="Removing the previous app">
       <option name="closed" value="true" />
@@ -209,23 +209,52 @@
       <option name="project" value="LOCAL" />
       <updated>1727423916242</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Adding the etl postman">
+      <option name="closed" value="true" />
+      <created>1727426972592</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1727426972592</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
   <component name="UnknownFeatures">
-    <option featureType="com.intellij.fileTypeFactory" implementationName="*.dart" />
-    <option featureType="dependencySupport" implementationName="executable:docker" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-core" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.validation:jakarta.validation-api" />
     <option featureType="com.intellij.configurationType" implementationName="FlutterRunConfigurationType" />
     <option featureType="dependencySupport" implementationName="executable:kubectl" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.data:spring-data-commons" />
+    <option featureType="dependencySupport" implementationName="java:org.hibernate.validator:hibernate-validator" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework:spring-webmvc" />
+    <option featureType="dependencySupport" implementationName="java:org.projectlombok:lombok" />
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.dart" />
+    <option featureType="dependencySupport" implementationName="executable:docker" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.persistence:jakarta.persistence-api" />
+    <option featureType="dependencySupport" implementationName="java:org.springframework.boot:spring-boot" />
+    <option featureType="dependencySupport" implementationName="java:jakarta.xml.ws:jakarta.xml.ws-api" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Updating the services" />
     <MESSAGE value="Removing the previous app" />
     <MESSAGE value="Adding the Etl" />
     <MESSAGE value="Improving the ETL" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improving the ETL" />
+    <MESSAGE value="Adding the etl postman" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding the etl postman" />
   </component>
 </project>

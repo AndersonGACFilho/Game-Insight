@@ -10,7 +10,6 @@ import java.util.List;
 
 @Repository
 public interface AgeRatingRepository extends JpaRepository<AgeRating, Integer> {
-    AgeRating findByName(String name);
 
     AgeRating findByIgdbId(Integer igdbId);
 }

@@ -165,12 +165,18 @@ public class IgdbService {
         String url = etlUrl + gameEndpoint;
 
         // Construct the request body
-        String requestBody = "fields *; where " + searchType + " >= "
-                + dateToStart.getEpochSecond() + ";"
+        String requestBody = "fields *; "
+                + "where " + searchType + " >= " + dateToStart.getEpochSecond() + "&"
+                + "platforms != null & "
+                + "cover != null & "
+                + "summary != null & "
+                + "storyline != null & "
+                // It is not dlcs or expansions or demos
+                + "version_parent = null & "
+                + "total_rating > 0 & "
+                + "total_rating_count > 0;"
                 + "limit " + limit + "; offset " + offset + ";"
-                + "sort updated_at asc;"
-                + "where total_rating > 50;"
-                + "where platforms != null;";
+                + "sort updated_at asc;";
 
         logger.debug("Request body: {}", requestBody);
 
