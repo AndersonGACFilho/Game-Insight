@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -105,6 +106,16 @@ public class Franchise {
     }
 
     public void addGame(Game game) {
+        if (game == null) {
+            return;
+        }
+        if (this.games == null) {
+            this.games = new ArrayList<>();
+            return;
+        }
+        if (this.games.contains(game)) {
+            return;
+        }
         this.games.add(game);
     }
 

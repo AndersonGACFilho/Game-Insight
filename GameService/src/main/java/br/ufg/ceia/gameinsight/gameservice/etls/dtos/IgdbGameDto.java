@@ -35,9 +35,9 @@ public class IgdbGameDto implements Serializable {
     private List<Integer> alternativeNames;
 
     /**
-     * The Francises associated with the game
+     * The Franchises associated with the game
      */
-    @JsonProperty(required = false, value = "franchises")
+    @JsonProperty(required = false, value = "collections")
     private List<Integer> franchises;
 
     /**

@@ -4,13 +4,17 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="Adding the etl postman">
+    <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="The etl was completed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/franchise/Franchise.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/franchise/Franchise.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_theme/GameTheme.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_theme/GameTheme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/genre/Genre.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/genre/Genre.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/player_perspective/PlayerPerspective.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/player_perspective/PlayerPerspective.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/platform/Platform.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/platform/Platform.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/AgeRatingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/AgeRatingRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -175,7 +179,7 @@
       <workItem from="1726837214592" duration="895000" />
       <workItem from="1726943982797" duration="6682000" />
       <workItem from="1726951505745" duration="177000" />
-      <workItem from="1727642154689" duration="5192000" />
+      <workItem from="1727642154689" duration="7734000" />
     </task>
     <task id="LOCAL-00001" summary="Removing the previous app">
       <option name="closed" value="true" />
@@ -217,7 +221,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727426972592</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="The etl was completed">
+      <option name="closed" value="true" />
+      <created>1727648131581</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1727648131581</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -255,6 +267,18 @@
     <MESSAGE value="Adding the Etl" />
     <MESSAGE value="Improving the ETL" />
     <MESSAGE value="Adding the etl postman" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding the etl postman" />
+    <MESSAGE value="The etl was completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="The etl was completed" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/genre/Genre.java</url>
+          <line>120</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

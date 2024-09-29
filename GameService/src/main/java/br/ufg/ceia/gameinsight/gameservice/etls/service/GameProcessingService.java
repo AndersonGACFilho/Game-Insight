@@ -209,7 +209,7 @@ public class GameProcessingService {
             if (game.getPlatforms() != null) {
                 logger.debug("Game '{}' has platforms: {}", game.getName(), game.getPlatforms());
                 for (Integer platformIgdbId : game.getPlatforms()) {
-                    Platform platform = SearchForPlatforms(platformIgdbId);
+                    Platform platform = SearchForPlatforms(platformIgdbId, gameEntity);
                     if (platform != null) {
                         platformsToAdd.add(platform);
                     }
@@ -247,7 +247,7 @@ public class GameProcessingService {
             if (game.getGenres() != null) {
                 logger.debug("Game '{}' has genres: {}", game.getName(), game.getGenres());
                 for (Integer genreId : game.getGenres()) {
-                    Genre genreEntity = SearchForGenres(genreId);
+                    Genre genreEntity = SearchForGenres(genreId, gameEntity);
                     if (genreEntity != null) {
                         genresToAdd.add(genreEntity);
                     }
@@ -277,7 +277,7 @@ public class GameProcessingService {
             if (game.getPlayerPerspectives() != null) {
                 logger.debug("Game '{}' has player perspectives: {}", game.getName(), game.getPlayerPerspectives());
                 for (Integer playerPerspectiveId : game.getPlayerPerspectives()) {
-                    PlayerPerspective playerPerspectiveEntity = SearchForPlayerPerspectives(playerPerspectiveId);
+                    PlayerPerspective playerPerspectiveEntity = SearchForPlayerPerspectives(playerPerspectiveId, gameEntity);
                     if (playerPerspectiveEntity != null) {
                         playerPerspectivesToAdd.add(playerPerspectiveEntity);
                     }
@@ -292,7 +292,7 @@ public class GameProcessingService {
             if (game.getThemes() != null) {
                 logger.debug("Game '{}' has themes: {}", game.getName(), game.getThemes());
                 for (Integer themeId : game.getThemes()) {
-                    GameTheme gameTheme = SearchForThemes(themeId);
+                    GameTheme gameTheme = SearchForThemes(themeId, gameEntity);
                     if (gameTheme != null) {
                         themesToAdd.add(gameTheme);
                     }
@@ -307,7 +307,7 @@ public class GameProcessingService {
             if (game.getGameModes() != null) {
                 logger.debug("Game '{}' has game modes: {}", game.getName(), game.getGameModes());
                 for (Integer gameModeId : game.getGameModes()) {
-                    GameMode gameModeEntity = SearchForGameModes(gameModeId);
+                    GameMode gameModeEntity = SearchForGameModes(gameModeId, gameEntity);
                     if (gameModeEntity != null) {
                         gameModesToAdd.add(gameModeEntity);
                     }
@@ -400,7 +400,7 @@ public class GameProcessingService {
      * @param platformIgdbId The IGDB ID of the platform.
      * @return The Platform entity.
      */
-    private Platform SearchForPlatforms(Integer platformIgdbId) {
+    private Platform SearchForPlatforms(Integer platformIgdbId, Game game) {
         logger.info("Searching for platform with ID: {}", platformIgdbId);
 
         // Check if the platform already exists in the database
@@ -432,6 +432,8 @@ public class GameProcessingService {
             Platform platform = platforms.get(0);
             platform.setId(null);
             platform.setIgdbId(platformIgdbId);
+            platform.addGame(game);
+
 
             // Save and return the platform
             platform = platformRepository.save(platform);
@@ -445,7 +447,7 @@ public class GameProcessingService {
 
     // Include similar methods for other entities:
     // - SearchForGenres
-    private Genre SearchForGenres(Integer genreId) {
+    private Genre SearchForGenres(Integer genreId, Game game) {
         logger.info("Searching for genre with ID: {}", genreId);
 
         // Check if genre already exists
@@ -477,6 +479,7 @@ public class GameProcessingService {
             Genre genreFound = genres.get(0);
             genreFound.setId(null);
             genreFound.setIgdbId(genreId);
+            genreFound.addGame(game);
 
             // Save and return the genre
             genreFound = genreRepository.save(genreFound);
@@ -489,7 +492,7 @@ public class GameProcessingService {
     }
 
     // - SearchForGameModes
-    private GameMode SearchForGameModes(Integer gameModeId) {
+    private GameMode SearchForGameModes(Integer gameModeId, Game game) {
         logger.info("Searching for game mode with ID: {}", gameModeId);
 
         // Check if game mode already exists
@@ -521,6 +524,8 @@ public class GameProcessingService {
             GameMode gameModeFound = gameModes.get(0);
             gameModeFound.setId(null);
             gameModeFound.setIgdbId(gameModeId);
+            gameModeFound.addGame(game);
+
 
             // Save and return the game mode
             gameModeFound = gameModeRepository.save(gameModeFound);
@@ -533,7 +538,7 @@ public class GameProcessingService {
     }
 
     // - SearchForThemes
-    private GameTheme SearchForThemes(Integer themeId) {
+    private GameTheme SearchForThemes(Integer themeId, Game game) {
         logger.info("Searching for theme with ID: {}", themeId);
 
         // Check if theme already exists
@@ -565,6 +570,7 @@ public class GameProcessingService {
             GameTheme themeFound = themes.get(0);
             themeFound.setId(null);
             themeFound.setIgdbId(themeId);
+            themeFound.addGame(game);
 
             // Save and return the theme
             themeFound = themeRepository.save(themeFound);
@@ -577,7 +583,7 @@ public class GameProcessingService {
     }
 
     // - SearchForPlayerPerspectives
-    private PlayerPerspective SearchForPlayerPerspectives(Integer playerPerspectiveId) {
+    private PlayerPerspective SearchForPlayerPerspectives(Integer playerPerspectiveId, Game game) {
         logger.info("Searching for player perspective with ID: {}", playerPerspectiveId);
 
         // Check if player perspective already exists
@@ -609,6 +615,7 @@ public class GameProcessingService {
             PlayerPerspective playerPerspectiveFound = playerPerspectives.get(0);
             playerPerspectiveFound.setId(null);
             playerPerspectiveFound.setIgdbId(playerPerspectiveId);
+            playerPerspectiveFound.addGame(game);
 
             // Save and return the player perspective
             playerPerspectiveFound = playerPerspectiveRepository.save(playerPerspectiveFound);
@@ -991,7 +998,7 @@ public class GameProcessingService {
             foundReleaseDate.setDate(foundIgdbReleaseDate.getDate());
             foundReleaseDate.setGame(game);
 
-            Platform platform = SearchForPlatforms(foundIgdbReleaseDate.getPlatform());
+            Platform platform = SearchForPlatforms(foundIgdbReleaseDate.getPlatform(), game);
             foundReleaseDate.setPlatform(platform);
 
             Region region = SearchForRegions(foundIgdbReleaseDate.getRegion());

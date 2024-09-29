@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToMany;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -51,6 +52,13 @@ public class Platform implements Serializable {
      * The generation of the platform.
      */
     private String generation;
+
+    /**
+     * The list of games associated with the platform.
+     */
+    @ManyToMany(mappedBy = "platforms")
+    @JsonIgnore
+    private List<Game> games;
 
     /**
      * Default constructor.
@@ -162,6 +170,48 @@ public class Platform implements Serializable {
      */
     public void setIgdbId(Integer igdbId) {
         this.igdbId = igdbId;
+    }
+
+    /**
+     * Get the list of games associated with the platform.
+     * @return The list of games associated with the platform.
+     */
+    public List<Game> getGames() {
+        return games;
+    }
+
+    /**
+     * Set the list of games associated with the platform.
+     * @param games The list of games associated with the platform.
+     */
+    public void setGames(List<Game> games) {
+        this.games = games;
+    }
+
+    /**
+     * Add a game to the list of games associated with the platform.
+     * @param game The game to add.
+     */
+    public void addGame(Game game) {
+        if (game == null) {
+            return;
+        }
+        if (this.games == null) {
+            this.games = new ArrayList<>();
+            return;
+        }
+        if (this.games.contains(game)) {
+            return;
+        }
+        this.games.add(game);
+    }
+
+    /**
+     * Remove a game from the list of games associated with the platform.
+     * @param game The game to remove.
+     */
+    public void removeGame(Game game) {
+        this.games.remove(game);
     }
 
     /**

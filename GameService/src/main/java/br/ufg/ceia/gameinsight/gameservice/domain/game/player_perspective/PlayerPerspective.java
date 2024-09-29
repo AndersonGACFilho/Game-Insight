@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +45,13 @@ public class PlayerPerspective implements Serializable {
      * The description of the player perspective.
      */
     private String description;
+
+    /**
+     * The list of games associated with the player perspective.
+     */
+    @ManyToMany(mappedBy = "playerPerspectives")
+    @JsonIgnore
+    private List<Game> games;
 
     public PlayerPerspective() {
     }
@@ -89,5 +97,31 @@ public class PlayerPerspective implements Serializable {
 
     public void setIgdbId(Integer igdbId) {
         this.igdbId = igdbId;
+    }
+
+    public List<Game> getGames() {
+        return games;
+    }
+
+    public void setGames(List<Game> games) {
+        this.games = games;
+    }
+
+    public void addGame(Game game) {
+        if (game == null) {
+            return;
+        }
+        if (this.games == null) {
+            this.games = new ArrayList<>();
+            return;
+        }
+        if (this.games.contains(game)) {
+            return;
+        }
+        this.games.add(game);
+    }
+
+    public void removeGame(Game game) {
+        this.games.remove(game);
     }
 }

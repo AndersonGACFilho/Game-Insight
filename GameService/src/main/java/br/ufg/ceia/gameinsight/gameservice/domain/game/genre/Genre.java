@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -107,6 +108,16 @@ public class Genre implements Serializable{
     }
 
     public void addGame(Game game) {
+        if (game == null) {
+            return;
+        }
+        if (this.games == null) {
+            this.games = new ArrayList<>();
+            return;
+        }
+        if (this.games.contains(game)) {
+            return;
+        }
         this.games.add(game);
     }
 
