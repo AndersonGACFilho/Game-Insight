@@ -1,5 +1,6 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.region;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
@@ -24,12 +25,14 @@ public class Region {
     /**
      * The name of the region.
      */
+    @JsonProperty("name")
     private String name;
 
     /**
      * The unique identifier of the region.
      * The identifier is a unique string that identifies the region.
      */
+    @JsonProperty("identifier")
     private String identifier;
 
     /**
@@ -37,6 +40,7 @@ public class Region {
      * The category is a classification system used to determine the category of a region.
      * For example, the category of a region can be "continent", "locale", ...
      */
+    @JsonProperty("category")
     private String category;
 
     public Region() {

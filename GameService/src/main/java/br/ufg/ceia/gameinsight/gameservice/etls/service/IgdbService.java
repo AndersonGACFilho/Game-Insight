@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -57,11 +58,8 @@ public class IgdbService {
 
     private int requests = 0;
 
-    @Value("${igdb.retry_time}")
-    private int retryTime;
-
     // List to hold games retrieved from IGDB
-    private List<IgdbGameDto> games;
+    private List<IgdbGameDto> games = new ArrayList<>(50);
 
     // Inject the GameProcessingService
     @Autowired
@@ -85,8 +83,10 @@ public class IgdbService {
      *
      * @param dateToStart The date to start fetching games from.
      * @param searchType  The type of search ("updated_at" or "created_at").
+     * @param minRating   The minimum rating for games to be fetched.
+     * @param minVotes The minimum number of votes for the games to be included in the ETL process.
      */
-    public void RunETL(Instant dateToStart, String searchType) {
+    public void RunETL(Instant dateToStart, String searchType, int minRating, int minVotes) {
         // Refresh the access token if expired
         if (accessToken == null || accessToken.isEmpty() || tokenIsExpired()) {
             login();
@@ -99,8 +99,19 @@ public class IgdbService {
 
         do {
             // Fetch games from IGDB API
-            SearchForGames(dateToStart, limit, offset, searchType);
-
+            boolean occurredError = false;
+            while (games.isEmpty() && !occurredError) {
+                try {
+                    games.clear();
+                    SearchForGames(dateToStart, limit, offset, searchType, minRating, minVotes);
+                    occurredError = false;
+                } catch (Exception e) {
+                    logger.error("Error while fetching games", e);
+                    logger.info("Doing login again to reset the rate limit");
+                    login();
+                    occurredError = true;
+                }
+            }
             if (games.isEmpty()) {
                 logger.info("No games found");
                 break;
@@ -158,8 +169,10 @@ public class IgdbService {
      * @param limit       The maximum number of games to retrieve.
      * @param offset      The offset for pagination.
      * @param searchType  The type of search ("updated_at" or "created_at").
+     * @param minRating   The minimum rating for games to be fetched.
      */
-    private void SearchForGames(Instant dateToStart, int limit, int offset, String searchType) {
+    private void SearchForGames(Instant dateToStart, int limit, int offset,
+                                String searchType, int minRating, int minVotes) {
         logger.info("Searching for games");
 
         String url = etlUrl + gameEndpoint;
@@ -173,10 +186,11 @@ public class IgdbService {
                 + "storyline != null & "
                 // It is not dlcs or expansions or demos
                 + "version_parent = null & "
-                + "total_rating > 0 & "
-                + "total_rating_count > 0;"
-                + "limit " + limit + "; offset " + offset + ";"
-                + "sort updated_at asc;";
+                + "total_rating > "+ minRating +" & "
+                + "total_rating_count > "+ minVotes +";"
+                + "limit " + limit
+                + "; offset " + offset + ";"
+                + "sort total_rating_count desc;";
 
         logger.debug("Request body: {}", requestBody);
 
@@ -211,10 +225,11 @@ public class IgdbService {
     private void manageRequestRate() {
         if (requests >= maxRequests) {
             try {
-                logger.info("Rate limit reached, waiting for {} milliseconds", retryTime);
-                Thread.sleep(retryTime);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                logger.info("Rate limit reached, doing login again to reset the rate limit");
+                login();
+            } catch (Exception e) {
+                logger.error("Error while resetting the rate limit", e);
+                throw new RuntimeException("Error while resetting the rate limit", e);
             }
             requests = 0;
         }

@@ -32,6 +32,12 @@ public class IgdbGameLanguageSupportDto implements Serializable {
     private Integer type;
 
     /**
+     * The update timestamp (Unix epoch seconds).
+     */
+    @JsonProperty(required = false, value = "updated_at")
+    private Integer updatedAt;
+
+    /**
      * Default constructor.
      */
     public IgdbGameLanguageSupportDto() {
@@ -115,6 +121,24 @@ public class IgdbGameLanguageSupportDto implements Serializable {
      */
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    /**
+     * Gets the update timestamp.
+     *
+     * @return the update timestamp.
+     */
+    public Integer getUpdatedAt() {
+        return updatedAt;
+    }
+
+    /**
+     * Sets the update timestamp.
+     *
+     * @param updatedAt the update timestamp to set.
+     */
+    public void setUpdatedAt(Integer updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**

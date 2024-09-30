@@ -4,20 +4,15 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="last etl improvements">
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/Language.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupport.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupportType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameLanguageSupportDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbLanguageDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/LanguageRepository.java" afterDir="false" />
+    <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="really last etl improvements">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/localization/Localization.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameLocalizationDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/controller/IGDBController.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/controller/IGDBController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupport.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/region/Region.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/region/Region.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameLanguageSupportDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameLanguageSupportDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/LocalizationRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/LanguageSupportRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/resources/IGDB ETL.postman_collection.json" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/resources/IGDB ETL.postman_collection.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -185,7 +180,8 @@
       <workItem from="1726837214592" duration="895000" />
       <workItem from="1726943982797" duration="6682000" />
       <workItem from="1726951505745" duration="177000" />
-      <workItem from="1727642154689" duration="14317000" />
+      <workItem from="1727642154689" duration="17153000" />
+      <workItem from="1727693570301" duration="5125000" />
     </task>
     <task id="LOCAL-00001" summary="Removing the previous app">
       <option name="closed" value="true" />
@@ -243,7 +239,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727651289068</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="really last etl improvements">
+      <option name="closed" value="true" />
+      <created>1727663385143</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1727663385143</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -283,7 +287,8 @@
     <MESSAGE value="Adding the etl postman" />
     <MESSAGE value="The etl was completed" />
     <MESSAGE value="last etl improvements" />
-    <option name="LAST_COMMIT_MESSAGE" value="last etl improvements" />
+    <MESSAGE value="really last etl improvements" />
+    <option name="LAST_COMMIT_MESSAGE" value="really last etl improvements" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

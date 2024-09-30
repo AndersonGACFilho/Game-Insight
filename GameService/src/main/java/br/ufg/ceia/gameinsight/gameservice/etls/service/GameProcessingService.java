@@ -131,32 +131,6 @@ public class GameProcessingService {
 
     private Instant tokenExpiration;
 
-    // IGDB API request limits
-    @Value("${igdb.max_requests}")
-    private int maxRequests;
-
-    private int requests = 0;
-
-    @Value("${igdb.retry_time}")
-    private int retryTime;
-
-    // For access token and headers
-    /**
-     * Manages the request rate to comply with IGDB API limits.
-     */
-    void manageRequestRate() {
-        if (requests >= maxRequests) {
-            try {
-                logger.info("Rate limit reached, waiting for {} milliseconds", retryTime);
-                Thread.sleep(retryTime);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-            requests = 0;
-        }
-        requests++;
-    }
-
     /**
      * Constructs the HTTP headers required for IGDB API requests.
      *
@@ -174,7 +148,7 @@ public class GameProcessingService {
      * Processes an individual game.
      *
      * @param game        The IgdbGameDto object containing game data.
-     * @param accessToken
+     * @param accessToken The access token for the IGDB API.
      */
     @Transactional
     public void processGame(IgdbGameDto game, String accessToken) {
@@ -194,6 +168,7 @@ public class GameProcessingService {
 
             if (gameFound != null) {
                 logger.info("Game already exists: {}", game.getName());
+                gameEntity.setId(gameFound.getId());
 
                 // Skip if the game hasn't been updated
                 if (!gameFound.getUpdatedAt().isBefore(gameEntity.getUpdatedAt())) {
@@ -752,6 +727,22 @@ public class GameProcessingService {
 
             IgdbGameLanguageSupportDto languageSupportFound = languageSupports.get(0);
 
+            // Check if language support already exists
+            if (languageSupportAtDb != null) {
+                if (languageSupportAtDb.getUpdatedAt() == null) {
+                    logger.warn("Language support '{}' has no updated_at timestamp.", languageSupportAtDb.
+                            getLanguageSupportType().getName()
+                            + " for ID: " + languageSupportId
+                            + " Language: " + languageSupportAtDb.getLanguage().getName());
+
+                    languageSupportAtDb.setUpdatedAt(0);
+                }
+                if (languageSupportFound.getUpdatedAt() <= languageSupportAtDb.getUpdatedAt()) {
+                    logger.info("Language support '{}' has not been updated.", languageSupportFound.getType());
+                    return languageSupportAtDb;
+                }
+            }
+
             // Check if 'type' is null
             if (languageSupportFound.getType() == null) {
                 logger.warn("Language support type is null for ID: {}", languageSupportId);
@@ -817,6 +808,8 @@ public class GameProcessingService {
             // Create and populate Language entity
             Language newLanguage = new Language();
             newLanguage.setName(languageFound.getName());
+            newLanguage.setLocale(languageFound.getLocale());
+            newLanguage.setNativeName(languageFound.getNativeName());
             newLanguage.setIgdbId(languageId);
 
             // Save and return the language
@@ -1083,14 +1076,7 @@ public class GameProcessingService {
         logger.info("Getting cover URL with ID: {}", coverId);
 
         String url = etlUrl + coverEndpoint;
-        String requestBody = "fields url; where id=" + coverId + ";";
-        HttpHeaders headers = getHttpHeaders();
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-        RestTemplate restTemplate = new RestTemplate();
-
-        manageRequestRate();
-
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+        ResponseEntity<String> response = SendRequest(coverId, coverEndpoint, "url");
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             logger.error("Failed to obtain cover with ID: {}", coverId);
@@ -1136,8 +1122,6 @@ public class GameProcessingService {
         HttpHeaders headers = getHttpHeaders(); // Use headers from IgdbService
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
         RestTemplate restTemplate = new RestTemplate();
-
-        manageRequestRate(); // Respect rate limits using IgdbService
 
         ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
         logger.info("Request sent successfully");

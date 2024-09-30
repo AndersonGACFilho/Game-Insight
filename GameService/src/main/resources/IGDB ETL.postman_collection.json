@@ -14,7 +14,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"var DateToSearch = new Date(\"2024-09-25T00:00:00Z\");\r",
+							"var DateToSearch = new Date(\"2010-01-01T00:00:00Z\");\r",
 							"// Get the Unix timestamp in seconds\r",
 							"var Timestamp = DateToSearch.getTime();\r",
 							"// Set the collection variable\r",
@@ -42,7 +42,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{base_url}}/api/igdb/etl?dateToStart={{timeToSearch}}&searchType=updated_at",
+					"raw": "{{base_url}}/api/igdb/etl?dateToStart={{timeToSearch}}&searchType={{searchType}}&minRating={{minRating}}&minVotes={{minVotes}}",
 					"host": [
 						"{{base_url}}"
 					],
@@ -58,7 +58,15 @@
 						},
 						{
 							"key": "searchType",
-							"value": "updated_at"
+							"value": "{{searchType}}"
+						},
+						{
+							"key": "minRating",
+							"value": "{{minRating}}"
+						},
+						{
+							"key": "minVotes",
+							"value": "{{minVotes}}"
 						}
 					]
 				}
@@ -104,16 +112,20 @@
 			"value": "http://localhost:8081"
 		},
 		{
-			"key": "email",
-			"value": ""
-		},
-		{
-			"key": "birthdate",
-			"value": ""
-		},
-		{
 			"key": "timeToSearch",
 			"value": "timeToSearch"
+		},
+		{
+			"key": "searchType",
+			"value": "created_at"
+		},
+		{
+			"key": "minRating",
+			"value": "60"
+		},
+		{
+			"key": "minVotes",
+			"value": "100"
 		}
 	]
 }

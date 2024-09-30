@@ -25,6 +25,7 @@ public class LanguageSupport implements Serializable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty("local_id")
     private Integer id;
 
     /**
@@ -33,6 +34,12 @@ public class LanguageSupport implements Serializable {
     @Column(name = "igdb_id", unique = true, nullable = false)
     @JsonProperty("id")
     private Integer igdbId;
+
+    /**
+     * The update timestamp (Unix epoch seconds).
+     */
+    @Column(name = "updated_at")
+    private Integer updatedAt;
 
     /**
      * Reference to the associated game.
@@ -185,8 +192,25 @@ public class LanguageSupport implements Serializable {
         this.languageSupportType = languageSupportType;
     }
 
-    // toString
+    /**
+     * Gets the update timestamp.
+     *
+     * @return the update timestamp.
+     */
+    public Integer getUpdatedAt() {
+        return updatedAt;
+    }
 
+    /**
+     * Sets the update timestamp.
+     *
+     * @param updatedAt the update timestamp to set.
+     */
+    public void setUpdatedAt(Integer updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    // toString
     @Override
     public String toString() {
         return "LanguageSupport{" +
