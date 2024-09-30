@@ -100,10 +100,11 @@ public class IgdbService {
         do {
             // Fetch games from IGDB API
             boolean occurredError = false;
+            games.clear();
             while (games.isEmpty() && !occurredError) {
                 try {
-                    games.clear();
                     SearchForGames(dateToStart, limit, offset, searchType, minRating, minVotes);
+                    login();
                     occurredError = false;
                 } catch (Exception e) {
                     logger.error("Error while fetching games", e);
@@ -117,13 +118,14 @@ public class IgdbService {
                 break;
             }
 
-            offset += limit;
-
             // Process each game
             for (IgdbGameDto game : games) {
                 // Delegate processing to GameProcessingService
                 gameProcessingService.processGame(game,accessToken);
             }
+
+            offset += games.size();
+            logger.info("Processed {} games", offset);
         } while (games.size() == limit);
     }
 
@@ -192,7 +194,7 @@ public class IgdbService {
                 + "; offset " + offset + ";"
                 + "sort total_rating_count desc;";
 
-        logger.debug("Request body: {}", requestBody);
+        logger.info("Request body: {}", requestBody);
 
         HttpHeaders headers = getHttpHeaders();
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);

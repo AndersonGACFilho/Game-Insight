@@ -14,7 +14,7 @@
 					"listen": "prerequest",
 					"script": {
 						"exec": [
-							"var DateToSearch = new Date(\"2010-01-01T00:00:00Z\");\r",
+							"var DateToSearch = new Date(pm.collectionVariables.set(\"timeToSearchString\", Timestamp));\r",
 							"// Get the Unix timestamp in seconds\r",
 							"var Timestamp = DateToSearch.getTime();\r",
 							"// Set the collection variable\r",
@@ -107,6 +107,11 @@
 		}
 	],
 	"variable": [
+		{
+			"key": "timeToSearchString",
+			"value": "\"2010-01-01T00:00:00Z\"",
+			"type": "string"
+		},
 		{
 			"key": "base_url",
 			"value": "http://localhost:8081"

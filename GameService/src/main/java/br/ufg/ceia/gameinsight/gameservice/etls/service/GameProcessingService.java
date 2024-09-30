@@ -717,6 +717,7 @@ public class GameProcessingService {
         try {
             String jsonResponse = response.getBody();
             logger.warn("LanguageSupport response: {}", jsonResponse);
+            Integer idToSet = null;
             List<IgdbGameLanguageSupportDto> languageSupports = objectMapper.readValue(jsonResponse,
                     new TypeReference<List<IgdbGameLanguageSupportDto>>() {});
 
@@ -729,6 +730,7 @@ public class GameProcessingService {
 
             // Check if language support already exists
             if (languageSupportAtDb != null) {
+                idToSet = languageSupportAtDb.getId();
                 if (languageSupportAtDb.getUpdatedAt() == null) {
                     logger.warn("Language support '{}' has no updated_at timestamp.", languageSupportAtDb.
                             getLanguageSupportType().getName()
@@ -755,6 +757,7 @@ public class GameProcessingService {
                 }
                 // Create and populate LanguageSupport entity
                 LanguageSupport newLanguageSupport = new LanguageSupport();
+                newLanguageSupport.setId(idToSet);
                 newLanguageSupport.setLanguageSupportType(supportType);
                 newLanguageSupport.setLanguage(SearchForLanguage(languageSupportFound.getLanguage()));
                 newLanguageSupport.setGame(game);
