@@ -8,7 +8,9 @@ import br.ufg.ceia.gameinsight.gameservice.domain.game.franchise.Franchise;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.game_mode.GameMode;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.game_theme.GameTheme;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.genre.Genre;
-import br.ufg.ceia.gameinsight.gameservice.domain.game.localization.Localization;
+import br.ufg.ceia.gameinsight.gameservice.domain.game.languages.Language;
+import br.ufg.ceia.gameinsight.gameservice.domain.game.languages.LanguageSupport;
+import br.ufg.ceia.gameinsight.gameservice.domain.game.languages.LanguageSupportType;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.player_perspective.PlayerPerspective;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.region.Region;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.release_date.ReleaseDate;
@@ -64,11 +66,13 @@ public class GameProcessingService {
     @Autowired
     private FranchiseRepository franchiseRepository;
     @Autowired
-    private LocalizationRepository localizationRepository;
+    private LanguageSupportRepository languageSupportRepository;
     @Autowired
     private CompanyRepository companyRepository;
     @Autowired
     private CompanyGameRepository companyGameRepository;
+    @Autowired
+    private LanguageRepository languageRepository;
 
     // IGDB API configuration properties
     @Value("${igdb.client-id}")
@@ -107,8 +111,11 @@ public class GameProcessingService {
     @Value("${igdb.franchises-endpoint}")
     private String franchisesEndpoint;
 
-    @Value("${igdb.game-localizations-endpoint}")
-    private String localizationsEndpoint;
+    @Value("${igdb.game-language-support-endpoint}")
+    private String languageSupportEndpoint;
+
+    @Value("${igdb.languages-endpoint}")
+    private String languagesEndpoint;
 
     @Value("${igdb.involved-companies-endpoint}")
     private String involvedCompaniesEndpoint;
@@ -332,20 +339,20 @@ public class GameProcessingService {
             }
             gameEntity.setFranchises(franchisesToAdd);
 
-            // Fetch and set localizations
-            List<Localization> localizationsToAdd = new ArrayList<>();
-            if (game.getGameLocalizations() != null) {
-                logger.debug("Game '{}' has localizations: {}", game.getName(), game.getGameLocalizations());
-                for (Integer localizationId : game.getGameLocalizations()) {
-                    Localization localizationEntity = SearchForLocalizations(localizationId, gameEntity);
-                    if (localizationEntity != null) {
-                        localizationsToAdd.add(localizationEntity);
+            // Fetch and set language supports
+            List<LanguageSupport> languageSupportsToAdd = new ArrayList<>();
+            if (game.getLanguageSupports() != null) {
+                logger.debug("Game '{}' has language supports: {}", game.getName(), game.getLanguageSupports());
+                for (Integer languageSupportId : game.getLanguageSupports()) {
+                    LanguageSupport languageSupportEntity = SearchForLanguageSupport(languageSupportId, gameEntity);
+                    if (languageSupportEntity != null) {
+                        languageSupportsToAdd.add(languageSupportEntity);
                     }
                 }
             } else {
-                logger.warn("Game '{}' has no localizations.", game.getName());
+                logger.warn("Game '{}' has no language supports.", game.getName());
             }
-            gameEntity.setLocalizations(localizationsToAdd);
+            gameEntity.setLanguageSupports(languageSupportsToAdd);
 
             // Fetch and set involved companies
             List<CompanyGame> companiesToAdd = new ArrayList<>();
@@ -717,54 +724,108 @@ public class GameProcessingService {
         }
     }
 
-    // - SearchForLocalizations
-    private Localization SearchForLocalizations(Integer localizationId, Game game) {
-        logger.info("Searching for localization with ID: {}", localizationId);
+    // - SearchForLanguageSupport
+    private LanguageSupport SearchForLanguageSupport(Integer languageSupportId, Game game) {
+        logger.info("Searching for language support with ID: {}", languageSupportId);
 
-        // Check if localization already exists
-        Localization localizationAtDb = localizationRepository.findByIgdbId(localizationId);
-        if (localizationAtDb != null) {
-            logger.debug("Localization with ID '{}' found in database.", localizationId);
-            return localizationAtDb;
-        }
+        // Check if language support already exists
+        LanguageSupport languageSupportAtDb = languageSupportRepository.findByIgdbId(languageSupportId);
 
-        // Fetch localization data from IGDB API
-        ResponseEntity<String> response = SendRequest(localizationId, localizationsEndpoint);
+        // Fetch language support data from IGDB API
+        ResponseEntity<String> response = SendRequest(languageSupportId, languageSupportEndpoint);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain localization with ID: {}", localizationId);
-            throw new RuntimeException("Failed to obtain localization");
+            logger.error("Failed to obtain language support with ID: {}", languageSupportId);
+            throw new RuntimeException("Failed to obtain language support");
         }
 
         try {
             String jsonResponse = response.getBody();
-            logger.debug("Localization response: {}", jsonResponse);
-            List<IgdbGameLocalizationDto> localizations = objectMapper.readValue(jsonResponse, new TypeReference<List<IgdbGameLocalizationDto>>() {
-            });
+            logger.warn("LanguageSupport response: {}", jsonResponse);
+            List<IgdbGameLanguageSupportDto> languageSupports = objectMapper.readValue(jsonResponse,
+                    new TypeReference<List<IgdbGameLanguageSupportDto>>() {});
 
-            if (localizations.isEmpty()) {
-                logger.warn("No localization data found for ID: {}", localizationId);
+            if (languageSupports.isEmpty()) {
+                logger.warn("No language support data found for ID: {}", languageSupportId);
                 return null;
             }
 
-            IgdbGameLocalizationDto localizationFound = localizations.get(0);
+            IgdbGameLanguageSupportDto languageSupportFound = languageSupports.get(0);
 
-            // Create and populate Localization entity
-            Localization newLocalization = new Localization();
-            newLocalization.setName(localizationFound.getName());
-            newLocalization.setGame(game);
-            newLocalization.setIgdbId(localizationId);
+            // Check if 'type' is null
+            if (languageSupportFound.getType() == null) {
+                logger.warn("Language support type is null for ID: {}", languageSupportId);
+                return null;
+            } else {
+                LanguageSupportType supportType = LanguageSupportType.fromId(languageSupportFound.getType());
+                if (supportType == null) {
+                    logger.warn("No LanguageSupportType found for type ID: {}", languageSupportFound.getType());
+                    return null;
+                }
+                // Create and populate LanguageSupport entity
+                LanguageSupport newLanguageSupport = new LanguageSupport();
+                newLanguageSupport.setLanguageSupportType(supportType);
+                newLanguageSupport.setLanguage(SearchForLanguage(languageSupportFound.getLanguage()));
+                newLanguageSupport.setGame(game);
+                newLanguageSupport.setIgdbId(languageSupportId);
 
-            Region region = SearchForRegions(localizationFound.getRegion());
-            newLocalization.setRegion(region);
-
-            // Save and return the localization
-            newLocalization = localizationRepository.save(newLocalization);
-            logger.info("Localization '{}' saved to database.", newLocalization.getName());
-            return newLocalization;
+                // Save and return the language support
+                newLanguageSupport = languageSupportRepository.save(newLanguageSupport);
+                logger.info("LanguageSupport '{}' saved to database.", newLanguageSupport.getLanguageSupportType().getName());
+                return newLanguageSupport;
+            }
         } catch (Exception e) {
-            logger.error("Error while parsing the localization data for ID: {}", localizationId, e);
-            throw new RuntimeException("Error while parsing the localization data", e);
+            logger.error("Error while parsing the language support data for ID: {}", languageSupportId, e);
+            throw new RuntimeException("Error while parsing the language support data", e);
+        }
+    }
+
+
+    // - SearchForLanguage
+    private Language SearchForLanguage(Integer languageId) {
+        logger.info("Searching for language with ID: {}", languageId);
+
+        // Check if the language already exists
+        Language languageAtDb = languageRepository.findByIgdbId(languageId);
+        if (languageAtDb != null) {
+            logger.debug("Language with ID '{}' found in database.", languageId);
+            return languageAtDb;
+        }
+
+        // Fetch language data from IGDB API
+        ResponseEntity<String> response = SendRequest(languageId, languagesEndpoint);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            logger.error("Failed to obtain language with ID: {}", languageId);
+            throw new RuntimeException("Failed to obtain language");
+        }
+
+        try {
+            String jsonResponse = response.getBody();
+            logger.debug("Language response: {}", jsonResponse);
+            List<IgdbLanguageDto> languages = objectMapper.readValue(jsonResponse,
+                    new TypeReference<List<IgdbLanguageDto>>() {
+            });
+
+            if (languages.isEmpty()) {
+                logger.warn("No language data found for ID: {}", languageId);
+                return null;
+            }
+
+            IgdbLanguageDto languageFound = languages.get(0);
+
+            // Create and populate Language entity
+            Language newLanguage = new Language();
+            newLanguage.setName(languageFound.getName());
+            newLanguage.setIgdbId(languageId);
+
+            // Save and return the language
+            newLanguage = languageRepository.save(newLanguage);
+            logger.info("Language '{}' saved to database.", newLanguage.getName());
+            return newLanguage;
+        } catch (Exception e) {
+            logger.error("Error while parsing the language data for ID: {}", languageId, e);
+            throw new RuntimeException("Error while parsing the language data", e);
         }
     }
 
@@ -967,7 +1028,7 @@ public class GameProcessingService {
         }
 
         // Fetch release date data from IGDB API
-        ResponseEntity<String> response = SendRequest(releaseDateId, releaseDatesEndpoint, "date", "platform", "region");
+        ResponseEntity<String> response = SendRequest(releaseDateId, releaseDatesEndpoint, "*");
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             logger.error("Failed to obtain release date with ID: {}", releaseDateId);
@@ -1003,6 +1064,7 @@ public class GameProcessingService {
 
             Region region = SearchForRegions(foundIgdbReleaseDate.getRegion());
             if (region != null) {
+                logger.debug("Region found: {}", region.getName());
                 foundReleaseDate.setRegion(region);
             }
 

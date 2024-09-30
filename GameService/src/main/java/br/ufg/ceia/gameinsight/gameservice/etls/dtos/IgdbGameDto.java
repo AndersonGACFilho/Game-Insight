@@ -193,8 +193,8 @@ public class IgdbGameDto implements Serializable {
     /**
      * Game localizations ids of the game
      */
-    @JsonProperty(required = false, value = "game_localizations")
-    private List<Integer> gameLocalizations;
+    @JsonProperty(required = false, value = "language_supports")
+    private List<Integer> languageSupports;
 
     /**
      * Total rating of the game
@@ -442,12 +442,12 @@ public class IgdbGameDto implements Serializable {
         this.checksum = checksum;
     }
 
-    public List<Integer> getGameLocalizations() {
-        return gameLocalizations;
+    public List<Integer> getLanguageSupports() {
+        return languageSupports;
     }
 
-    public void setGameLocalizations(List<Integer> gameLocalizations) {
-        this.gameLocalizations = gameLocalizations;
+    public void setLanguageSupports(List<Integer> languageSupports) {
+        this.languageSupports = languageSupports;
     }
 
     public void setTotalRating(float totalRating) {
@@ -497,7 +497,7 @@ public class IgdbGameDto implements Serializable {
                 ", videos=" + videos +
                 ", websites=" + websites +
                 ", checksum='" + checksum + '\'' +
-                ", gameLocalizations=" + gameLocalizations +
+                ", languageSupports=" + languageSupports +
                 ", totalRating=" + totalRating +
                 ", totalRatingCount=" + totalRatingCount +
                 '}';
@@ -540,6 +540,6 @@ public class IgdbGameDto implements Serializable {
         if (!checksum.equals(that.checksum)) return false;
         if (totalRating != that.totalRating) return false;
         if (totalRatingCount != that.totalRatingCount) return false;
-        return gameLocalizations.equals(that.gameLocalizations);
+        return languageSupports.equals(that.languageSupports);
     }
 }

@@ -6,7 +6,7 @@ import br.ufg.ceia.gameinsight.gameservice.domain.game.franchise.Franchise;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.game_mode.GameMode;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.game_theme.GameTheme;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.genre.Genre;
-import br.ufg.ceia.gameinsight.gameservice.domain.game.localization.Localization;
+import br.ufg.ceia.gameinsight.gameservice.domain.game.languages.LanguageSupport;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.player_perspective.PlayerPerspective;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.release_date.ReleaseDate;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.Requirement;
@@ -16,7 +16,6 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.swing.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
@@ -133,10 +132,10 @@ public class Game implements Serializable {
     private List<PlayerPerspective> playerPerspectives;
 
     /**
-     * @brief The list of localizations available for the game.
+     * @brief The list of language supports available in the game.
      */
     @ManyToMany
-    private List<Localization> localizations;
+    private List<LanguageSupport> languageSupports;
 
     /**
      * @brief The list of companies involved in the game's development or publishing.
@@ -182,7 +181,7 @@ public class Game implements Serializable {
      * @param franchises The franchises related to the game.
      * @param gameModes The game modes available in the game.
      * @param playerPerspectives The player perspectives available.
-     * @param localizations The localizations for the game.
+     * @param languageSupports The language supports available.
      * @param rating The rating of the game.
      * @param ratingCount The total rating count for the game.
      * @param involvedCompanies The companies involved in the game.
@@ -192,7 +191,7 @@ public class Game implements Serializable {
     public Game(Integer id, String title, String cover, List<ReleaseDate> releaseDates,
                 List<AgeRating> ageRatings, String summary, List<Genre> genres,
                 List<GameTheme> themes, List<Franchise> franchises, List<GameMode> gameModes,
-                List<PlayerPerspective> playerPerspectives, List<Localization> localizations,
+                List<PlayerPerspective> playerPerspectives, List<LanguageSupport> languageSupports,
                 float rating, int ratingCount, List<CompanyGame> involvedCompanies,
                 List<Platform> platforms, List<Requirement> requirements) {
         this.id = id;
@@ -206,7 +205,7 @@ public class Game implements Serializable {
         this.franchises = franchises;
         this.gameModes = gameModes;
         this.playerPerspectives = playerPerspectives;
-        this.localizations = localizations;
+        this.languageSupports = languageSupports;
         this.rating = rating;
         this.ratingCount = ratingCount;
         this.involvedCompanies = involvedCompanies;
@@ -232,7 +231,7 @@ public class Game implements Serializable {
                 ", franchises=" + franchises +
                 ", gameModes=" + gameModes +
                 ", playerPerspectives=" + playerPerspectives +
-                ", localizations=" + localizations +
+                ", localizations=" + languageSupports +
                 ", rating=" + rating +
                 ", ratingCount=" + ratingCount +
                 ", involvedCompanies=" + involvedCompanies +
@@ -390,12 +389,12 @@ public class Game implements Serializable {
         this.playerPerspectives = playerPerspectives;
     }
 
-    public List<Localization> getLocalizations() {
-        return localizations;
+    public List<LanguageSupport> getLocalizations() {
+        return languageSupports;
     }
 
-    public void setLocalizations(List<Localization> localizations) {
-        this.localizations = localizations;
+    public void setLocalizations(List<LanguageSupport> localizations) {
+        this.languageSupports = localizations;
     }
 
     public List<CompanyGame> getInvolvedCompanies() {
@@ -472,22 +471,51 @@ public class Game implements Serializable {
     }
 
     public void addPlayerPerspective(PlayerPerspective playerPerspective) {
-        this.playerPerspectives.add(playerPerspective);
+        if (this.playerPerspectives == null) {
+            this.playerPerspectives = new ArrayList<>();
+        }
+        if (playerPerspective.getGames() == null) {
+            playerPerspective.setGames(new ArrayList<>());
+        }
+        if (!playerPerspective.getGames().contains(this)) {
+            playerPerspective.getGames().add(this);
+        }
+        if (!this.playerPerspectives.contains(playerPerspective)) {
+            this.playerPerspectives.add(playerPerspective);
+        }
+
     }
 
     public void removePlayerPerspective(PlayerPerspective playerPerspective) {
         this.playerPerspectives.remove(playerPerspective);
     }
 
-    public void addLocalization(Localization localization) {
-        this.localizations.add(localization);
+    public void addLocalization(LanguageSupport localization) {
+        if (this.languageSupports == null) {
+            this.languageSupports = new ArrayList<>();
+        }
+        if (localization.getGame() == null) {
+            localization.setGame(this);
+        }
+        if (!this.languageSupports.contains(localization)) {
+            this.languageSupports.add(localization);
+        }
     }
 
-    public void removeLocalization(Localization localization) {
-        this.localizations.remove(localization);
+    public void removeLocalization(LanguageSupport localization) {
+        this.languageSupports.remove(localization);
     }
 
     public void addCompany(CompanyGame company) {
+        if (this.involvedCompanies == null) {
+            this.involvedCompanies = new ArrayList<>();
+        }
+        if (company.getGame() == null) {
+            company.setGame(this);
+        }
+        if (!this.involvedCompanies.contains(company)) {
+            this.involvedCompanies.add(company);
+        }
         this.involvedCompanies.add(company);
     }
 
@@ -496,7 +524,12 @@ public class Game implements Serializable {
     }
 
     public void addPlatform(Platform platform) {
-        this.platforms.add(platform);
+        if (this.platforms == null) {
+            this.platforms = new ArrayList<>();
+        }
+        if (!this.platforms.contains(platform)) {
+            this.platforms.add(platform);
+        }
     }
 
     public void removePlatform(Platform platform) {
@@ -533,5 +566,13 @@ public class Game implements Serializable {
 
     public void removeSimilarGame(Game game) {
         this.similarGames.remove(game);
+    }
+
+    public List<LanguageSupport> getLanguageSupports() {
+        return languageSupports;
+    }
+
+    public void setLanguageSupports(List<LanguageSupport> languageSupports) {
+        this.languageSupports = languageSupports;
     }
 }
