@@ -645,7 +645,8 @@ public class GameProcessingService {
 
             // Save and return the age rating
             ageRatingFound = ageRatingRepository.save(ageRatingFound);
-            logger.info("Age rating '{}' saved to database.", ageRatingFound.getDescription());
+            logger.info("Age rating '{}' of category '{}' saved to database.", ageRatingFound.getRating(),
+                    ageRatingFound.getCategory());
             return ageRatingFound;
         } catch (Exception e) {
             logger.error("Error while parsing the age rating data for ID: {}", ageRatingId, e);

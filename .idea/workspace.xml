@@ -5,10 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="really last etl improvements">
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/CategoryEnum.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/RatingEnum.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_theme/GameTheme.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_theme/GameTheme.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupportType.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupportType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/player_perspective/PlayerPerspective.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/player_perspective/PlayerPerspective.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/resources/IGDB ETL.postman_collection.json" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/resources/IGDB ETL.postman_collection.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,8 +30,8 @@
       <list>
         <option value="Dart File" />
         <option value="Interface" />
-        <option value="Enum" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -91,11 +98,11 @@
 }</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.age_rating" />
       <recent name="br.ufg.ceia.gameinsight.gameservice.etls.dtos" />
       <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.languages" />
       <recent name="br.ufg.ceia.gameinsight.gameservice.repository" />
       <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system" />
-      <recent name="br.ufg.ceia.gameinsight.gameservice.domain.game.requirement.system.parts" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\ander\IdeaProjects\game_insight\game_insight_mobile_interface\lib\Screens" />
@@ -177,7 +184,8 @@
       <workItem from="1726951505745" duration="177000" />
       <workItem from="1727642154689" duration="17153000" />
       <workItem from="1727693570301" duration="5450000" />
-      <workItem from="1727700590408" duration="2341000" />
+      <workItem from="1727700590408" duration="3702000" />
+      <workItem from="1727790889562" duration="4628000" />
     </task>
     <task id="LOCAL-00001" summary="Removing the previous app">
       <option name="closed" value="true" />
@@ -251,7 +259,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727700132971</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="really last etl improvements">
+      <option name="closed" value="true" />
+      <created>1727705033714</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1727705033714</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

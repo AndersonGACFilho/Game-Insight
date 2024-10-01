@@ -66,6 +66,6 @@ public enum LanguageSupportType {
                 return type;
             }
         }
-        return null; // Alternatively, throw an exception if preferred
+        return null;
     }
 }

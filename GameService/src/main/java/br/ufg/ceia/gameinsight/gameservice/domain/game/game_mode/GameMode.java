@@ -39,11 +39,6 @@ public class GameMode implements Serializable {
     private String name;
 
     /**
-     * The description of the game mode.
-     */
-    private String description;
-
-    /**
      * The list of games associated with the game mode.
      */
     @ManyToMany(mappedBy = "gameModes")
@@ -53,15 +48,13 @@ public class GameMode implements Serializable {
     public GameMode() {
     }
 
-    public GameMode(Integer id, String name, String description) {
+    public GameMode(Integer id, String name) {
         this.id = id;
         this.name = name;
-        this.description = description;
     }
 
-    public GameMode(String name, String description) {
+    public GameMode(String name) {
         this.name = name;
-        this.description = description;
     }
 
     // Getters and Setters
@@ -80,14 +73,6 @@ public class GameMode implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public List<Game> getGames() {
@@ -129,7 +114,6 @@ public class GameMode implements Serializable {
         return "GameMode{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", games=" + games +
                 '}';
     }
@@ -137,9 +121,8 @@ public class GameMode implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GameMode)) return false;
-        GameMode gameMode = (GameMode) o;
-        return id == gameMode.id;
+        if (!(o instanceof GameMode gameMode)) return false;
+        return Objects.equals(id, gameMode.id);
     }
 
     @Override

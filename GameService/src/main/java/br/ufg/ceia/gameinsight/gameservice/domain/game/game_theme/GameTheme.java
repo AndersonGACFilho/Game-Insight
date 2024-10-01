@@ -38,11 +38,6 @@ public class GameTheme implements Serializable {
     private String name;
 
     /**
-     * The description of the game theme.
-     */
-    private String description;
-
-    /**
      * The games associated with the game theme.
      */
     @ManyToMany
@@ -52,15 +47,13 @@ public class GameTheme implements Serializable {
     public GameTheme() {
     }
 
-    public GameTheme(Integer id, String name, String description) {
+    public GameTheme(Integer id, String name) {
         this.id = id;
         this.name = name;
-        this.description = description;
     }
 
-    public GameTheme(String name, String description) {
+    public GameTheme(String name) {
         this.name = name;
-        this.description = description;
     }
 
     // Getters and Setters
@@ -79,14 +72,6 @@ public class GameTheme implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public List<Game> getGames() {
@@ -128,7 +113,6 @@ public class GameTheme implements Serializable {
         return "GameTheme{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
                 ", games=" + games +
                 '}';
     }
@@ -136,13 +120,12 @@ public class GameTheme implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GameTheme)) return false;
-        GameTheme gameTheme = (GameTheme) o;
-        return id == gameTheme.id && name.equals(gameTheme.name) && description.equals(gameTheme.description);
+        if (!(o instanceof GameTheme gameTheme)) return false;
+        return Objects.equals(id, gameTheme.id) && name.equals(gameTheme.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, description);
+        return Objects.hash(id, name);
     }
 }

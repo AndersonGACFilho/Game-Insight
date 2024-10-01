@@ -42,11 +42,6 @@ public class PlayerPerspective implements Serializable {
     private String name;
 
     /**
-     * The description of the player perspective.
-     */
-    private String description;
-
-    /**
      * The list of games associated with the player perspective.
      */
     @ManyToMany(mappedBy = "playerPerspectives")
@@ -56,15 +51,13 @@ public class PlayerPerspective implements Serializable {
     public PlayerPerspective() {
     }
 
-    public PlayerPerspective(Integer id, String name, String description) {
+    public PlayerPerspective(Integer id, String name ) {
         this.id = id;
         this.name = name;
-        this.description = description;
     }
 
-    public PlayerPerspective(String name, String description) {
+    public PlayerPerspective(String name ) {
         this.name = name;
-        this.description = description;
     }
 
     public Integer getId() {
@@ -81,14 +74,6 @@ public class PlayerPerspective implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public Integer getIgdbId() {
@@ -113,6 +98,7 @@ public class PlayerPerspective implements Serializable {
         }
         if (this.games == null) {
             this.games = new ArrayList<>();
+            this.games.add(game);
             return;
         }
         if (this.games.contains(game)) {

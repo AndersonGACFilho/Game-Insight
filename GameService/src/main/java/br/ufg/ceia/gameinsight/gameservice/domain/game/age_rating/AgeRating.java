@@ -1,6 +1,6 @@
 package br.ufg.ceia.gameinsight.gameservice.domain.game.age_rating;
 
-import br.ufg.ceia.gameinsight.gameservice.domain.game.region.Region;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
@@ -31,18 +31,18 @@ public class AgeRating implements Serializable {
      * The Igdb identifier of the age rating.
      */
     private Integer igdbId;
+    
+    /**
+     * The category of the age rating.
+     */
+    @Enumerated(EnumType.STRING)
+    private CategoryEnum category;
 
     /**
-     * The description of the age rating.
+     * The age rating rating.
      */
-    private String description;
-
-    /**
-     * The region of the age rating.
-     */
-    @ManyToOne
-    @JoinColumn(name = "region_id", nullable = true)
-    private Region region;
+    @Enumerated(EnumType.STRING)
+    private RatingEnum rating;
 
     /**
      * Default constructor.
@@ -54,24 +54,24 @@ public class AgeRating implements Serializable {
      * Constructor with all fields.
      *
      * @param id The unique identifier of the age rating.
-     * @param description The description of the age rating.
-     * @param region The region of the age rating.
+     * @param category The rating of the age rating.
+     * @param rating The rating of the age rating.
      */
-    public AgeRating(Integer id, String description, Region region) {
+    public AgeRating(Integer id, CategoryEnum category, RatingEnum rating) {
         this.id = id;
-        this.description = description;
-        this.region = region;
+        this.category = category;
+        this.rating = rating;
     }
 
     /**
      * Constructor without id (auto-generated).
      *
-     * @param description The description of the age rating.
-     * @param region The region of the age rating.
+     * @param category The rating of the age rating.
+     * @param rating The rating of the age rating.
      */
-    public AgeRating(String description, Region region) {
-        this.description = description;
-        this.region = region;
+    public AgeRating(CategoryEnum category, RatingEnum rating) {
+        this.category = category;
+        this.rating = rating;
     }
 
     // Getters and Setters
@@ -83,20 +83,12 @@ public class AgeRating implements Serializable {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public CategoryEnum getCategory() {
+        return category;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Region getRegion() {
-        return region;
-    }
-
-    public void setRegion(Region region) {
-        this.region = region;
+    public void setCategory(CategoryEnum category) {
+        this.category = category;
     }
 
     public Integer getIgdbId() {
@@ -107,27 +99,34 @@ public class AgeRating implements Serializable {
         this.igdbId = igdbId;
     }
 
+    public RatingEnum getRating() {
+        return rating;
+    }
+
+    public void setRating(RatingEnum rating) {
+        this.rating = rating;
+    }
+
     @Override
     public String toString() {
         return "AgeRating{" +
                 "id=" + id +
-                ", description='" + description + '\'' +
-                ", region=" + region +
+                ", category=" + category +
+                ", rating=" + rating +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof AgeRating)) return false;
-        AgeRating that = (AgeRating) o;
+        if (!(o instanceof AgeRating that)) return false;
         return Objects.equals(id, that.id) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(region, that.region);
+                Objects.equals(category, that.category) &&
+                Objects.equals(rating, that.rating);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, description, region);
+        return Objects.hash(id, category, rating);
     }
 }
