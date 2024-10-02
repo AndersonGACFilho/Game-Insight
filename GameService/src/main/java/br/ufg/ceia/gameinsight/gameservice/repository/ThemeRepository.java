@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.ui.context.Theme;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * This interface represents the repository for the Theme entity.
  * <p>
@@ -27,5 +30,7 @@ public interface ThemeRepository extends JpaRepository<GameTheme, Integer> {
      * @return the platform
      */
     GameTheme findByIgdbId(Integer igdbId);
+
+    List<GameTheme> findAllByIgdbIdIn(Collection<Integer> igdbId);
 
 }

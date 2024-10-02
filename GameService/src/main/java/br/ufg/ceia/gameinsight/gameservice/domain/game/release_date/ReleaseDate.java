@@ -3,6 +3,7 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.release_date;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.region.Region;
 import br.ufg.ceia.gameinsight.gameservice.domain.platform.Platform;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.Instant;
 
 /**
  * This class represents the ReleaseDate entity.
@@ -41,6 +43,12 @@ public class ReleaseDate implements Serializable {
     private Integer igdbId;
 
     /**
+     * The instant that the release date was updated.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
+
+    /**
      * The release date of the game.
      */
     private Integer date;
@@ -48,19 +56,22 @@ public class ReleaseDate implements Serializable {
     /**
      * The game associated with the release date.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
     private Game game;
 
     /**
      * The platform of the release date.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "platform_id")
     private Platform platform;
 
     /**
      * The region of the release date.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
     private Region region;
 
     public ReleaseDate() {
@@ -139,5 +150,13 @@ public class ReleaseDate implements Serializable {
 
     public void setRegion(Region region) {
         this.region = region;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

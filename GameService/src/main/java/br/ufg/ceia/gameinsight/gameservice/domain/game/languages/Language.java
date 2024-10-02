@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -30,8 +31,13 @@ public class Language implements Serializable {
      * The IGDB identifier of the language.
      */
     @Column(name = "igdb_id")
-    @JsonProperty("id")
     private Integer igdbId;
+
+    /**
+     * The instant that the language was updated.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
 
     /**
      * The name of the language.
@@ -185,6 +191,24 @@ public class Language implements Serializable {
      */
     public void setLocale(String locale) {
         this.locale = locale;
+    }
+
+    /**
+     * Gets the instant that the language was updated.
+     *
+     * @return the instant.
+     */
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    /**
+     * Sets the instant that the language was updated.
+     *
+     * @param updatedAt the instant to set.
+     */
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**

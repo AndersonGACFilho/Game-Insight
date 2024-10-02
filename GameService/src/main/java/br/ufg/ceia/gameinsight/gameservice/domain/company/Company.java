@@ -32,6 +32,7 @@ public class Company implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @JsonProperty("updated_at")
     private Instant updatedAt;
 
     private Integer igdbId;

@@ -2,11 +2,13 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.player_perspective;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,12 @@ public class PlayerPerspective implements Serializable {
      * The Igdb identifier of the player perspective.
      */
     private Integer igdbId;
+
+    /**
+     * The instant that the player perspective was updated.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
 
     /**
      * The name of the player perspective.
@@ -109,5 +117,13 @@ public class PlayerPerspective implements Serializable {
 
     public void removeGame(Game game) {
         this.games.remove(game);
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

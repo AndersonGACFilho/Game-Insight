@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -26,6 +27,12 @@ public class AgeRating implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    /**
+     * The updated at date of the age rating.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
 
     /**
      * The Igdb identifier of the age rating.
@@ -105,6 +112,14 @@ public class AgeRating implements Serializable {
 
     public void setRating(RatingEnum rating) {
         this.rating = rating;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override

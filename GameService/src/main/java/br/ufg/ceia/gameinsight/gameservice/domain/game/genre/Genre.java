@@ -2,11 +2,13 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.genre;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,12 @@ public class Genre implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    /**
+     * The instant that the genre was updated.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
 
     /**
      * The Igdb identifier of the region.
@@ -119,6 +127,14 @@ public class Genre implements Serializable{
             return;
         }
         this.games.add(game);
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public void removeGame(Game game) {

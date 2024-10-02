@@ -5,6 +5,9 @@ import br.ufg.ceia.gameinsight.gameservice.domain.game.languages.LanguageSupport
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * This interface represents the repository for the Language Support entity.
  * <p>
@@ -20,4 +23,5 @@ public interface LanguageSupportRepository extends JpaRepository<LanguageSupport
      */
     LanguageSupport findByIgdbId(Integer igdbId);
 
+    List<LanguageSupport> findAllByIgdbIdIn(Collection<Integer> igdbId);
 }

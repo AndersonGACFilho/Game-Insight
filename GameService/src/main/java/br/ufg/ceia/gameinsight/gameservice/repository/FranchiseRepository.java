@@ -1,9 +1,13 @@
 package br.ufg.ceia.gameinsight.gameservice.repository;
 
+import br.ufg.ceia.gameinsight.gameservice.domain.game.age_rating.AgeRating;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.franchise.Franchise;
 import br.ufg.ceia.gameinsight.gameservice.domain.platform.Platform;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This interface represents the repository for the Franchise entity.
@@ -27,4 +31,5 @@ public interface FranchiseRepository extends JpaRepository<Franchise, Integer> {
      */
     Franchise findByIgdbId(Integer igdbId);
 
+    List<Franchise> findAllByIgdbIdIn(Collection<Integer> igdbId);
 }

@@ -2,14 +2,12 @@ package br.ufg.ceia.gameinsight.gameservice.domain.platform;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,19 +36,29 @@ public class Platform implements Serializable {
      */
     private Integer igdbId;
 
+
+    /**
+     * The instant that the platform was updated.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
+
     /**
      * The name of the platform.
      */
+    @JsonProperty("name")
     private String name;
 
     /**
      * The abbreviation of the platform.
      */
+    @JsonProperty("abbreviation")
     private String abbreviation;
 
     /**
      * The generation of the platform.
      */
+    @JsonProperty("generation")
     private String generation;
 
     /**
@@ -186,6 +194,22 @@ public class Platform implements Serializable {
      */
     public void setGames(List<Game> games) {
         this.games = games;
+    }
+
+    /**
+     * Get the instant that the platform was updated.
+     * @return The instant that the platform was updated.
+     */
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    /**
+     * Set the instant that the platform was updated.
+     * @param updatedAt The instant that the platform was updated.
+     */
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**

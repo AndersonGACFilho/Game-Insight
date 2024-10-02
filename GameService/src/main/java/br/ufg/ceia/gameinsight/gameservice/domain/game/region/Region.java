@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
+
 /**
  *
  */
@@ -21,6 +23,12 @@ public class Region {
      * The Igdb identifier of the region.
      */
     private Integer igdbId;
+
+    /**
+     * The instant that the region was updated.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
 
     /**
      * The name of the region.
@@ -89,6 +97,14 @@ public class Region {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override

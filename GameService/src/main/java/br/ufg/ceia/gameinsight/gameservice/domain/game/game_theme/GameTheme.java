@@ -2,9 +2,11 @@ package br.ufg.ceia.gameinsight.gameservice.domain.game.game_theme;
 
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +33,12 @@ public class GameTheme implements Serializable {
      * The Igdb identifier of the region.
      */
     private Integer igdbId;
+
+    /**
+     * The instant that the game theme was updated.
+     */
+    @JsonProperty("updated_at")
+    private Instant updatedAt;
 
     /**
      * The name of the game theme.
@@ -88,6 +96,14 @@ public class GameTheme implements Serializable {
 
     public void setIgdbId(Integer igdbId) {
         this.igdbId = igdbId;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public void addGame(Game game) {

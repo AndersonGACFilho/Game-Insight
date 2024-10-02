@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -39,7 +40,7 @@ public class LanguageSupport implements Serializable {
      * The update timestamp (Unix epoch seconds).
      */
     @Column(name = "updated_at")
-    private Integer updatedAt;
+    private Instant updatedAt;
 
     /**
      * Reference to the associated game.
@@ -197,7 +198,7 @@ public class LanguageSupport implements Serializable {
      *
      * @return the update timestamp.
      */
-    public Integer getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
@@ -206,7 +207,7 @@ public class LanguageSupport implements Serializable {
      *
      * @param updatedAt the update timestamp to set.
      */
-    public void setUpdatedAt(Integer updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 

@@ -4,12 +4,13 @@ import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
 public interface GameRepository extends JpaRepository<Game, Integer> {
 
-    Game findByIGDBId(Integer igdbId);
+    Game findByIgdbId(Integer igdbId);
 
     // Buscar jogos por título
     Game findByTitle(String title);
@@ -22,4 +23,6 @@ public interface GameRepository extends JpaRepository<Game, Integer> {
 
     // Buscar jogos por nome da empresa envolvida
     List<Game> findByInvolvedCompanies_Company_Name(String companyName);
+
+    List<Game> findAllByIgdbIdIn(Collection<Integer> igdbId);
 }

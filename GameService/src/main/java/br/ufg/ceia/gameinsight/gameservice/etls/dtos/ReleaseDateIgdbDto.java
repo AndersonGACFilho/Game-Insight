@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 
 /**
  * This class represents the DTO for the cover image of a game from IGDB.
@@ -38,6 +39,12 @@ public class ReleaseDateIgdbDto implements Serializable{
      */
     @JsonProperty(required = false, value = "region")
     private Integer region;
+
+    /**
+     * The update timestamp (Unix epoch seconds).
+     */
+    @JsonProperty(required = false, value = "updated_at")
+    private Instant updatedAt;
 
     public ReleaseDateIgdbDto() {
     }
@@ -79,5 +86,13 @@ public class ReleaseDateIgdbDto implements Serializable{
 
     public void setRegion(Integer region) {
         this.region = region;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

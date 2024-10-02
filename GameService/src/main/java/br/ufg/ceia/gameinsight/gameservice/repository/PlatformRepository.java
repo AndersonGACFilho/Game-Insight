@@ -5,6 +5,9 @@ import br.ufg.ceia.gameinsight.gameservice.domain.platform.Platform;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
+import java.util.List;
+
 /**
  * This interface represents the repository for the Platform entity.
  * <p>
@@ -27,4 +30,5 @@ public interface PlatformRepository extends JpaRepository<Platform, Integer> {
      */
     Platform findByIgdbId(Integer igdbId);
 
+    List<Platform> findAllByIgdbIdIn(Collection<Integer> igdbId);
 }

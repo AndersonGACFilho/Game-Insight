@@ -3,6 +3,7 @@ package br.ufg.ceia.gameinsight.gameservice.etls.dtos;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Objects;
 
 /**
@@ -35,7 +36,7 @@ public class IgdbGameLanguageSupportDto implements Serializable {
      * The update timestamp (Unix epoch seconds).
      */
     @JsonProperty(required = false, value = "updated_at")
-    private Integer updatedAt;
+    private Instant updatedAt;
 
     /**
      * Default constructor.
@@ -128,7 +129,7 @@ public class IgdbGameLanguageSupportDto implements Serializable {
      *
      * @return the update timestamp.
      */
-    public Integer getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
@@ -137,7 +138,7 @@ public class IgdbGameLanguageSupportDto implements Serializable {
      *
      * @param updatedAt the update timestamp to set.
      */
-    public void setUpdatedAt(Integer updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 

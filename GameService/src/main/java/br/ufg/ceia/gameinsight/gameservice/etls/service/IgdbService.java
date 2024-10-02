@@ -17,6 +17,9 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Service class for handling IGDB API interactions and ETL processes.
@@ -52,11 +55,9 @@ public class IgdbService {
 
     private Instant tokenExpiration;
 
-    // IGDB API request limits
-    @Value("${igdb.max_requests}")
-    private int maxRequests;
-
-    private int requests = 0;
+    // Number of threads for processing games
+    @Value("${game.processing.threads}")
+    private int numberOfThreads;
 
     // List to hold games retrieved from IGDB
     private List<IgdbGameDto> games = new ArrayList<>(50);
@@ -87,7 +88,6 @@ public class IgdbService {
      * @param minVotes The minimum number of votes for the games to be included in the ETL process.
      */
     public void RunETL(Instant dateToStart, String searchType, int minRating, int minVotes) {
-        // Refresh the access token if expired
         if (accessToken == null || accessToken.isEmpty() || tokenIsExpired()) {
             login();
         }
@@ -97,36 +97,53 @@ public class IgdbService {
         int limit = 50; // Number of games per request
         int offset = 0; // Offset for pagination
 
-        do {
-            // Fetch games from IGDB API
-            boolean occurredError = false;
-            games.clear();
-            while (games.isEmpty() && !occurredError) {
-                try {
-                    SearchForGames(dateToStart, limit, offset, searchType, minRating, minVotes);
-                    login();
+        try {
+            // Create a custom ExecutorService with a configurable number of threads
+            ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
+            do {
+                boolean occurredError = false;
+                games.clear();
+                while (games.isEmpty() && !occurredError) {
                     occurredError = false;
-                } catch (Exception e) {
-                    logger.error("Error while fetching games", e);
-                    logger.info("Doing login again to reset the rate limit");
-                    login();
-                    occurredError = true;
+                    try {
+                        login();
+                        SearchForGames(dateToStart, limit, offset, searchType, minRating, minVotes);
+                    } catch (Exception e) {
+                        logger.error("Error while fetching games", e);
+                        occurredError = true;
+                    }
                 }
-            }
-            if (games.isEmpty()) {
-                logger.info("No games found");
-                break;
-            }
+                if (games.isEmpty()) {
+                    logger.info("No games found");
+                    break;
+                }
 
-            // Process each game
-            for (IgdbGameDto game : games) {
-                // Delegate processing to GameProcessingService
-                gameProcessingService.processGame(game,accessToken);
-            }
+                // Process each game concurrently using CompletableFuture and the custom ExecutorService
+                List<CompletableFuture<Void>> futures = new ArrayList<>();
+                for (IgdbGameDto game : games) {
+                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                        try {
+                            gameProcessingService.processGame(game, accessToken);
+                        } catch (Exception e) {
+                            logger.error("Error while processing game: {}", game.getName(), e);
+                        }
+                    }, executorService);  // Pass the custom ExecutorService here
+                    futures.add(future);
+                }
 
-            offset += games.size();
-            logger.info("Processed {} games", offset);
-        } while (games.size() == limit);
+                // Wait for all tasks to complete
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
+                offset += games.size();
+                logger.info("Processed {} games", offset);
+
+            } while (games.size() == limit);
+
+            // Shutdown the ExecutorService after all tasks are done
+            executorService.shutdown();
+        } catch (IllegalArgumentException e) {
+            logger.error("Error when setting the executor service", e);
+        }
     }
 
     /**
@@ -200,9 +217,6 @@ public class IgdbService {
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
         RestTemplate restTemplate = new RestTemplate();
 
-        // Respect the request rate limit
-        manageRequestRate();
-
         ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
@@ -219,22 +233,5 @@ public class IgdbService {
         } catch (Exception e) {
             throw new RuntimeException("Error while parsing the game data", e);
         }
-    }
-
-    /**
-     * Manages the request rate to comply with IGDB API limits.
-     */
-    private void manageRequestRate() {
-        if (requests >= maxRequests) {
-            try {
-                logger.info("Rate limit reached, doing login again to reset the rate limit");
-                login();
-            } catch (Exception e) {
-                logger.error("Error while resetting the rate limit", e);
-                throw new RuntimeException("Error while resetting the rate limit", e);
-            }
-            requests = 0;
-        }
-        requests++;
     }
 }

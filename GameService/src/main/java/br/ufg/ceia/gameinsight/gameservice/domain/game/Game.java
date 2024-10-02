@@ -49,7 +49,7 @@ public class Game implements Serializable {
     /**
      * @brief The IGDB identifier for the game.
      */
-    private Integer IGDBId;
+    private Integer igdbId;
 
     /**
      * @brief The title of the game.
@@ -92,7 +92,7 @@ public class Game implements Serializable {
     /**
      * @brief The list of release dates for the game.
      */
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<ReleaseDate> releaseDates;
 
     /**
@@ -140,7 +140,7 @@ public class Game implements Serializable {
     /**
      * @brief The list of companies involved in the game's development or publishing.
      */
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<CompanyGame> involvedCompanies = new ArrayList<>();
 
     /**
@@ -152,7 +152,7 @@ public class Game implements Serializable {
     /**
      * @brief The list of system requirements for the game.
      */
-    @OneToMany(mappedBy = "game")
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<Requirement> requirements;
 
     /**
@@ -160,6 +160,11 @@ public class Game implements Serializable {
      * @details This list is populated by the recommendation engine, or by the Igdb API.
      */
     @ManyToMany
+    @JoinTable(
+            name = "game_similar_games",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "similar_game_id")
+    )
     @JsonIgnore
     private List<Game> similarGames;
 
@@ -249,7 +254,7 @@ public class Game implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Game game)) return false;
-        return  Objects.equals(IGDBId , game.IGDBId) &&
+        return  Objects.equals(igdbId , game.igdbId) &&
                 Objects.equals(title, game.title) &&
                 Objects.equals(cover, game.cover) &&
                 Objects.equals(summary, game.summary) &&
@@ -552,12 +557,12 @@ public class Game implements Serializable {
         this.updatedAt = updatedAt;
     }
 
-    public Integer getIGDBId() {
-        return IGDBId;
+    public Integer getIgdbId() {
+        return igdbId;
     }
 
-    public void setIGDBId(Integer IGDBId) {
-        this.IGDBId = IGDBId;
+    public void setIgdbId(Integer igdbId) {
+        this.igdbId = igdbId;
     }
 
     public void addSimilarGame(Game game) {

@@ -5,16 +5,39 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c8555ce9-d9a8-4f7a-83a2-237a80fdd12a" name="Changes" comment="really last etl improvements">
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/CategoryEnum.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/RatingEnum.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/GameService/src/main/resources/MainQuarry.sql" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/Company.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/Company.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/company_game/CompanyGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/company/company_game/CompanyGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/Game.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/age_rating/AgeRating.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_mode/GameMode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_theme/GameTheme.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/game_theme/GameTheme.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupportType.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupportType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/genre/Genre.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/genre/Genre.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/Language.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/Language.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupport.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/languages/LanguageSupport.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/player_perspective/PlayerPerspective.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/player_perspective/PlayerPerspective.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/region/Region.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/region/Region.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/release_date/ReleaseDate.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/release_date/ReleaseDate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/platform/Platform.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/platform/Platform.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameLanguageSupportDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/IgdbGameLanguageSupportDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/ReleaseDateIgdbDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/dtos/ReleaseDateIgdbDto.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/GameProcessingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/etls/service/IgdbService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/AgeRatingRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/AgeRatingRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/CompanyGameRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/CompanyGameRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/CompanyRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/CompanyRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/FranchiseRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/FranchiseRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/GameModeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/GameModeRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/GameRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/GameRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/GenreRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/GenreRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/LanguageRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/LanguageRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/LanguageSupportRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/LanguageSupportRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/PlatformRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/PlatformRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/PlayerPerspectiveRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/PlayerPerspectiveRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/RegionRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/RegionRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/ReleaseDateRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/ReleaseDateRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/ThemeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/repository/ThemeRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GameService/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/GameService/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -309,16 +332,5 @@
     <MESSAGE value="last etl improvements" />
     <MESSAGE value="really last etl improvements" />
     <option name="LAST_COMMIT_MESSAGE" value="really last etl improvements" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/GameService/src/main/java/br/ufg/ceia/gameinsight/gameservice/domain/game/genre/Genre.java</url>
-          <line>120</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

@@ -1,5 +1,7 @@
 package br.ufg.ceia.gameinsight.gameservice.etls.service;
 
+// Import statements...
+
 import br.ufg.ceia.gameinsight.gameservice.domain.company.Company;
 import br.ufg.ceia.gameinsight.gameservice.domain.company.company_game.CompanyGame;
 import br.ufg.ceia.gameinsight.gameservice.domain.game.Game;
@@ -17,24 +19,29 @@ import br.ufg.ceia.gameinsight.gameservice.domain.game.release_date.ReleaseDate;
 import br.ufg.ceia.gameinsight.gameservice.domain.platform.Platform;
 import br.ufg.ceia.gameinsight.gameservice.etls.dtos.*;
 import br.ufg.ceia.gameinsight.gameservice.repository.*;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-// Import statements
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.relational.core.sql.In;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
- * Service class for processing individual games.
+ * Service class for processing individual games with batch processing.
  */
 @Service
 public class GameProcessingService {
@@ -129,8 +136,6 @@ public class GameProcessingService {
     // Access token and expiration for IGDB API
     private String accessToken;
 
-    private Instant tokenExpiration;
-
     /**
      * Constructs the HTTP headers required for IGDB API requests.
      *
@@ -145,7 +150,7 @@ public class GameProcessingService {
     }
 
     /**
-     * Processes an individual game.
+     * Processes an individual game with batch fetching of related entities.
      *
      * @param game        The IgdbGameDto object containing game data.
      * @param accessToken The access token for the IGDB API.
@@ -154,982 +159,967 @@ public class GameProcessingService {
     public void processGame(IgdbGameDto game, String accessToken) {
         try {
             logger.info("Processing game: {}", game.getName());
-            // Set the access token
             this.accessToken = accessToken;
-            // Initialize game entity
-            Game gameEntity = new Game();
 
-            // Check if game already exists in the database
-            Game gameFound = gameRepository.findByIGDBId(game.getId());
-
-            // Set IGDB ID and updated_at timestamp
-            gameEntity.setIGDBId(game.getId());
-            gameEntity.setUpdatedAt(Instant.ofEpochSecond(game.getUpdatedAt()));
-
-            if (gameFound != null) {
-                logger.info("Game already exists: {}", game.getName());
-                gameEntity.setId(gameFound.getId());
-
-                // Skip if the game hasn't been updated
-                if (!gameFound.getUpdatedAt().isBefore(gameEntity.getUpdatedAt())) {
-                    logger.info("Game has not changed: {}", game.getName());
-                    return;
-                }
+            // Retrieve or create the Game entity
+            Game gameEntity = gameRepository.findByIgdbId(game.getId());
+            if (gameEntity == null) {
+                gameEntity = new Game();
+                gameEntity.setIgdbId(game.getId());
             }
 
-            // Set basic game information
+            // Check if the game entity in the database is outdated
+            Instant updatedAt = Instant.ofEpochSecond(game.getUpdatedAt());
+            if (gameEntity.getUpdatedAt() != null && !gameEntity.getUpdatedAt().isBefore(updatedAt)) {
+                logger.info("Game '{}' has not been updated since last processing.", game.getName());
+                return;
+            }
+
+            // Update game fields
             gameEntity.setTitle(game.getName());
             gameEntity.setSummary(game.getSummary());
             gameEntity.setStoryline(game.getStoryline());
             gameEntity.setRating(game.getTotalRating());
             gameEntity.setRatingCount(game.getTotalRatingCount());
+            gameEntity.setUpdatedAt(updatedAt);
+            gameEntity.setCover(GetCoverUrl(game.getCover()));
 
-            gameEntity = gameRepository.save(gameEntity);
+            // **Save the Game entity early**
+            gameRepository.save(gameEntity);
+            logger.info("Game '{}' saved to the database.", game.getName());
 
-            // Fetch and set platforms
-            List<Platform> platformsToAdd = new ArrayList<>();
-            if (game.getPlatforms() != null) {
-                logger.debug("Game '{}' has platforms: {}", game.getName(), game.getPlatforms());
-                for (Integer platformIgdbId : game.getPlatforms()) {
-                    Platform platform = SearchForPlatforms(platformIgdbId, gameEntity);
-                    if (platform != null) {
-                        platformsToAdd.add(platform);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no platforms.", game.getName());
-            }
-            gameEntity.setPlatforms(platformsToAdd);
+            // Collect IGDB IDs
+            List<Integer> platformIds = game.getPlatforms() != null ? game.getPlatforms() : new ArrayList<>();
+            List<Integer> releaseDateIds = game.getReleaseDates() != null ? game.getReleaseDates() : new ArrayList<>();
+            List<Integer> genreIds = game.getGenres() != null ? game.getGenres() : new ArrayList<>();
+            List<Integer> ageRatingIds = game.getAgeRatings() != null ? game.getAgeRatings() : new ArrayList<>();
+            List<Integer> playerPerspectiveIds = game.getPlayerPerspectives() != null ? game.getPlayerPerspectives() : new ArrayList<>();
+            List<Integer> themeIds = game.getThemes() != null ? game.getThemes() : new ArrayList<>();
+            List<Integer> gameModeIds = game.getGameModes() != null ? game.getGameModes() : new ArrayList<>();
+            List<Integer> franchiseIds = game.getFranchises() != null ? game.getFranchises() : new ArrayList<>();
+            List<Integer> languageSupportIds = game.getLanguageSupports() != null ? game.getLanguageSupports() : new ArrayList<>();
+            List<Integer> involvedCompanyIds = game.getInvolvedCompanies() != null ? game.getInvolvedCompanies() : new ArrayList<>();
 
-            // Fetch and set cover URL
-            if (game.getCover() != null) {
-                logger.debug("Game '{}' has cover ID: {}", game.getName(), game.getCover());
-                gameEntity.setCover(GetCoverUrl(game.getCover()));
-            } else {
-                logger.warn("Game '{}' has no cover.", game.getName());
-            }
+            // Batch fetch and save entities
+            Map<Integer, Platform> platforms = processPlatforms(platformIds, gameEntity);
+            Map<Integer, Genre> genres = processGenres(genreIds, gameEntity);
+            Map<Integer, GameMode> gameModes = processGameModes(gameModeIds, gameEntity);
+            Map<Integer, GameTheme> themes = processGameThemes(themeIds, gameEntity);
+            Map<Integer, PlayerPerspective> playerPerspectives = processPlayerPerspectives(playerPerspectiveIds, gameEntity);
+            Map<Integer, AgeRating> ageRatings = processAgeRatings(ageRatingIds);
+            Map<Integer, ReleaseDate> releaseDates = processReleaseDates(releaseDateIds, gameEntity, platforms);
+            Map<Integer, Franchise> franchises = processFranchises(franchiseIds, gameEntity);
+            Map<Integer, LanguageSupport> languageSupports = processLanguageSupports(languageSupportIds, gameEntity);
+            Map<Integer, CompanyGame> companyGames = processCompanyGames(involvedCompanyIds, gameEntity);
 
-            // Fetch and set release dates
-            List<ReleaseDate> releaseDatesToAdd = new ArrayList<>();
-            if (game.getReleaseDates() != null) {
-                logger.debug("Game '{}' has release dates: {}", game.getName(), game.getReleaseDates());
-                for (Integer releaseDateId : game.getReleaseDates()) {
-                    ReleaseDate releaseDateEntity = SearchForReleaseDates(releaseDateId, gameEntity);
-                    if (releaseDateEntity != null) {
-                        releaseDatesToAdd.add(releaseDateEntity);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no release dates.", game.getName());
-            }
-            gameEntity.setReleaseDates(releaseDatesToAdd);
+            // Process Similar Games
+            List<Game> similarGames = processSimilarGames(game.getSimilarGames(), gameEntity);
 
-            // Fetch and set genres
-            List<Genre> genresToAdd = new ArrayList<>();
-            if (game.getGenres() != null) {
-                logger.debug("Game '{}' has genres: {}", game.getName(), game.getGenres());
-                for (Integer genreId : game.getGenres()) {
-                    Genre genreEntity = SearchForGenres(genreId, gameEntity);
-                    if (genreEntity != null) {
-                        genresToAdd.add(genreEntity);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no genres.", game.getName());
-            }
-            gameEntity.setGenres(genresToAdd);
-
-            // Fetch and set age ratings
-            List<AgeRating> ageRatingsToAdd = new ArrayList<>();
-            if (game.getAgeRatings() != null) {
-                logger.debug("Game '{}' has age ratings: {}", game.getName(), game.getAgeRatings());
-                for (Integer ageRatingId : game.getAgeRatings()) {
-                    AgeRating ageRatingEntity = SearchForAgeRatings(ageRatingId);
-                    if (ageRatingEntity != null) {
-                        ageRatingsToAdd.add(ageRatingEntity);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no age ratings.", game.getName());
-            }
-            gameEntity.setAgeRatings(ageRatingsToAdd);
-
-            // Fetch and set player perspectives
-            List<PlayerPerspective> playerPerspectivesToAdd = new ArrayList<>();
-            if (game.getPlayerPerspectives() != null) {
-                logger.debug("Game '{}' has player perspectives: {}", game.getName(), game.getPlayerPerspectives());
-                for (Integer playerPerspectiveId : game.getPlayerPerspectives()) {
-                    PlayerPerspective playerPerspectiveEntity = SearchForPlayerPerspectives(playerPerspectiveId, gameEntity);
-                    if (playerPerspectiveEntity != null) {
-                        playerPerspectivesToAdd.add(playerPerspectiveEntity);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no player perspectives.", game.getName());
-            }
-            gameEntity.setPlayerPerspectives(playerPerspectivesToAdd);
-
-            // Fetch and set themes
-            List<GameTheme> themesToAdd = new ArrayList<>();
-            if (game.getThemes() != null) {
-                logger.debug("Game '{}' has themes: {}", game.getName(), game.getThemes());
-                for (Integer themeId : game.getThemes()) {
-                    GameTheme gameTheme = SearchForThemes(themeId, gameEntity);
-                    if (gameTheme != null) {
-                        themesToAdd.add(gameTheme);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no themes.", game.getName());
-            }
-            gameEntity.setThemes(themesToAdd);
-
-            // Fetch and set game modes
-            List<GameMode> gameModesToAdd = new ArrayList<>();
-            if (game.getGameModes() != null) {
-                logger.debug("Game '{}' has game modes: {}", game.getName(), game.getGameModes());
-                for (Integer gameModeId : game.getGameModes()) {
-                    GameMode gameModeEntity = SearchForGameModes(gameModeId, gameEntity);
-                    if (gameModeEntity != null) {
-                        gameModesToAdd.add(gameModeEntity);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no game modes.", game.getName());
-            }
-            gameEntity.setGameModes(gameModesToAdd);
-
-            // Fetch and set franchises
-            List<Franchise> franchisesToAdd = new ArrayList<>();
-            if (game.getFranchises() != null) {
-                logger.debug("Game '{}' has franchises: {}", game.getName(), game.getFranchises());
-                for (Integer franchiseId : game.getFranchises()) {
-                    Franchise franchiseEntity = SearchForFranchises(franchiseId, gameEntity);
-                    if (franchiseEntity != null) {
-                        franchisesToAdd.add(franchiseEntity);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no franchises.", game.getName());
-            }
-            gameEntity.setFranchises(franchisesToAdd);
-
-            // Fetch and set language supports
-            List<LanguageSupport> languageSupportsToAdd = new ArrayList<>();
-            if (game.getLanguageSupports() != null) {
-                logger.debug("Game '{}' has language supports: {}", game.getName(), game.getLanguageSupports());
-                for (Integer languageSupportId : game.getLanguageSupports()) {
-                    LanguageSupport languageSupportEntity = SearchForLanguageSupport(languageSupportId, gameEntity);
-                    if (languageSupportEntity != null) {
-                        languageSupportsToAdd.add(languageSupportEntity);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no language supports.", game.getName());
-            }
-            gameEntity.setLanguageSupports(languageSupportsToAdd);
-
-            // Fetch and set involved companies
-            List<CompanyGame> companiesToAdd = new ArrayList<>();
-            if (game.getInvolvedCompanies() != null) {
-                logger.debug("Game '{}' has involved companies: {}", game.getName(), game.getInvolvedCompanies());
-                for (Integer companyId : game.getInvolvedCompanies()) {
-                    CompanyGame companyGame = SearchForInvolvedCompanies(companyId, gameEntity);
-                    if (companyGame != null) {
-                        companiesToAdd.add(companyGame);
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no involved companies.", game.getName());
-            }
-            gameEntity.setInvolvedCompanies(companiesToAdd);
-
-            // Fetch and set similar games
-            List<Game> similarGames = new ArrayList<>();
-            if (game.getSimilarGames() != null) {
-                logger.debug("Game '{}' has similar games: {}", game.getName(), game.getSimilarGames());
-                for (Integer similarGameId : game.getSimilarGames()) {
-                    Game similarGameEntity = gameRepository.findByIGDBId(similarGameId);
-                    if (similarGameEntity != null) {
-                        similarGames.add(similarGameEntity);
-                        if (!similarGameEntity.getSimilarGames().contains(gameEntity)) {
-                            similarGameEntity.addSimilarGame(gameEntity);
-                            gameRepository.save(similarGameEntity);
-                        }
-                        break;
-                    }
-                }
-            } else {
-                logger.warn("Game '{}' has no similar games.", game.getName());
-            }
+            // Set all associated entities to the game
+            gameEntity.setPlatforms(new ArrayList<>(platforms.values()));
+            gameEntity.setGenres(new ArrayList<>(genres.values()));
+            gameEntity.setGameModes(new ArrayList<>(gameModes.values()));
+            gameEntity.setThemes(new ArrayList<>(themes.values()));
+            gameEntity.setPlayerPerspectives(new ArrayList<>(playerPerspectives.values()));
+            gameEntity.setAgeRatings(new ArrayList<>(ageRatings.values()));
+            gameEntity.setFranchises(new ArrayList<>(franchises.values()));
+            gameEntity.setLanguageSupports(new ArrayList<>(languageSupports.values()));
+            gameEntity.setInvolvedCompanies(new ArrayList<>(companyGames.values()));
+            gameEntity.setReleaseDates(new ArrayList<>(releaseDates.values()));
             gameEntity.setSimilarGames(similarGames);
 
-            gameRepository.save(gameEntity);
+            // **No need to save Game again if associations are managed properly**
+            // gameRepository.save(gameEntity);
 
-            // Save the game entity (cascading will save associated entities)
-            logger.info("Game '{}' processed and saved successfully.", game.getName());
+            logger.info("Game '{}' processed and associations set successfully.", game.getName());
         } catch (Exception e) {
             logger.error("Error while processing game: {}", game.getName(), e);
-            // Depending on your requirements, you may choose to continue processing other games
-            // or rethrow the exception to halt the process.
-            // For now, we'll continue with the next game.
+            // Handle exception as per requirements (e.g., continue processing other games or halt)
         }
     }
 
-    /**
-     * Searches for a platform by its IGDB ID.
-     *
-     * @param platformIgdbId The IGDB ID of the platform.
-     * @return The Platform entity.
-     */
-    private Platform SearchForPlatforms(Integer platformIgdbId, Game game) {
-        logger.info("Searching for platform with ID: {}", platformIgdbId);
+    // --- Dedicated Batch Processing Methods ---
 
-        // Check if the platform already exists in the database
-        Platform platformAtDb = platformRepository.findByIgdbId(platformIgdbId);
-        if (platformAtDb != null) {
-            logger.debug("Platform with ID '{}' found in database.", platformIgdbId);
-            return platformAtDb;
+    private Map<Integer, Platform> processPlatforms(List<Integer> platformIds, Game game) {
+        if (platformIds == null || platformIds.isEmpty()) {
+            return Collections.emptyMap();
         }
 
-        // Fetch platform data from IGDB API
-        ResponseEntity<String> response = SendRequest(platformIgdbId, platformEndpoint);
+        logger.info("Processing Platforms with IDs: {}", platformIds);
 
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain platform with ID: {}", platformIgdbId);
-            throw new RuntimeException("Failed to obtain platform");
-        }
+        // Fetch existing platforms from the database
+        List<Platform> existingPlatforms = platformRepository.findAllByIgdbIdIn(platformIds);
 
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Platform response: {}", jsonResponse);
-            List<Platform> platforms = objectMapper.readValue(jsonResponse, new TypeReference<List<Platform>>() {
-            });
+        // Fetch missing platforms from IGDB API
+        List<Platform> fetchedPlatforms = fetchEntitiesFromApi(platformIds, platformEndpoint, Platform.class);
 
-            if (platforms.isEmpty()) {
-                logger.warn("No platform data found for ID: {}", platformIgdbId);
-                return null;
-            }
-
-            Platform platform = platforms.get(0);
-            platform.setId(null);
-            platform.setIgdbId(platformIgdbId);
+        // Prepare the fetched platforms for saving (set IgdbId and clear local Id)
+        fetchedPlatforms.forEach(platform -> {
+            platform.setIgdbId(platform.getId());
             platform.addGame(game);
+            platform.setId(null);  // Ensure new platforms get a new ID when saved
+        });
 
+        // Merge fetched platforms with existing platforms
+        List<Platform> finalFetchedPlatforms = fetchedPlatforms;
+        existingPlatforms.forEach(platform -> {
+            Platform fetchedPlatform = finalFetchedPlatforms.stream()
+                    .filter(p -> p.getIgdbId().equals(platform.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
 
-            // Save and return the platform
-            platform = platformRepository.save(platform);
-            logger.info("Platform '{}' saved to database.", platform.getName());
-            return platform;
-        } catch (Exception e) {
-            logger.error("Error while parsing the platform data for ID: {}", platformIgdbId, e);
-            throw new RuntimeException("Error while parsing the platform data", e);
-        }
+            if (fetchedPlatform != null && fetchedPlatform.getUpdatedAt().isAfter(platform.getUpdatedAt())) {
+                fetchedPlatform.setId(platform.getId());
+            }
+        });
+
+        // Save all platforms that need updating or adding
+        fetchedPlatforms = platformRepository.saveAll(fetchedPlatforms);
+
+        // Combine the existing platforms with updated ones, removing duplicates
+        Map<Integer, Platform> combinedPlatformsMap = new HashMap<>();
+
+        // Add existing platforms to the map (IgdbId as key to ensure uniqueness)
+        existingPlatforms.forEach(platform -> combinedPlatformsMap.put(platform.getIgdbId(), platform));
+
+        // Add or update platforms from platformsToSave (this will overwrite any duplicates)
+        fetchedPlatforms.forEach(platform -> combinedPlatformsMap.put(platform.getIgdbId(), platform));
+
+        // Return the combined list of platforms without duplicates
+        return combinedPlatformsMap;
     }
 
-    // Include similar methods for other entities:
-    // - SearchForGenres
-    private Genre SearchForGenres(Integer genreId, Game game) {
-        logger.info("Searching for genre with ID: {}", genreId);
-
-        // Check if genre already exists
-        Genre genreAtDb = genreRepository.findByIgdbId(genreId);
-        if (genreAtDb != null) {
-            logger.debug("Genre with ID '{}' found in database.", genreId);
-            return genreAtDb;
+    private Map<Integer, Genre> processGenres(List<Integer> genreIds, Game game) {
+        if (genreIds == null || genreIds.isEmpty()) {
+            return Collections.emptyMap();
         }
 
-        // Fetch genre data from IGDB API
-        ResponseEntity<String> response = SendRequest(genreId, genresEndpoint);
+        logger.info("Processing Genres with IDs: {}", genreIds);
 
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain genre with ID: {}", genreId);
-            throw new RuntimeException("Failed to obtain genre");
-        }
+        // Fetch existing Genres from the database
+        List<Genre> existingGenres = genreRepository.findAllByIgdbIdIn(genreIds);
 
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Genre response: {}", jsonResponse);
-            List<Genre> genres = objectMapper.readValue(jsonResponse, new TypeReference<List<Genre>>() {
-            });
+        // Fetch missing Genres from IGDB API
+        List<Genre> fetchedGenres = fetchEntitiesFromApi(genreIds, genresEndpoint, Genre.class);
 
-            if (genres.isEmpty()) {
-                logger.warn("No genre data found for ID: {}", genreId);
-                return null;
+        fetchedGenres.forEach(genre -> {
+            genre.setIgdbId(genre.getId());
+            genre.addGame(game);
+            genre.setId(null); // Reset to allow creation of new entity if not present
+        });
+
+        // Merge fetched genres with existing genres based on updatedAt field
+        List<Genre> finalFetchedGenres = fetchedGenres;
+        existingGenres.forEach(genre -> {
+            Genre fetchedGenre = finalFetchedGenres.stream()
+                    .filter(g -> g.getIgdbId().equals(genre.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedGenre != null && fetchedGenre.getUpdatedAt().isAfter(genre.getUpdatedAt())) {
+                fetchedGenre.setId(genre.getId());
             }
+        });
 
-            Genre genreFound = genres.get(0);
-            genreFound.setId(null);
-            genreFound.setIgdbId(genreId);
-            genreFound.addGame(game);
+        // Save new or updated genres
+        fetchedGenres = genreRepository.saveAll(fetchedGenres);
 
-            // Save and return the genre
-            genreFound = genreRepository.save(genreFound);
-            logger.info("Genre '{}' saved to database.", genreFound.getName());
-            return genreFound;
-        } catch (Exception e) {
-            logger.error("Error while parsing the genre data for ID: {}", genreId, e);
-            throw new RuntimeException("Error while parsing the genre data", e);
-        }
+        // Combine existing genres with updated ones, removing duplicates
+         Map<Integer, Genre> combinedGenresMap = new HashMap<>();
+
+        // Add existing genres to the map (IgdbId as key to ensure uniqueness)
+        existingGenres.forEach(genre -> combinedGenresMap.put(genre.getIgdbId(), genre));
+
+        // Add or update genres from fetchedGenres (this will overwrite any duplicates)
+        fetchedGenres.forEach(genre -> combinedGenresMap.put(genre.getIgdbId(), genre));
+
+        // Return the combined list of genres without duplicates
+        return combinedGenresMap;
     }
 
-    // - SearchForGameModes
-    private GameMode SearchForGameModes(Integer gameModeId, Game game) {
-        logger.info("Searching for game mode with ID: {}", gameModeId);
-
-        // Check if game mode already exists
-        GameMode gameModeAtDb = gameModeRepository.findByIgdbId(gameModeId);
-        if (gameModeAtDb != null) {
-            logger.debug("Game mode with ID '{}' found in database.", gameModeId);
-            return gameModeAtDb;
+    private Map<Integer, GameMode> processGameModes(List<Integer> gameModeIds, Game game) {
+        if (gameModeIds == null || gameModeIds.isEmpty()) {
+            return Collections.emptyMap();
         }
 
-        // Fetch game mode data from IGDB API
-        ResponseEntity<String> response = SendRequest(gameModeId, gameModesEndpoint);
+        logger.info("Processing Game Modes with IDs: {}", gameModeIds);
 
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain game mode with ID: {}", gameModeId);
-            throw new RuntimeException("Failed to obtain game mode");
-        }
+        // Fetch existing Game Modes from the database
+        List<GameMode> existingGameModes = gameModeRepository.findAllByIgdbIdIn(gameModeIds);
 
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Game mode response: {}", jsonResponse);
-            List<GameMode> gameModes = objectMapper.readValue(jsonResponse, new TypeReference<List<GameMode>>() {
-            });
+        // Fetch missing Game Modes from IGDB API
+        List<GameMode> fetchedGameModes = fetchEntitiesFromApi(gameModeIds, gameModesEndpoint, GameMode.class);
 
-            if (gameModes.isEmpty()) {
-                logger.warn("No game mode data found for ID: {}", gameModeId);
-                return null;
+        fetchedGameModes.forEach(gameMode -> {
+            gameMode.setIgdbId(gameMode.getId());
+            gameMode.addGame(game);
+            gameMode.setId(null); // Reset to allow creation of new entity if not present
+        });
+
+        // Merge fetched game modes with existing game modes
+        List<GameMode> finalFetchedGameModes = fetchedGameModes;
+        existingGameModes.forEach(gameMode -> {
+            GameMode fetchedGameMode = finalFetchedGameModes.stream()
+                    .filter(gm -> gm.getIgdbId().equals(gameMode.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedGameMode != null && fetchedGameMode.getUpdatedAt().isAfter(gameMode.getUpdatedAt())) {
+                fetchedGameMode.setId(gameMode.getId());
             }
+        });
 
-            GameMode gameModeFound = gameModes.get(0);
-            gameModeFound.setId(null);
-            gameModeFound.setIgdbId(gameModeId);
-            gameModeFound.addGame(game);
+        // Save new or updated game modes
+        fetchedGameModes = gameModeRepository.saveAll(fetchedGameModes);
 
+        // Combine existing game modes with updated ones, removing duplicates
+         Map<Integer, GameMode> combinedGameModesMap = new HashMap<>();
 
-            // Save and return the game mode
-            gameModeFound = gameModeRepository.save(gameModeFound);
-            logger.info("Game mode '{}' saved to database.", gameModeFound.getName());
-            return gameModeFound;
-        } catch (Exception e) {
-            logger.error("Error while parsing the game mode data for ID: {}", gameModeId, e);
-            throw new RuntimeException("Error while parsing the game mode data", e);
-        }
-    }
+        // Add existing game modes to the map (IgdbId as key to ensure uniqueness)
+        existingGameModes.forEach(gameMode -> combinedGameModesMap.put(gameMode.getIgdbId(), gameMode));
 
-    // - SearchForThemes
-    private GameTheme SearchForThemes(Integer themeId, Game game) {
-        logger.info("Searching for theme with ID: {}", themeId);
+        // Add or update game modes from fetchedGameModes (this will overwrite any duplicates)
+        fetchedGameModes.forEach(gameMode -> combinedGameModesMap.put(gameMode.getIgdbId(), gameMode));
 
-        // Check if theme already exists
-        GameTheme themeAtDb = themeRepository.findByIgdbId(themeId);
-        if (themeAtDb != null) {
-            logger.debug("Theme with ID '{}' found in database.", themeId);
-            return themeAtDb;
-        }
-
-        // Fetch theme data from IGDB API
-        ResponseEntity<String> response = SendRequest(themeId, gameThemesEndpoint);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain theme with ID: {}", themeId);
-            throw new RuntimeException("Failed to obtain theme");
-        }
-
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Theme response: {}", jsonResponse);
-            List<GameTheme> themes = objectMapper.readValue(jsonResponse, new TypeReference<List<GameTheme>>() {
-            });
-
-            if (themes.isEmpty()) {
-                logger.warn("No theme data found for ID: {}", themeId);
-                return null;
-            }
-
-            GameTheme themeFound = themes.get(0);
-            themeFound.setId(null);
-            themeFound.setIgdbId(themeId);
-            themeFound.addGame(game);
-
-            // Save and return the theme
-            themeFound = themeRepository.save(themeFound);
-            logger.info("Theme '{}' saved to database.", themeFound.getName());
-            return themeFound;
-        } catch (Exception e) {
-            logger.error("Error while parsing the theme data for ID: {}", themeId, e);
-            throw new RuntimeException("Error while parsing the theme data", e);
-        }
-    }
-
-    // - SearchForPlayerPerspectives
-    private PlayerPerspective SearchForPlayerPerspectives(Integer playerPerspectiveId, Game game) {
-        logger.info("Searching for player perspective with ID: {}", playerPerspectiveId);
-
-        // Check if player perspective already exists
-        PlayerPerspective playerPerspectiveAtDb = playerPerspectiveRepository.findByIgdbId(playerPerspectiveId);
-        if (playerPerspectiveAtDb != null) {
-            logger.debug("Player perspective with ID '{}' found in database.", playerPerspectiveId);
-            return playerPerspectiveAtDb;
-        }
-
-        // Fetch player perspective data from IGDB API
-        ResponseEntity<String> response = SendRequest(playerPerspectiveId, playerPerspectivesEndpoint);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain player perspective with ID: {}", playerPerspectiveId);
-            throw new RuntimeException("Failed to obtain player perspective");
-        }
-
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Player perspective response: {}", jsonResponse);
-            List<PlayerPerspective> playerPerspectives = objectMapper.readValue(jsonResponse, new TypeReference<List<PlayerPerspective>>() {
-            });
-
-            if (playerPerspectives.isEmpty()) {
-                logger.warn("No player perspective data found for ID: {}", playerPerspectiveId);
-                return null;
-            }
-
-            PlayerPerspective playerPerspectiveFound = playerPerspectives.get(0);
-            playerPerspectiveFound.setId(null);
-            playerPerspectiveFound.setIgdbId(playerPerspectiveId);
-            playerPerspectiveFound.addGame(game);
-
-            // Save and return the player perspective
-            playerPerspectiveFound = playerPerspectiveRepository.save(playerPerspectiveFound);
-            logger.info("Player perspective '{}' saved to database.", playerPerspectiveFound.getName());
-            return playerPerspectiveFound;
-        } catch (Exception e) {
-            logger.error("Error while parsing the player perspective data for ID: {}", playerPerspectiveId, e);
-            throw new RuntimeException("Error while parsing the player perspective data", e);
-        }
-    }
-
-    // - SearchForAgeRatings
-    private AgeRating SearchForAgeRatings(Integer ageRatingId) {
-        logger.info("Searching for age rating with ID: {}", ageRatingId);
-
-        // Check if age rating already exists
-        AgeRating ageRatingAtDb = ageRatingRepository.findByIgdbId(ageRatingId);
-        if (ageRatingAtDb != null) {
-            logger.debug("Age rating with ID '{}' found in database.", ageRatingId);
-            return ageRatingAtDb;
-        }
-
-        // Fetch age rating data from IGDB API
-        ResponseEntity<String> response = SendRequest(ageRatingId, ageRatingsEndpoint);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain age rating with ID: {}", ageRatingId);
-            throw new RuntimeException("Failed to obtain age rating");
-        }
-
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Age rating response: {}", jsonResponse);
-            List<AgeRating> ageRatings = objectMapper.readValue(jsonResponse, new TypeReference<List<AgeRating>>() {
-            });
-
-            if (ageRatings.isEmpty()) {
-                logger.warn("No age rating data found for ID: {}", ageRatingId);
-                return null;
-            }
-
-            AgeRating ageRatingFound = ageRatings.get(0);
-            ageRatingFound.setId(null);
-            ageRatingFound.setIgdbId(ageRatingId);
-
-            // Save and return the age rating
-            ageRatingFound = ageRatingRepository.save(ageRatingFound);
-            logger.info("Age rating '{}' of category '{}' saved to database.", ageRatingFound.getRating(),
-                    ageRatingFound.getCategory());
-            return ageRatingFound;
-        } catch (Exception e) {
-            logger.error("Error while parsing the age rating data for ID: {}", ageRatingId, e);
-            throw new RuntimeException("Error while parsing the age rating data", e);
-        }
-    }
-
-    // - SearchForFranchises
-    private Franchise SearchForFranchises(Integer franchiseId, Game gameEntity) {
-        logger.info("Searching for franchise with ID: {}", franchiseId);
-
-        // Check if franchise already exists
-        Franchise franchiseAtDb = franchiseRepository.findByIgdbId(franchiseId);
-        if (franchiseAtDb != null) {
-            logger.debug("Franchise with ID '{}' found in database.", franchiseId);
-            franchiseAtDb.addGame(gameEntity);
-            return franchiseAtDb;
-        }
-
-        // Fetch franchise data from IGDB API
-        ResponseEntity<String> response = SendRequest(franchiseId, franchisesEndpoint);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain franchise with ID: {}", franchiseId);
-            throw new RuntimeException("Failed to obtain franchise");
-        }
-
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Franchise response: {}", jsonResponse);
-            List<Franchise> franchises = objectMapper.readValue(jsonResponse, new TypeReference<List<Franchise>>() {
-            });
-
-            if (franchises.isEmpty()) {
-                logger.warn("No franchise data found for ID: {}", franchiseId);
-                return null;
-            }
-
-            Franchise franchiseFound = franchises.get(0);
-            franchiseFound.setId(null);
-            franchiseFound.setIgdbId(franchiseId);
-            franchiseFound.addGame(gameEntity);
-
-            // Save and return the franchise
-            franchiseFound = franchiseRepository.save(franchiseFound);
-            logger.info("Franchise '{}' saved to database.", franchiseFound.getName());
-            return franchiseFound;
-        } catch (Exception e) {
-            logger.error("Error while parsing the franchise data for ID: {}", franchiseId, e);
-            throw new RuntimeException("Error while parsing the franchise data", e);
-        }
-    }
-
-    // - SearchForLanguageSupport
-    private LanguageSupport SearchForLanguageSupport(Integer languageSupportId, Game game) {
-        logger.info("Searching for language support with ID: {}", languageSupportId);
-
-        // Check if language support already exists
-        LanguageSupport languageSupportAtDb = languageSupportRepository.findByIgdbId(languageSupportId);
-
-        // Fetch language support data from IGDB API
-        ResponseEntity<String> response = SendRequest(languageSupportId, languageSupportEndpoint);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain language support with ID: {}", languageSupportId);
-            throw new RuntimeException("Failed to obtain language support");
-        }
-
-        try {
-            String jsonResponse = response.getBody();
-            logger.warn("LanguageSupport response: {}", jsonResponse);
-            Integer idToSet = null;
-            List<IgdbGameLanguageSupportDto> languageSupports = objectMapper.readValue(jsonResponse,
-                    new TypeReference<List<IgdbGameLanguageSupportDto>>() {});
-
-            if (languageSupports.isEmpty()) {
-                logger.warn("No language support data found for ID: {}", languageSupportId);
-                return null;
-            }
-
-            IgdbGameLanguageSupportDto languageSupportFound = languageSupports.get(0);
-
-            // Check if language support already exists
-            if (languageSupportAtDb != null) {
-                idToSet = languageSupportAtDb.getId();
-                if (languageSupportAtDb.getUpdatedAt() == null) {
-                    logger.warn("Language support '{}' has no updated_at timestamp.", languageSupportAtDb.
-                            getLanguageSupportType().getName()
-                            + " for ID: " + languageSupportId
-                            + " Language: " + languageSupportAtDb.getLanguage().getName());
-
-                    languageSupportAtDb.setUpdatedAt(0);
-                }
-                if (languageSupportFound.getUpdatedAt() <= languageSupportAtDb.getUpdatedAt()) {
-                    logger.info("Language support '{}' has not been updated.", languageSupportFound.getType());
-                    return languageSupportAtDb;
-                }
-            }
-
-            // Check if 'type' is null
-            if (languageSupportFound.getType() == null) {
-                logger.warn("Language support type is null for ID: {}", languageSupportId);
-                return null;
-            } else {
-                LanguageSupportType supportType = LanguageSupportType.fromId(languageSupportFound.getType());
-                if (supportType == null) {
-                    logger.warn("No LanguageSupportType found for type ID: {}", languageSupportFound.getType());
-                    return null;
-                }
-                // Create and populate LanguageSupport entity
-                LanguageSupport newLanguageSupport = new LanguageSupport();
-                newLanguageSupport.setId(idToSet);
-                newLanguageSupport.setLanguageSupportType(supportType);
-                newLanguageSupport.setLanguage(SearchForLanguage(languageSupportFound.getLanguage()));
-                newLanguageSupport.setGame(game);
-                newLanguageSupport.setIgdbId(languageSupportId);
-
-                // Save and return the language support
-                newLanguageSupport = languageSupportRepository.save(newLanguageSupport);
-                logger.info("LanguageSupport '{}' saved to database.", newLanguageSupport.getLanguageSupportType().getName());
-                return newLanguageSupport;
-            }
-        } catch (Exception e) {
-            logger.error("Error while parsing the language support data for ID: {}", languageSupportId, e);
-            throw new RuntimeException("Error while parsing the language support data", e);
-        }
+        // Return the combined list of game modes without duplicates
+        return combinedGameModesMap;
     }
 
 
-    // - SearchForLanguage
-    private Language SearchForLanguage(Integer languageId) {
-        logger.info("Searching for language with ID: {}", languageId);
 
-        // Check if the language already exists
-        Language languageAtDb = languageRepository.findByIgdbId(languageId);
-        if (languageAtDb != null) {
-            logger.debug("Language with ID '{}' found in database.", languageId);
-            return languageAtDb;
+    private Map<Integer, GameTheme> processGameThemes(List<Integer> themeIds, Game game) {
+        if (themeIds == null || themeIds.isEmpty()) {
+            return Collections.emptyMap();
         }
 
-        // Fetch language data from IGDB API
-        ResponseEntity<String> response = SendRequest(languageId, languagesEndpoint);
+        logger.info("Processing Game Themes with IDs: {}", themeIds);
+
+        // Fetch existing Game Themes from the database
+        List<GameTheme> existingThemes = themeRepository.findAllByIgdbIdIn(themeIds);
+
+        // Fetch missing Game Themes from IGDB API
+        List<GameTheme> fetchedThemes = fetchEntitiesFromApi(themeIds, gameThemesEndpoint, GameTheme.class);
+
+        fetchedThemes.forEach(theme -> {
+            theme.setIgdbId(theme.getId());
+            theme.addGame(game);
+            theme.setId(null); // Reset to allow creation of new entity if not present
+        });
+
+        // Merge fetched themes with existing themes
+        List<GameTheme> finalFetchedThemes = fetchedThemes;
+        existingThemes.forEach(theme -> {
+            GameTheme fetchedTheme = finalFetchedThemes.stream()
+                    .filter(th -> th.getIgdbId().equals(theme.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedTheme != null && fetchedTheme.getUpdatedAt().isAfter(theme.getUpdatedAt())) {
+                fetchedTheme.setId(theme.getId());
+            }
+        });
+
+        // Save new or updated themes
+        fetchedThemes = themeRepository.saveAll(fetchedThemes);
+
+        // Combine existing themes with updated ones, removing duplicates
+         Map<Integer, GameTheme> combinedThemesMap = new HashMap<>();
+
+        // Add existing themes to the map (IgdbId as key to ensure uniqueness)
+        existingThemes.forEach(theme -> combinedThemesMap.put(theme.getIgdbId(), theme));
+
+        // Add or update themes from fetchedThemes (this will overwrite any duplicates)
+        fetchedThemes.forEach(theme -> combinedThemesMap.put(theme.getIgdbId(), theme));
+
+        // Return the combined list of themes without duplicates
+        return combinedThemesMap;
+    }
+
+    private Map<Integer, PlayerPerspective> processPlayerPerspectives(List<Integer> perspectiveIds, Game game) {
+        if (perspectiveIds == null || perspectiveIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        logger.info("Processing Player Perspectives with IDs: {}", perspectiveIds);
+
+        // Fetch existing Player Perspectives from the database
+        List<PlayerPerspective> existingPerspectives = playerPerspectiveRepository.findAllByIgdbIdIn(perspectiveIds);
+
+        // Fetch missing Player Perspectives from IGDB API
+        List<PlayerPerspective> fetchedPerspectives = fetchEntitiesFromApi(perspectiveIds, playerPerspectivesEndpoint, PlayerPerspective.class);
+
+        fetchedPerspectives.forEach(perspective -> {
+            perspective.setIgdbId(perspective.getId());
+            perspective.setId(null);
+            perspective.addGame(game);
+        });
+
+        // Merge fetched perspectives with existing perspectives
+        List<PlayerPerspective> finalFetchedPerspectives = fetchedPerspectives;
+        existingPerspectives.forEach(perspective -> {
+            PlayerPerspective fetchedPerspective = finalFetchedPerspectives.stream()
+                    .filter(pp -> pp.getIgdbId().equals(perspective.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedPerspective != null && fetchedPerspective.getUpdatedAt().isAfter(perspective.getUpdatedAt())) {
+                fetchedPerspective.setId(perspective.getId());
+            }
+        });
+
+        // Save new or updated perspectives
+        fetchedPerspectives = playerPerspectiveRepository.saveAll(fetchedPerspectives);
+
+        // Combine existing perspectives with updated ones, removing duplicates
+         Map<Integer, PlayerPerspective> combinedPerspectivesMap = new HashMap<>();
+
+        // Add existing perspectives to the map (IgdbId as key to ensure uniqueness)
+        existingPerspectives.forEach(perspective -> combinedPerspectivesMap.put(perspective.getIgdbId(), perspective));
+
+        // Add or update perspectives from fetchedPerspectives (this will overwrite any duplicates)
+        fetchedPerspectives.forEach(perspective -> combinedPerspectivesMap.put(perspective.getIgdbId(), perspective));
+
+        // Return the combined list of perspectives without duplicates
+        return combinedPerspectivesMap;
+    }
+
+    private Map<Integer, AgeRating> processAgeRatings(List<Integer> ageRatingIds) {
+        if (ageRatingIds == null || ageRatingIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        logger.info("Processing Age Ratings with IDs: {}", ageRatingIds);
+
+        // Fetch existing Age Ratings from the database
+        List<AgeRating> existingAgeRatings = ageRatingRepository.findAllByIgdbIdIn(ageRatingIds);
+
+        // Fetch missing Age Ratings from IGDB API
+        List<AgeRating> fetchedAgeRatings = fetchEntitiesFromApi(ageRatingIds, ageRatingsEndpoint, AgeRating.class);
+
+        fetchedAgeRatings.forEach(ageRating -> {
+            ageRating.setIgdbId(ageRating.getId());
+            ageRating.setId(null); // Reset to allow creation of new entity if not present
+        });
+
+        // Merge fetched age ratings with existing age ratings
+        List<AgeRating> finalFetchedAgeRatings = fetchedAgeRatings;
+        existingAgeRatings.forEach(ageRating -> {
+            AgeRating fetchedAgeRating = finalFetchedAgeRatings.stream()
+                    .filter(ar -> ar.getIgdbId().equals(ageRating.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedAgeRating != null && fetchedAgeRating.getUpdatedAt().isAfter(ageRating.getUpdatedAt())) {
+                fetchedAgeRating.setId(ageRating.getId());
+            }
+        });
+
+        // Save new or updated age ratings
+        fetchedAgeRatings = ageRatingRepository.saveAll(fetchedAgeRatings);
+
+        // Combine existing age ratings with updated ones, removing duplicates
+         Map<Integer, AgeRating> combinedAgeRatingsMap = new HashMap<>();
+
+        // Add existing age ratings to the map (IgdbId as key to ensure uniqueness)
+        existingAgeRatings.forEach(ageRating -> combinedAgeRatingsMap.put(ageRating.getIgdbId(), ageRating));
+
+        // Add or update age ratings from fetchedAgeRatings (this will overwrite any duplicates)
+        fetchedAgeRatings.forEach(ageRating -> combinedAgeRatingsMap.put(ageRating.getIgdbId(), ageRating));
+
+        // Return the combined list of age ratings without duplicates
+        return combinedAgeRatingsMap;
+    }
+
+    private Map<Integer, ReleaseDate> processReleaseDates(List<Integer> releaseDateIds, Game game,
+        Map<Integer, Platform> platforms) {
+        if (releaseDateIds == null || releaseDateIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        logger.info("Processing Release Dates with IDs: {}", releaseDateIds);
+
+        // Fetch existing Release Dates from the database
+        List<ReleaseDate> existingReleaseDates = releaseDateRepository.findAllByIgdbIdIn(releaseDateIds);
+
+        // Fetch missing Release Dates from IGDB API
+        List<ReleaseDateIgdbDto> foundReleaseDates = fetchEntitiesFromApi(releaseDateIds, releaseDatesEndpoint, ReleaseDateIgdbDto.class);
+
+        // Transform fetched release dates to ReleaseDate entities
+        List<ReleaseDate> fetchedReleaseDates = foundReleaseDates.stream()
+                .map(dto -> {
+                    ReleaseDate releaseDate = new ReleaseDate();
+                    releaseDate.setIgdbId(dto.getId());
+                    releaseDate.setUpdatedAt(dto.getUpdatedAt());
+                    releaseDate.setPlatform(platforms.get(dto.getPlatform()));
+                    releaseDate.setGame(game);
+                    return releaseDate;
+                })
+                .toList();
+
+        // Merge fetched release dates with existing release dates
+        List<ReleaseDate> finalFetchedReleaseDates = fetchedReleaseDates;
+        existingReleaseDates.forEach(releaseDate -> {
+            ReleaseDate fetchedReleaseDate = finalFetchedReleaseDates.stream()
+                    .filter(rd -> rd.getId().equals(releaseDate.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedReleaseDate != null && fetchedReleaseDate.getUpdatedAt().isAfter(releaseDate.getUpdatedAt())) {
+                fetchedReleaseDate.setId(releaseDate.getId());
+            }
+        });
+
+
+        fetchedReleaseDates = releaseDateRepository.saveAll(fetchedReleaseDates);
+
+        // Combine existing release dates with updated ones, removing duplicates
+         Map<Integer, ReleaseDate> combinedReleaseDatesMap = new HashMap<>();
+
+        // Add existing release dates to the map (IgdbId as key to ensure uniqueness)
+        existingReleaseDates.forEach(releaseDate -> combinedReleaseDatesMap.put(releaseDate.getIgdbId(), releaseDate));
+
+        // Add or update release dates from releaseDatesToSave (this will overwrite any duplicates)
+        fetchedReleaseDates.forEach(releaseDate -> combinedReleaseDatesMap.put(releaseDate.getIgdbId(), releaseDate));
+
+        // Return the combined list of release dates without duplicates
+        return combinedReleaseDatesMap;
+    }
+
+    private Map<Integer, Region> processRegions(List<Integer> regionIds) {
+        if (regionIds == null || regionIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        logger.info("Processing Regions with IDs: {}", regionIds);
+
+        // Fetch existing Regions from the database
+        List<Region> existingRegions = regionRepository.findAllByIgdbIdIn(regionIds);
+
+        // Fetch missing Regions from IGDB API
+        List<Region> fetchedRegions = fetchEntitiesFromApi(regionIds, regionsEndpoint, Region.class);
+
+        fetchedRegions.forEach(region -> {
+            region.setIgdbId(region.getId());
+            region.setId(null); // Reset to allow creation of new entity if not present
+        });
+
+        // Merge fetched regions with existing regions
+        List<Region> finalFetchedRegions = fetchedRegions;
+        existingRegions.forEach(region -> {
+            Region fetchedRegion = finalFetchedRegions.stream()
+                    .filter(r -> r.getIgdbId().equals(region.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedRegion != null && fetchedRegion.getUpdatedAt().isAfter(region.getUpdatedAt())) {
+                fetchedRegion.setId(region.getId());
+            }
+        });
+
+        // Save new or updated regions
+        fetchedRegions = regionRepository.saveAll(fetchedRegions);
+
+        // Combine existing regions with updated ones, removing duplicates
+         Map<Integer, Region> combinedRegionsMap = new HashMap<>();
+
+        // Add existing regions to the map (IgdbId as key to ensure uniqueness)
+        existingRegions.forEach(region -> combinedRegionsMap.put(region.getIgdbId(), region));
+
+        // Add or update regions from fetchedRegions (this will overwrite any duplicates)
+        fetchedRegions.forEach(region -> combinedRegionsMap.put(region.getIgdbId(), region));
+
+        // Return the combined list of regions without duplicates
+        return combinedRegionsMap;
+    }
+
+    private Map<Integer, Franchise> processFranchises(List<Integer> franchiseIds, Game game) {
+        if (franchiseIds == null || franchiseIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        logger.info("Processing Franchises with IDs: {}", franchiseIds);
+
+        // Fetch existing Franchises from the database
+        List<Franchise> existingFranchises = franchiseRepository.findAllByIgdbIdIn(franchiseIds);
+
+        // Fetch missing Franchises from IGDB API
+        List<Franchise> fetchedFranchises = fetchEntitiesFromApi(franchiseIds, franchisesEndpoint, Franchise.class);
+
+        fetchedFranchises.forEach(franchise -> {
+            franchise.setIgdbId(franchise.getId());
+            franchise.setId(null); // Reset to allow creation of new entity if not present
+        });
+
+        // Merge fetched franchises with existing franchises
+        List<Franchise> finalFetchedFranchises = fetchedFranchises;
+        existingFranchises.forEach(franchise -> {
+            Franchise fetchedFranchise = finalFetchedFranchises.stream()
+                    .filter(f -> f.getIgdbId().equals(franchise.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedFranchise != null && fetchedFranchise.getUpdatedAt().isAfter(franchise.getUpdatedAt())) {
+                fetchedFranchise.setId(franchise.getId());
+            }
+        });
+
+        // Save new or updated franchises
+        fetchedFranchises = franchiseRepository.saveAll(fetchedFranchises);
+
+        // Combine existing franchises with updated ones, removing duplicates
+         Map<Integer, Franchise> combinedFranchisesMap = new HashMap<>();
+
+        // Add existing franchises to the map (IgdbId as key to ensure uniqueness)
+        existingFranchises.forEach(franchise -> combinedFranchisesMap.put(franchise.getIgdbId(), franchise));
+
+        // Add or update franchises from fetchedFranchises (this will overwrite any duplicates)
+        fetchedFranchises.forEach(franchise -> combinedFranchisesMap.put(franchise.getIgdbId(), franchise));
+
+        // Return the combined list of franchises without duplicates
+        return combinedFranchisesMap;
+    }
+
+    private Map<Integer, LanguageSupport> processLanguageSupports(List<Integer> languageSupportIds, Game game) {
+        if (languageSupportIds == null || languageSupportIds.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        logger.info("Processing Language Supports with IDs: {}", languageSupportIds);
+
+        // Fetch existing Language Supports from the database
+        List<LanguageSupport> existingLanguageSupports = languageSupportRepository.findAllByIgdbIdIn(languageSupportIds);
+
+        // Fetch missing Language Supports from IGDB API
+        List<IgdbGameLanguageSupportDto> foundLanguageSupports = fetchEntitiesFromApi(languageSupportIds,
+                languageSupportEndpoint, IgdbGameLanguageSupportDto.class);
+
+
+        // Transform fetched language supports to LanguageSupport entities
+        List<LanguageSupport> fetchedLanguageSupports = foundLanguageSupports.stream()
+                .map(dto -> {
+                    LanguageSupport languageSupport = new LanguageSupport();
+                    languageSupport.setIgdbId(dto.getId());
+                    languageSupport.setUpdatedAt(dto.getUpdatedAt());
+                    languageSupport.setLanguageSupportType(LanguageSupportType.fromId(dto.getType()));
+                    languageSupport.setLanguage(processLanguage(dto.getLanguage()));
+                    languageSupport.setGame(game);
+                    return languageSupport;
+                })
+                .toList();
+
+        // Merge fetched language supports with existing language supports
+        List<LanguageSupport> finalFetchedLanguageSupports = fetchedLanguageSupports;
+        existingLanguageSupports.forEach(languageSupport -> {
+            LanguageSupport fetchedLanguageSupport = finalFetchedLanguageSupports.stream()
+                    .filter(ls -> ls.getIgdbId().equals(languageSupport.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedLanguageSupport != null && fetchedLanguageSupport.getUpdatedAt().isAfter(
+                    languageSupport.getUpdatedAt())) {
+                fetchedLanguageSupport.setId(languageSupport.getId());
+            }
+        });
+
+        fetchedLanguageSupports = languageSupportRepository.saveAll(fetchedLanguageSupports);
+
+
+        // Combine existing language supports with updated ones, removing duplicates
+         Map<Integer, LanguageSupport> combinedLanguageSupportsMap = new HashMap<>();
+
+        // Add existing language supports to the map (IgdbId as key to ensure uniqueness)
+        existingLanguageSupports.forEach(languageSupport -> combinedLanguageSupportsMap.put(languageSupport.getIgdbId(), languageSupport));
+
+        // Add or update language supports from fetchedLanguageSupports (this will overwrite any duplicates)
+        fetchedLanguageSupports.forEach(languageSupport -> combinedLanguageSupportsMap.put(languageSupport.getIgdbId(), languageSupport));
+
+        // Return the combined list of language supports without duplicates
+        return combinedLanguageSupportsMap;
+    }
+
+    private Language processLanguage(Integer languageId) {
+        if (languageId == null) {
+            logger.warn("No Language ID provided.");
+            return null;
+        }
+
+        logger.info("Fetching Language with ID: {}", languageId);
+
+        // Fetch Language from the database
+        Language language = languageRepository.findByIgdbId(languageId);
+
+        // Fetch Language from IGDB API
+        String url = etlUrl + languagesEndpoint;
+        String requestBody = "fields *; where id = " + languageId + ";";
+
+        HttpHeaders headers = getHttpHeaders();
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+        logger.info("Language request sent successfully");
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain language with ID: {}", languageId);
-            throw new RuntimeException("Failed to obtain language");
+            logger.error("Failed to obtain Language with ID: {}", languageId);
+            throw new RuntimeException("Failed to obtain Language from IGDB API");
         }
 
         try {
             String jsonResponse = response.getBody();
             logger.debug("Language response: {}", jsonResponse);
-            List<IgdbLanguageDto> languages = objectMapper.readValue(jsonResponse,
-                    new TypeReference<List<IgdbLanguageDto>>() {
-            });
+            List<Language> languageDtos = objectMapper.readValue(jsonResponse,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, Language.class));
 
-            if (languages.isEmpty()) {
-                logger.warn("No language data found for ID: {}", languageId);
+            if (languageDtos.isEmpty()) {
+                logger.warn("No Language data found for ID: {}", languageId);
                 return null;
             }
 
-            IgdbLanguageDto languageFound = languages.get(0);
+            Language dto = languageDtos.get(0);
 
-            // Create and populate Language entity
-            Language newLanguage = new Language();
-            newLanguage.setName(languageFound.getName());
-            newLanguage.setLocale(languageFound.getLocale());
-            newLanguage.setNativeName(languageFound.getNativeName());
-            newLanguage.setIgdbId(languageId);
-
-            // Save and return the language
-            newLanguage = languageRepository.save(newLanguage);
-            logger.info("Language '{}' saved to database.", newLanguage.getName());
-            return newLanguage;
-        } catch (Exception e) {
-            logger.error("Error while parsing the language data for ID: {}", languageId, e);
-            throw new RuntimeException("Error while parsing the language data", e);
-        }
-    }
-
-    // - SearchForInvolvedCompanies
-    private CompanyGame SearchForInvolvedCompanies(Integer companyId, Game game) {
-        logger.info("Searching for involved company with ID: {}", companyId);
-
-        // Check if company game already exists
-        CompanyGame companyGameAtDb = companyGameRepository.findByIgdbId(companyId);
-        if (companyGameAtDb != null) {
-            logger.debug("Involved company with ID '{}' found in database.", companyId);
-            return companyGameAtDb;
-        }
-
-        // Fetch involved company data from IGDB API
-        ResponseEntity<String> response = SendRequest(companyId, involvedCompaniesEndpoint);
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain involved company with ID: {}", companyId);
-            throw new RuntimeException("Failed to obtain involved company");
-        }
-
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Involved company response: {}", jsonResponse);
-            List<IgbdCompanyGameDto> companies = objectMapper.readValue(jsonResponse, new TypeReference<List<IgbdCompanyGameDto>>() {
-            });
-
-            if (companies.isEmpty()) {
-                logger.warn("No involved company data found for ID: {}", companyId);
+            if (dto == null) {
+                logger.warn("No Language data found for ID: {}", languageId);
                 return null;
             }
 
-            IgbdCompanyGameDto companyFound = companies.get(0);
+            Integer idToSet = null;
+            if (language!=null){
+                if (language.getUpdatedAt().isAfter(dto.getUpdatedAt())){
+                    return language;
+                }
+                idToSet = language.getId();
+            }
 
-            // Create and populate CompanyGame entity
-            CompanyGame newCompanyGame = new CompanyGame();
-            newCompanyGame.setIgdbId(companyId);
-            newCompanyGame.setGame(game);
-            newCompanyGame.setDeveloper(companyFound.isDeveloper());
-            newCompanyGame.setPublisher(companyFound.isPublisher());
-            newCompanyGame.setSupporter(companyFound.isSupporter());
-            newCompanyGame.setPorter(companyFound.isPorter());
+            language = new Language();
+            language.setId(idToSet);
+            language.setIgdbId(dto.getId());
+            language.setName(dto.getName());
+            language.setUpdatedAt(dto.getUpdatedAt());
+            language.setNativeName(dto.getNativeName());
+            language.setLocale(dto.getLocale());
+            language = languageRepository.save(language);
 
-            Company company = SearchForCompanies(companyFound.getCompany(), newCompanyGame);
-            newCompanyGame.setCompany(company);
-
-            // Save and return the company game
-            assert company != null;
-            newCompanyGame = companyGameRepository.save(newCompanyGame);
-            logger.info("Involved company '{}' saved to database.", company.getName());
-            return newCompanyGame;
+            logger.info("Language saved to the database: {}", language.getName());
+            return language;
         } catch (Exception e) {
-            logger.error("Error while parsing the involved company data for ID: {}", companyId, e);
-            throw new RuntimeException("Error while parsing the involved company data", e);
+            logger.error("Error while parsing the Language data for ID: {}", languageId, e);
+            throw new RuntimeException("Error while parsing the Language data", e);
         }
     }
 
-    // - SearchForCompanies
-    private Company SearchForCompanies(Integer companyId, CompanyGame companyGame) {
-        logger.info("Searching for company with ID: {}", companyId);
-
-        // Check if company already exists
-        Company companyAtDb = companyRepository.findByIgdbId(companyId);
-        if (companyAtDb != null) {
-            logger.debug("Company with ID '{}' found in database.", companyId);
-            companyAtDb.addCompanyGame(companyGame);
-            return companyAtDb;
+    private Map<Integer, CompanyGame> processCompanyGames(List<Integer> companyGameIds, Game gameEntity) {
+        if (companyGameIds == null || companyGameIds.isEmpty()) {
+            return Collections.emptyMap();
         }
 
-        // Fetch company data from IGDB API
-        ResponseEntity<String> response = SendRequest(companyId, companiesEndpoint);
+        logger.info("Processing Involved Companies with IDs: {}", companyGameIds);
+
+        // Fetch existing Company Games from the database
+        List<CompanyGame> existingCompanyGames = companyGameRepository.findAllByIgdbIdIn(companyGameIds);
+
+        // Fetch missing Company Games from IGDB API
+        List<IgbdCompanyGameDto> foundCompanyGames = fetchEntitiesFromApi(companyGameIds,
+                involvedCompaniesEndpoint, IgbdCompanyGameDto.class);
+
+        // Transform fetched company games to CompanyGame entities
+        List<CompanyGame> fetchedCompanyGames = foundCompanyGames.stream()
+                .map(dto -> {
+                    CompanyGame companyGame = new CompanyGame();
+                    companyGame.setIgdbId(dto.getId());
+                    companyGame.setUpdatedAt(dto.getUpdatedAt());
+                    companyGame.setPorter(dto.isPorter());
+                    companyGame.setPublisher(dto.isPublisher());
+                    companyGame.setDeveloper(dto.isDeveloper());
+                    companyGame.setSupporter(dto.isSupporter());
+                    companyGame.setCompany(processCompany(dto.getCompany(), companyGame));
+                    companyGame.setGame(gameEntity);
+                    return companyGame;
+                })
+                .toList();
+
+        // Merge fetched company games with existing company games
+        List<CompanyGame> finalFetchedCompanyGames = fetchedCompanyGames;
+        existingCompanyGames.forEach(companyGame -> {
+            CompanyGame fetchedCompanyGame = finalFetchedCompanyGames.stream()
+                    .filter(cg -> cg.getIgdbId().equals(companyGame.getIgdbId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (fetchedCompanyGame != null && fetchedCompanyGame.getUpdatedAt().isAfter(companyGame.getUpdatedAt())) {
+                fetchedCompanyGame.setId(companyGame.getId());
+            }
+        });
+
+        fetchedCompanyGames = companyGameRepository.saveAll(fetchedCompanyGames);
+
+        // Combine existing company games with updated ones, removing duplicates
+         Map<Integer, CompanyGame> combinedCompanyGamesMap = new HashMap<>();
+
+        // Add existing company games to the map (IgdbId as key to ensure uniqueness)
+        existingCompanyGames.forEach(companyGame -> combinedCompanyGamesMap.put(companyGame.getIgdbId(), companyGame));
+
+        // Add or update company games from fetchedCompanyGames (this will overwrite any duplicates)
+        fetchedCompanyGames.forEach(companyGame -> combinedCompanyGamesMap.put(companyGame.getIgdbId(), companyGame));
+
+        // Return the combined list of company games without duplicates
+        return combinedCompanyGamesMap;
+    }
+
+    // --- Fetch Company ---
+
+    private Company processCompany(Integer companyId, CompanyGame companyGame) {
+        if (companyId == null) {
+            logger.warn("No Company ID provided.");
+            return null;
+        }
+
+        logger.info("Fetching Company with ID: {}", companyId);
+
+        // Fetch Company from the database
+        Company company = companyRepository.findByIgdbId(companyId);
+
+        // Fetch Company from IGDB API
+        String url = etlUrl + companiesEndpoint;
+        String requestBody = "fields *; where id = " + companyId + ";";
+        HttpHeaders headers = getHttpHeaders();
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+        logger.info("Company request sent successfully");
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain company with ID: {}", companyId);
-            throw new RuntimeException("Failed to obtain company");
+            logger.error("Failed to obtain Company with ID: {}", companyId);
+            throw new RuntimeException("Failed to obtain Company from IGDB API");
         }
 
         try {
             String jsonResponse = response.getBody();
             logger.debug("Company response: {}", jsonResponse);
-            List<IgbdCompanyDto> companies = objectMapper.readValue(jsonResponse, new TypeReference<List<IgbdCompanyDto>>() {
-            });
+            List<IgbdCompanyDto> companyDtos = objectMapper.readValue(jsonResponse,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, IgbdCompanyDto.class));
 
-            if (companies.isEmpty()) {
-                logger.warn("No company data found for ID: {}", companyId);
+            if (companyDtos.isEmpty()) {
+                logger.warn("No Company data found for ID: {}", companyId);
                 return null;
             }
 
-            IgbdCompanyDto companyFound = companies.get(0);
+            IgbdCompanyDto dto = companyDtos.get(0);
 
-            // Create and populate Company entity
-            Company newCompany = new Company();
-            newCompany.setName(companyFound.getName());
-            newCompany.setIgdbId(companyId);
-            newCompany.setDescription(companyFound.getDescription());
-            newCompany.setLogoUrl(SearchForCompanyLogo(companyFound.getLogo()));
-            newCompany.addCompanyGame(companyGame);
+            if (dto == null) {
+                logger.warn("No Company data found for ID: {}", companyId);
+                return null;
+            }
 
-            // Save and return the company
-            newCompany = companyRepository.save(newCompany);
-            logger.info("Company '{}' saved to database.", newCompany.getName());
-            return newCompany;
+            Integer idToSet = null;
+            if (company!=null){
+                if (company.getUpdatedAt().isAfter(dto.getUpdatedAt())){
+                    return company;
+                }
+                idToSet = company.getId();
+            }
+
+            company = new Company();
+            company.setId(idToSet);
+            company.setIgdbId(dto.getId());
+            company.setName(dto.getName());
+            company.setUpdatedAt(dto.getUpdatedAt());
+            company.setLogoUrl(SearchCompanyLogo(companyId));
+            company.addCompanyGame(companyGame);
+            company.setDescription(dto.getDescription());
+            company = companyRepository.save(company);
+
+            logger.info("Company saved to the database: {}", company.getName());
+            return company;
         } catch (Exception e) {
-            logger.error("Error while parsing the company data for ID: {}", companyId, e);
-            throw new RuntimeException("Error while parsing the company data", e);
+            logger.error("Error while parsing the Company data for ID: {}", companyId, e);
+            throw new RuntimeException("Error while parsing the Company data", e);
         }
     }
 
-    // - SearchForCompanyLogo
-    private String SearchForCompanyLogo(Integer logoId) {
-        if (logoId == null) {
-            logger.warn("No logo ID provided for company");
+
+    // --- Fetch Company Logo ---
+
+    private String SearchCompanyLogo(Integer companyId) {
+        if (companyId == null) {
+            logger.warn("No Company ID provided.");
             return null;
         }
 
-        logger.info("Searching for company logo with ID: {}", logoId);
+        logger.info("Fetching Company Logo with ID: {}", companyId);
 
-        ResponseEntity<String> response = SendRequest(logoId, companyLogosEndpoint);
+        // Fetch Company Logo from IGDB API
+        String url = etlUrl + companyLogosEndpoint;
+        String requestBody = "fields *; where id = " + companyId + ";";
+
+        HttpHeaders headers = getHttpHeaders();
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+        logger.info("Company Logo request sent successfully");
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain company logo with ID: {}", logoId);
-            throw new RuntimeException("Failed to obtain company logo");
+            logger.error("Failed to obtain Company Logo with ID: {}", companyId);
+            throw new RuntimeException("Failed to obtain Company Logo from IGDB API");
         }
 
         try {
             String jsonResponse = response.getBody();
-            logger.debug("Company logo response: {}", jsonResponse);
-            List<IgdbCompanyLogoDto> logos = objectMapper.readValue(jsonResponse, new TypeReference<List<IgdbCompanyLogoDto>>() {
-            });
+            logger.debug("Company Logo response: {}", jsonResponse);
+            List<IgdbCompanyLogoDto> companyLogos = objectMapper.readValue(jsonResponse,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, IgdbCompanyLogoDto.class));
 
-            if (logos.isEmpty()) {
-                logger.warn("No company logo data found for ID: {}", logoId);
+            if (companyLogos.isEmpty()) {
+                logger.warn("No Company Logo data found for ID: {}", companyId);
                 return null;
             }
 
-            String logoUrl = logos.get(0).getUrl();
-            logger.info("Company logo URL obtained: {}", logoUrl);
+            IgdbCompanyLogoDto dto = companyLogos.get(0);
 
-            return logoUrl;
+            logger.info("Company Logo saved to the database: {}", dto.getUrl());
+            return dto.getUrl();
         } catch (Exception e) {
-            logger.error("Error while parsing the company logo data for ID: {}", logoId, e);
-            throw new RuntimeException("Error while parsing the company logo data", e);
+            logger.error("Error while parsing the Company Logo data for ID: {}", companyId, e);
+            throw new RuntimeException("Error while parsing the Company Logo data", e);
         }
     }
 
-    // - SearchForRegions
-    private Region SearchForRegions(Integer regionIgdbId) {
-        logger.info("Searching for region with ID: {}", regionIgdbId);
+    // --- Fetching Similar Games ---
 
-        // Check if region already exists in the database
-        Region regionAtDb = regionRepository.findByIgdbId(regionIgdbId);
-        if (regionAtDb != null) {
-            logger.debug("Region with ID '{}' found in database.", regionIgdbId);
-            return regionAtDb;
+    /**
+     * Processes Similar Games by fetching them from the database and establishing bidirectional relationships.
+     *
+     * @param similarGameIds List of Similar Game IGDB IDs.
+     * @param game           The Game entity to associate with Similar Games.
+     * @return List of Similar Game entities.
+     */
+    private List<Game> processSimilarGames(List<Integer> similarGameIds, Game game) {
+        List<Game> similarGames = new ArrayList<>();
+        if (similarGameIds != null && !similarGameIds.isEmpty()) {
+            logger.debug("Game '{}' has similar games: {}", game.getTitle(), similarGameIds);
+
+            // Fetch similar games from the database in batch
+            List<Game> fetchedSimilarGames = gameRepository.findAllByIgdbIdIn(similarGameIds);
+
+            if (fetchedSimilarGames.isEmpty()) {
+                logger.warn("No similar games found in the database for game '{}'.", game.getTitle());
+            } else {
+                similarGames.addAll(fetchedSimilarGames);
+
+                // Establish bidirectional relationships
+                for (Game similarGame : fetchedSimilarGames) {
+                    if (!similarGame.getSimilarGames().contains(game)) {
+                        similarGame.addSimilarGame(game);
+                        gameRepository.save(similarGame);
+                        logger.info("Established bidirectional relationship between '{}' and '{}'.",
+                                game.getTitle(), similarGame.getTitle());
+                    }
+                }
+            }
+        } else {
+            logger.warn("Game '{}' has no similar games.", game.getTitle());
+        }
+        return similarGames;
+    }
+
+    // --- Generic Fetch Method for API Calls ---
+
+    /**
+     * Fetches entities from the IGDB API.
+     *
+     * @param <D>      The type of the DTO.
+     * @param ids      List of IGDB IDs.
+     * @param endpoint The IGDB API endpoint.
+     * @param dtoClass The DTO class.
+     * @return List of DTOs fetched from the API.
+     */
+    private <D> List<D> fetchEntitiesFromApi(List<Integer> ids, String endpoint, Class<D> dtoClass) {
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        // Fetch region data from IGDB API
-        ResponseEntity<String> response = SendRequest(regionIgdbId, regionsEndpoint);
+        String url = etlUrl + endpoint;
+        logger.info("Sending batch request to: {}", url);
+
+        // Construct the query to fetch multiple IDs
+        String idsString = ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+        String requestBody = "fields *; where id = (" + idsString + ");";
+
+        HttpHeaders headers = getHttpHeaders();
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+        logger.info("Batch request sent successfully");
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain region with ID: {}", regionIgdbId);
-            throw new RuntimeException("Failed to obtain region");
+            logger.error("Failed to obtain entities from IGDB API");
+            throw new RuntimeException("Failed to obtain entities from IGDB API");
         }
 
         try {
             String jsonResponse = response.getBody();
-            logger.debug("Region response: {}", jsonResponse);
-            List<Region> regions = objectMapper.readValue(jsonResponse, new TypeReference<List<Region>>() {
-            });
-
-            if (regions.isEmpty()) {
-                logger.warn("No region data found for ID: {}", regionIgdbId);
-                return null;
-            }
-
-            Region region = regions.get(0);
-            region.setId(null);
-            region.setIgdbId(regionIgdbId);
-
-            // Save and return the region
-            region = regionRepository.save(region);
-            logger.info("Region '{}' saved to database.", region.getName());
-            return region;
+            logger.debug("Batch response: {}", jsonResponse);
+            List<D> dtos = objectMapper.readValue(jsonResponse,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, dtoClass));
+            return dtos;
         } catch (Exception e) {
-            logger.error("Error while parsing the region data for ID: {}", regionIgdbId, e);
-            throw new RuntimeException("Error while parsing the region data", e);
+            logger.error("Error while parsing batch API response", e);
+            throw new RuntimeException("Error while parsing batch API response", e);
         }
     }
 
-    // - SearchForReleaseDates
-    private ReleaseDate SearchForReleaseDates(Integer releaseDateId, Game game) {
-        logger.info("Searching for release date with ID: {}", releaseDateId);
+    // --- Fetch Cover URL ---
 
-        // Check if release date already exists
-        ReleaseDate releaseDateAtDb = releaseDateRepository.findByIgdbId(releaseDateId);
-        if (releaseDateAtDb != null) {
-            logger.debug("Release date with ID '{}' found in database.", releaseDateId);
-            return releaseDateAtDb;
-        }
-
-        // Fetch release date data from IGDB API
-        ResponseEntity<String> response = SendRequest(releaseDateId, releaseDatesEndpoint, "*");
-
-        if (!response.getStatusCode().is2xxSuccessful()) {
-            logger.error("Failed to obtain release date with ID: {}", releaseDateId);
-            throw new RuntimeException("Failed to obtain release date");
-        }
-
-        try {
-            String jsonResponse = response.getBody();
-            logger.debug("Release date response: {}", jsonResponse);
-            List<ReleaseDateIgdbDto> releaseDates = objectMapper.readValue(jsonResponse, new TypeReference<List<ReleaseDateIgdbDto>>() {
-            });
-
-            if (releaseDates.isEmpty()) {
-                logger.warn("No release date data found for ID: {}", releaseDateId);
-                return null;
-            }
-
-            ReleaseDateIgdbDto foundIgdbReleaseDate = releaseDates.get(0);
-
-            if (foundIgdbReleaseDate.getDate() == null || foundIgdbReleaseDate.getPlatform() == null || foundIgdbReleaseDate.getRegion() == null) {
-                logger.warn("Incomplete release date data for ID: {}", releaseDateId);
-                return null;
-            }
-
-            // Create and populate ReleaseDate entity
-            ReleaseDate foundReleaseDate = new ReleaseDate();
-            foundReleaseDate.setIgdbId(releaseDateId);
-            foundReleaseDate.setDate(foundIgdbReleaseDate.getDate());
-            foundReleaseDate.setGame(game);
-
-            Platform platform = SearchForPlatforms(foundIgdbReleaseDate.getPlatform(), game);
-            foundReleaseDate.setPlatform(platform);
-
-            Region region = SearchForRegions(foundIgdbReleaseDate.getRegion());
-            if (region != null) {
-                logger.debug("Region found: {}", region.getName());
-                foundReleaseDate.setRegion(region);
-            }
-
-            // Save and return the release date
-            foundReleaseDate = releaseDateRepository.save(foundReleaseDate);
-            logger.info("Release date '{}' saved to database.", foundReleaseDate.getDate()) ;
-            return foundReleaseDate;
-        } catch (Exception e) {
-            logger.error("Error while parsing the release date data for ID: {}", releaseDateId, e);
-            throw new RuntimeException("Error while parsing the release date data", e);
-        }
-    }
-
-    // - GetCoverUrl
+    /**
+     * Gets the cover URL from the IGDB API.
+     *
+     * @param coverId The cover ID.
+     * @return The cover URL.
+     */
     private String GetCoverUrl(Integer coverId) {
-        logger.info("Getting cover URL with ID: {}", coverId);
+        if (coverId == null) {
+            logger.warn("No cover ID provided.");
+            return null;
+        }
+
+        logger.info("Fetching cover URL with ID: {}", coverId);
 
         String url = etlUrl + coverEndpoint;
-        ResponseEntity<String> response = SendRequest(coverId, coverEndpoint, "url");
+        String requestBody = "fields url; where id = " + coverId + ";";
+
+        HttpHeaders headers = getHttpHeaders();
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+        RestTemplate restTemplate = new RestTemplate();
+
+        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
+        logger.info("Cover request sent successfully");
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             logger.error("Failed to obtain cover with ID: {}", coverId);
-            throw new RuntimeException("Failed to obtain cover");
+            throw new RuntimeException("Failed to obtain cover from IGDB API");
         }
 
         try {
             String jsonResponse = response.getBody();
             logger.debug("Cover response: {}", jsonResponse);
-            List<CoverIgdbDto> foundCovers = objectMapper.readValue(jsonResponse, new TypeReference<List<CoverIgdbDto>>() {
-            });
+            List<CoverIgdbDto> covers = objectMapper.readValue(jsonResponse,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, CoverIgdbDto.class));
 
-            if (foundCovers.isEmpty()) {
+            if (covers.isEmpty()) {
                 logger.warn("No cover data found for ID: {}", coverId);
                 return null;
             }
 
-            String coverUrl = foundCovers.get(0).getUrl();
+            String coverUrl = covers.get(0).getUrl();
             logger.info("Cover URL obtained: {}", coverUrl);
-
             return coverUrl;
         } catch (Exception e) {
             logger.error("Error while parsing the cover data for ID: {}", coverId, e);
             throw new RuntimeException("Error while parsing the cover data", e);
         }
-    }
-
-    /**
-     * Sends a request to the IGDB API.
-     *
-     * @param igdbId   The IGDB ID of the entity.
-     * @param endpoint The API endpoint.
-     * @param fields   Optional fields to retrieve.
-     * @return The ResponseEntity containing the API response.
-     */
-    private ResponseEntity<String> SendRequest(Integer igdbId, String endpoint, String... fields) {
-        String url = etlUrl + endpoint;
-        logger.info("Sending request to: {}", url);
-
-        String fieldString = fields.length > 0 ? "fields " + String.join(", ", fields) + ";" : "fields *;";
-        String requestBody = fieldString + " where id = " + igdbId + ";";
-
-        HttpHeaders headers = getHttpHeaders(); // Use headers from IgdbService
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-        RestTemplate restTemplate = new RestTemplate();
-
-        ResponseEntity<String> response = restTemplate.postForEntity(url, requestEntity, String.class);
-        logger.info("Request sent successfully");
-
-        return response;
     }
 }
