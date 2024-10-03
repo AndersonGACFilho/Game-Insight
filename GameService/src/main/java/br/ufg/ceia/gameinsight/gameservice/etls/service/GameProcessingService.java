@@ -170,9 +170,12 @@ public class GameProcessingService {
 
             // Check if the game entity in the database is outdated
             Instant updatedAt = Instant.ofEpochSecond(game.getUpdatedAt());
-            if (gameEntity.getUpdatedAt() != null && !gameEntity.getUpdatedAt().isBefore(updatedAt)) {
-                logger.info("Game '{}' has not been updated since last processing.", game.getName());
-                return;
+            if (gameEntity.getUpdatedAt() != null ){
+                if (updatedAt.isBefore(gameEntity.getUpdatedAt()) ||
+                        updatedAt.equals(gameEntity.getUpdatedAt())) {
+                    logger.info("Game '{}' is up to date.", game.getName());
+                    return;
+                }
             }
 
             // Update game fields
@@ -228,8 +231,8 @@ public class GameProcessingService {
             gameEntity.setReleaseDates(new ArrayList<>(releaseDates.values()));
             gameEntity.setSimilarGames(similarGames);
 
-            // **No need to save Game again if associations are managed properly**
-            // gameRepository.save(gameEntity);
+            // Save the game entity with all associations
+            gameRepository.save(gameEntity);
 
             logger.info("Game '{}' processed and associations set successfully.", game.getName());
         } catch (Exception e) {
