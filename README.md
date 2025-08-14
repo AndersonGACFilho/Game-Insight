@@ -133,7 +133,7 @@ You'll need the following tools installed on your system:
 
 1.  **Clone the repository:**
     ```sh
-    git clone https://github.com/your-username/game-insight.git
+    git clone https://github.com/AndersonGACFilho/Game-Insight.git
     ```
 2.  **Navigate to the project directory:**
     ```sh
