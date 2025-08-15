@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: Game Insight Public API
+  version: 0.1.0
+  description: >-
+    Initial skeleton of Game Insight API. Endpoints are placeholders and will evolve.
+servers:
+  - url: http://localhost:8080
+    description: Local Gateway
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      responses:
+        '200':
+          description: OK
+  /ready:
+    get:
+      summary: Readiness probe
+      responses:
+        '200':
+          description: Ready
+  /api/users/{id}:
+    get:
+      summary: Get user by id (placeholder)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '501':
+          description: Not implemented
+  /api/games/{id}:
+    get:
+      summary: Get game by id (placeholder)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '501':
+          description: Not implemented
+  /reco/users/{userId}:
+    get:
+      summary: Get recommendations for user (placeholder)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: List of recommendations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    game_id: { type: string }
+                    score: { type: number, format: float }
+components: {}
+
