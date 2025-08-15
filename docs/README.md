@@ -50,6 +50,7 @@ Decision: Added domain mapping & ETL references <br>
 - Game Catalog ER Diagram: architecture/diagrams/game-catalog-er.md
 - Popularity Composite SQL: ../scripts/popularity_composite.sql
 - Service & ETL Implementation Plan: roadmap/service-etl-implementation-plan.md
+- Service Implementation Backlog (Phase 1): roadmap/service-implementation-backlog.md
 - Glossary: glossary.md
 - Changelog: ../CHANGELOG.md
 

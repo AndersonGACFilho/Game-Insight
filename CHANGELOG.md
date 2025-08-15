@@ -18,6 +18,8 @@ Format based on Keep a Changelog and SemVer.
 - IGDB ETL worker skeleton (services/igdb-etl) with incremental loop + watermark handling.
 - example.env updated with IGDB_* variables and poll/batch configs.
 - docker-compose.yml updated with igdb-etl service.
+- GitHub Issue Templates (.github/ISSUE_TEMPLATE/*) for bug, feature, epic, task, tech debt, security hardening, docs.
+- Service Implementation Backlog (docs/roadmap/service-implementation-backlog.md) seeding epics & tasks.
 ### Changed
 - README: project status updated to v0.1.0 and disclaimer note on metadata standardization.
 - SECURITY: supported versions table corrected to reflect 0.1.0 initial baseline.
