@@ -3,159 +3,226 @@ Game Insight is a cross-platform game recommendation engine designed to answer t
 
 It solves this by creating a **"True Gamer Profile"**—a single, unified view of a user's entire gaming life, aggregating library data, playtime, and achievements from multiple platforms like Steam, PlayStation, and Xbox. This rich, behavioral dataset powers a nuanced recommendation engine that goes far beyond simple genre matching.
 
------
+> Project Status: v0.1.0 – Initial public documentation and early architecture phase (pre-public MVP). Steam-only MVP in progress; console integrations pending official partnerships.
+
+<!-- Badges (activate when pipelines exist)
+![Build Status](#) ![Coverage](#) ![License: MIT](#) -->
+
+---
+
+## Table of Contents
+1. Overview
+2. Key Features
+3. System Architecture
+4. Project Roadmap (High-Level)
+5. Documentation
+6. Getting Started
+7. Environment Variables
+8. Development Workflow
+9. Core Metrics (Initial Targets)
+10. Contributing
+11. License
+12. Further Reading & Docs
+
+---
+
+## Overview
+Game Insight unifies fragmented gaming activity into a behavioral profile used to deliver high-quality, explainable recommendations plus real-time deal intelligence. Short-term focus: Steam-only MVP validating retention + recommendation engagement. Medium-term: secure official console data partnerships. Long-term: social/network effects and anonymized B2B insights. Canonical terminology lives in `docs/glossary.md`.
 
 ## Key Features
 
-  - **Unified Game Library**: Connect multiple platform accounts to see your entire collection in one place.
-  - **Hybrid Recommendation Engine**: A sophisticated model combining content-based and collaborative filtering to give you tailored suggestions.
-  - **Deep Data Analysis**: Leverages nuanced metrics like **playtime** and **achievements** to understand your unique playstyle.
-  - **Integrated Deal Tracking**: Get alerts when games on your wishlist go on sale across various storefronts.
-  - **Cross-Platform Clients**: Access your profile and recommendations via a web app (React) and a mobile app (React Native).
+- **Unified Game Library**: Connect multiple platform accounts to see your entire collection in one place.
+- **Hybrid Recommendation Engine**: Combines content-based and collaborative filtering for tailored suggestions.
+- **Deep Data Analysis**: Leverages nuanced metrics like **playtime** and **achievements** to understand playstyle.
+- **Integrated Deal Tracking**: Alerts when wishlist games go on sale across storefronts.
+- **Cross-Platform Clients**: Web (React) and Mobile (React Native).
+- **Privacy & Governance (Planned)**: Explicit consent flows, transparent data usage, opt-out pipelines.
 
------
+> Implementation Strategy: Start lean. A simplified single-process deployment (gateway + core logic + basic rec stub) can be used initially before decomposing into full microservices as scale and complexity justify it.
+
+---
 
 ## System Architecture
 
-The platform is built on a modern, scalable microservices architecture to ensure performance and separation of concerns.
+A modern, polyglot microservices architecture for scalability and separation of concerns.
 
-### Technology Stack
+**Stack Overview**
+- **Frontend**: React (Web), React Native (Mobile)
+- **API Gateway & ETLs**: Go
+- **Core Services**: Java (Spring Boot)
+- **Recommendation Service**: Python (scikit-learn, TensorFlow)
+- **Database**: PostgreSQL
+- **Messaging**: RabbitMQ (commands) & Apache Kafka (ingestion)
 
-  * **Frontend**: React (Web), React Native (Mobile)
-  * **API Gateway & ETLs**: Go (Golang)
-  * **Backend Core Services**: Java (Spring Boot)
-  * **Recommendation Service**: Python (scikit-learn, TensorFlow)
-  * **Database**: PostgreSQL
-  * **Asynchronous Messaging**: RabbitMQ (for inter-service commands), Apache Kafka (for data ingestion pipelines)
+Detailed diagrams and rationale: `./docs/architecture/strategic-analysis.md`.
 
-### System Utilization Flow
-
-This diagram illustrates how clients interact with the backend services through the API Gateway.
-
-```mermaid
-flowchart TD
-    subgraph Clientes["Clients"]
-        Mobile["Mobile (React Native)"]
-        WEB["Web (React)"]
-    end
-    subgraph subGraph1["Gateway Layer"]
-        APIGateway["API Gateway (Go)"]
-        AuthService["Auth Service"]
-    end
-    subgraph subGraph2["Core Services (Java & Python)"]
-        RecService["Recommendation Service (Python)"]
-        GameService["Game Service (Java)"]
-        UserService["User Service (Java)"]
-    end
-    Clientes --> APIGateway
-    APIGateway <--> AuthService
-    APIGateway --> RecService & GameService & UserService
-    GameService --> OffersService["Offers Service"]
-    UserService --> OffersService
-    RecService --> GameService
+ASCII (fallback) high-level view:
+```
+[ Clients ] -> [ API Gateway (Go) ] -> [ User Svc | Game Svc (Java) ] -> [ Rec Svc (Py) ]
+                               |              |                      
+                               v              v                      
+                         [ RabbitMQ ]   [ PostgreSQL ] <-> [ Kafka Ingestion ]
 ```
 
-### Games Data Pipeline
+---
 
-This chart shows how gaming data is collected, processed, and served.
+## Project Roadmap (High-Level)
 
-```mermaid
-graph TD
-    subgraph "Data Sources (ETLs in Go)"
-        direction LR
-        A[IGDB API]
-        B[PSN API]
-        C[XBOX API]
-        D[Steam API]
-    end
+| Phase | Focus | Core Outcomes |
+|-------|-------|---------------|
+| 1. De-Risking & Foundation | Steam-only MVP, legal/privacy readiness | Steam ingest, core services, onboarding quiz |
+| 2. Expansion & Growth | Console integrations (if licensed), freemium launch | Cross-platform rec engine v1, deal alerts, subscriptions |
+| 3. Moat & Scaling | Social + B2B data products | Network effects, analytics dashboards, insights offering |
 
-    subgraph "Processing & Storage"
-        PostgreSQL[PostgreSQL Database]
-    end
-    
-    subgraph "Business Logic"
-        GameService[Game Service]
-        RecService[Recommendation Service]
-    end
+Full strategic roadmap (with Gantt, KPIs): see `docs/architecture/strategic-analysis.md`.
+---
+## Documentation
 
-    subgraph "Client Delivery"
-        Gateway[API Gateway]
-        Client[Web/Mobile Client]
-    end
+### 1. Overview
+- Strategy & roadmap: `docs/architecture/strategic-analysis.md`
+- ADRs: `docs/adr/*`
 
-    A & B & C & D --> PostgreSQL
-    PostgreSQL --> GameService
-    GameService --> RecService
-    RecService --> Gateway
-    GameService --> Gateway
-    Gateway --> Client
-```
+### 2. Architectural Decisions
+- Backend languages: `docs/adr/0001-backend-language-selection.md`
+- Messaging: `docs/adr/0002-messaging-architecture.md`
+- Versioning: `docs/adr/0003-versioning-policy.md`
+- Branching: `docs/governance/branching-policy.md`
 
------
+### 3. Operations
+- Security: `docs/governance/security-policy.md`
+- Data classification: `docs/governance/data-classification.md`
+- Observability: `docs/operations/observability.md`
+- Runbooks: `docs/operations/runbooks/incident-response.md`
+- SLOs: `docs/operations/slo.md`
 
-## Project Roadmap
+### 4. Engineering
+- Glossary (canonical): `docs/glossary.md`
+- Messaging standards: `docs/messaging/envelope.md`
+- Load testing: `docs/operations/testing/load-testing-plan.md`
+- Contributing: `CONTRIBUTING.md`
+- Changelog: `CHANGELOG.md`
 
-The project is being developed according to a strategic, phased roadmap.
+### 5. Models / ML
+- (Future) Feature store
+- (Future) Recommendation model v1 (model card)
 
-  * **Phase 1: De-Risking & Foundation 🏛️**
+### 6. Security & Compliance
+- SECURITY policy: `SECURITY.md`
+- Secrets policy (in security policy)
+- Scans (SAST, SCA, IaC, container)
+- Incident response process
 
-      * **Goal**: Achieve legal and technical stability.
-      * **Focus**: Build a functional MVP using only the official Steam API while proactively initiating formal partnership discussions with Sony and Microsoft for legitimate data access.
+### 7. Data
+- Ingestion pipeline (strategic analysis)
+- Governance & retention (data classification)
 
-  * **Phase 2: Expansion & Growth 🚀**
-
-      * **Goal**: Achieve product-market fit and scale the user base.
-      * **Focus**: Integrate console data (upon securing partnerships), launch publicly with a freemium subscription model, and activate deal tracking features.
-
-  * **Phase 3: Moat-Building & Scaling 🏰**
-
-      * **Goal**: Create a defensible market position and activate long-term revenue streams.
-      * **Focus**: Build social features to drive network effects and develop a B2B data insights product for publishers and developers.
-
------
+### 8. Appendices
+- Mermaid diagrams embedded in source files
 
 ## Getting Started
 
-To get a local copy up and running for development and testing, please follow these steps.
+To get a local copy up and running for development and testing:
 
 ### Prerequisites
-
-You'll need the following tools installed on your system:
-
-  * Git
-  * Docker and Docker Compose
-  * Node.js (v18+)
-  * Go (v1.20+)
-  * Java (JDK 17+)
-  * Python (v3.9+)
+Install:
+- Git
+- Docker & Docker Compose
+- Node.js (v18+)
+- Go (v1.20+)
+- Java (JDK 17+)
+- Python (3.9+)
 
 ### Installation
+1. Clone repository
+```sh
+git clone https://github.com/AndersonGACFilho/Game-Insight.git
+cd Game-Insight
+```
+2. Copy env template & configure
+```sh
+cp example.env .env
+```
+3. Start services (when compose file available)
+```sh
+docker-compose up --build
+```
+4. (Optional) Run only web client (placeholder until structure is added)
+```sh
+cd web && npm install && npm start
+```
 
-1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/AndersonGACFilho/Game-Insight.git
-    ```
-2.  **Navigate to the project directory:**
-    ```sh
-    cd game-insight
-    ```
-3.  **Set up your environment variables.** Copy the example file and fill in your own API keys and configuration details.
-    ```sh
-    cp .env.example .env
-    ```
-4.  **Build and run all services using Docker Compose:**
-    ```sh
-    docker-compose up --build
-    ```
+---
 
------
+## Environment Variables
+(Adjust as services are created.)
+
+| Variable | Description                | Example |
+|----------|----------------------------|---------|
+| STEAM_API_KEY | Steam Web API key          | abc123... |
+| DATABASE_URL | Postgres connection string | postgres://user:pass@localhost:5432/game_insight |
+| KAFKA_BROKERS | Kafka bootstrap servers    | localhost:9092 |
+| RABBITMQ_URL | RabbitMQ connection URL    | amqp://guest:guest@localhost:5672/ |
+| JWT_SECRET | Token signing secret       | (generated) |
+| DEALS_API_KEY | IsThereAnyDeal key         | keyvalue |
+| LOG_LEVEL | Global log verbosity       | info |
+
+> Principle: store no secrets in code; prefer Docker secrets / vault in production.
+
+---
+
+## Development Workflow
+
+1. **Branching**: `main` (stable), feature branches: `feat/<scope>`, fixes: `fix/<scope>`.
+2. **Commits**: Prefer Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, etc.).
+3. **Code Style**: Add linters/formatters per language (planned): ESLint + Prettier, `gofmt`, `spotless` for Java, `black` for Python.
+4. **Testing**: (Placeholder) Add minimal tests early—especially for rec engine evaluation metrics.
+5. **CI/CD**: Planned pipeline stages: build → lint → unit tests → security scan → package → deploy.
+6. **Security**: No production credentials in `.env`. Rotate API keys quarterly.
+7. **Observability (Planned)**: Centralized logging, tracing (OpenTelemetry), metrics dashboards (Grafana).
+
+---
+
+## Core Metrics (Initial Targets)
+
+| Metric | Definition | Phase 1 Target | Phase 2 Target |
+|--------|------------|----------------|----------------|
+| Activation Rate | % new users completing Steam link + quiz | ≥ 40% | ≥ 55% |
+| 7-Day Retention | % returning within 7 days | ≥ 25% | ≥ 35% |
+| Recommendation CTR | Clicks / impressions on rec list | ≥ 8% | ≥ 12% |
+| Deal Alert Opt-in | % users enabling deal notifications | ≥ 30% | ≥ 45% |
+| DAU/MAU Ratio | Engagement depth proxy | ≥ 0.18 | ≥ 0.25 |
+| Premium Conversion | Free → paid (after launch) | – | 3–5% |
+
+> KPIs evolve; see strategic doc appendix for extended list.
+
+---
 
 ## Contributing
 
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are welcome. Please read `CONTRIBUTING.md` for:
+- Code of Conduct
+- Branch & PR guidelines
+- Review / merge criteria
 
-Please see the `CONTRIBUTING.md` file for our code of conduct and the process for submitting pull requests.
+Small improvements (docs, typos) are encouraged via separate PRs.
+
+---
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See `LICENSE`.
+
+---
+
+## Further Reading & Docs
+- Strategic Analysis & Roadmap: `docs/architecture/strategic-analysis.md`
+- ADRs: `docs/adr/*`
+- Glossary: `docs/glossary.md`
+- (Planned) API Reference: `docs/api/*.md`
+
+---
+
+## Disclaimer
+This project does not use unofficial console APIs in production. Console data integration is contingent upon formal, lawful partnerships. Users retain control over revoking data access.
+
+> Documentation metadata (Title, Version, Last Updated, Owner, Status) is being standardized across `docs/` progressively starting with v0.1.0.
