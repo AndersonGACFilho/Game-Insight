@@ -104,6 +104,19 @@ services:
     ports:
       - "8000:8000"
 
+  igdb-etl:
+    build: ./services/igdb-etl
+    environment:
+      - DATABASE_URL=postgres://user:pass@postgres:5432/game_insight?sslmode=disable
+      - IGDB_CLIENT_ID=${IGDB_CLIENT_ID:-replace_me}
+      - IGDB_CLIENT_SECRET=${IGDB_CLIENT_SECRET:-replace_me}
+      - IGDB_POLL_INTERVAL_SECONDS=900
+      - IGDB_BATCH_SIZE=100
+      - LOG_LEVEL=info
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
 volumes:
   pgdata:
-
