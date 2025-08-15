@@ -9,22 +9,41 @@ coverage/
 /dist/
 /build/
 /tmp/
+observability/
+*.iml
+*.class
+*.jar
+*.war
+*.ear
+*.swp
+*.swo
+*.bak
+*.old
+*.orig
+
 # Go
 services/gateway/bin/
+
 # Java
 **/target/
 **/.mvn/wrapper/maven-wrapper.jar
+
 # Python
 **/__pycache__/
 **/*.pyc
 .venv/
+
 # Node (futuro se houver)
 node_modules/
+
 # OS
 Thumbs.db
+
 # Poetry / Pip
 poetry.lock
+
 # Pycache
 **/*.pyo
+
 # Misc
 
