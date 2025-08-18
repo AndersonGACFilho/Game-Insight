@@ -60,3 +60,5 @@ poetry.lock
 
 # Misc
 
+/services/igdb-etl/go.sum
+/services/igdb-etl/go.work.sum
