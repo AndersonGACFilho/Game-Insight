@@ -102,3 +102,27 @@ func (r *GameRepository) FindGameIDBySourceRef(sourceRef int64) (*uuid.UUID, err
 	}
 	return &row.ID, nil
 }
+
+func (r *GameRepository) ResolveParentBySourceRef(game *entities.Game, parentSourceRef int64) error {
+	var parent entities.Game
+	if err := r.db.Select("game_id").Where("source_ref = ?", parentSourceRef).First(&parent).Error; err != nil {
+		return err
+	}
+	game.ParentGameID = &parent.ID
+	return nil
+}
+
+func (r *GameRepository) ExistsBySourceRef(sourceRef int64) (bool, error) {
+	var id uuid.UUID
+	err := r.db.Table("game").Select("game_id").Where("source_ref = ?", sourceRef).Scan(&id).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
+	}
+	if err != nil {
+		return false, err
+	}
+	if id == uuid.Nil {
+		return false, nil
+	}
+	return true, nil
+}

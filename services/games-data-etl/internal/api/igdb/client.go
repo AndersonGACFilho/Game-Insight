@@ -83,7 +83,12 @@ func (c *Client) GetToken() (string, error) {
 		c.logger.Error().Err(err).Msg("Failed to execute token request")
 		return "", fmt.Errorf("failed to execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			c.logger.Error().Err(err).Msg("Failed to close token response body")
+		}
+	}(resp.Body)
 
 	return c.processTokenResponse(resp)
 }
@@ -164,7 +169,12 @@ func (c *Client) executeGameRequest(requestBody string) ([]byte, error) {
 		c.logger.Error().Err(err).Msg("Failed to execute games request")
 		return nil, fmt.Errorf("failed to execute request: %w", err)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			c.logger.Error().Err(err).Msg("Failed to close games response body")
+		}
+	}(resp.Body)
 
 	return c.processGameResponse(resp)
 }
@@ -255,4 +265,52 @@ func (c *Client) processTokenResponse(resp *http.Response) (string, error) {
 		Msg("Token retrieved successfully")
 
 	return tokenResp.AccessToken, nil
+}
+
+// GetNamedEntities fetches arbitrary named dimension entities (genres, themes, keywords, etc.) by their numeric IGDB IDs.
+// endpoint examples: "genres", "themes", "keywords", "game_modes", "player_perspectives", "collections", "franchises".
+func (c *Client) GetNamedEntities(endpoint string, ids []int32) ([]byte, error) {
+	if err := c.validateToken(); err != nil {
+		return nil, err
+	}
+	if len(ids) == 0 {
+		return []byte("[]"), nil
+	}
+	// build id list
+	parts := make([]string, 0, len(ids))
+	for _, id := range ids {
+		parts = append(parts, fmt.Sprintf("%d", id))
+	}
+	where := fmt.Sprintf("where id = (%s);", strings.Join(parts, ","))
+	query := "fields id,name,slug,created_at,updated_at; " + where + fmt.Sprintf(" limit %d;", len(ids))
+	return c.executeGenericPOST(endpoint, query)
+}
+
+// executeGenericPOST executes a POST against an IGDB endpoint with a plain-text body.
+func (c *Client) executeGenericPOST(endpoint, bodyStr string) ([]byte, error) {
+	url := c.baseURL + endpoint
+	req, err := http.NewRequest("POST", url, strings.NewReader(bodyStr))
+	if err != nil {
+		return nil, fmt.Errorf("failed creating request: %w", err)
+	}
+	c.setGameRequestHeaders(req) // same headers
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			c.logger.Error().Err(err).Msg("Failed to close generic POST response body")
+		}
+	}(resp.Body)
+
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("read body: %w", err)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("endpoint %s failed (%d): %s", endpoint, resp.StatusCode, string(data))
+	}
+	return data, nil
 }

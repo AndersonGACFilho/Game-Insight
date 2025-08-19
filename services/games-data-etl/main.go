@@ -48,7 +48,7 @@ func main() {
 	// SRP Components
 	extractor := etl.NewIGDBExtractor(igdbClient, log, "")
 	transformer := etl.NewGameTransformer(log)
-	enricher := etl.NewDimensionEnricher(dimensionRepo)
+	enricher := etl.NewDimensionEnricher(dimensionRepo, igdbClient, log)
 	loader := etl.NewGameLoader(gameRepository)
 
 	// Pipeline
