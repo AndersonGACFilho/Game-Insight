@@ -1,11 +1,11 @@
 # IGDB Source Mapping
 
 Title: IGDB -> Game Service Data Mapping <br>
-Version: 0.3.1 <br>
-Last Updated: 2025-08-15 <br>
+Version: 0.3.2 <br>
+Last Updated: 2025-08-19 <br>
 Owner: Anderson (Sole Maintainer) <andersonfilho09@gmail.com> <br>
 Status: Draft <br>
-Decision: Added Achievements & fully extended entities (standardized formatting) <br>
+Decision: Added Achievements & fully extended entities (standardized formatting); Converted collections + age_ratings to many-to-many <br>
 
 > Compliance Notice (EN): IGDB data usage in this project is limited to fields retrieved via the official IGDB API under Twitch/IGDB terms for non-production / portfolio demonstration. No HTML scraping, credential circumvention, or redistribution of raw proprietary datasets is performed. Console platform user data (PSN / XBL) and any non‑authorized store data remain out of scope; only IGDB + Steam (public Web API) mappings are presently active. Any future production/commercial use would require a renewed license review, data minimization assessment, and explicit partner agreements for additional platforms.
 
@@ -89,19 +89,20 @@ Out of scope (for now): characters (no product use yet), search (utility only).
 | aggregated_rating | DECIMAL(5,2) | No | aggregated_rating | Round to 2 decimals. |
 | aggregated_rating_count | INT | No | aggregated_rating_count | >=0. |
 | popularity | DECIMAL(9,2) | No | popularity | Preserve scale 2. |
-| keywords | ARRAY<UUID> | No | keywords | Resolve via keyword ids -> keyword_id. |
-| genres | ARRAY<UUID> | No | genres | Resolve. |
-| themes | ARRAY<UUID> | No | themes | Resolve. |
-| game_modes | ARRAY<UUID> | No | game_modes | Resolve. |
-| player_perspectives | ARRAY<UUID> | No | player_perspectives | Resolve. |
-| collection_id | UUID | No | collection | Lookup collection. |
-| franchise_ids | ARRAY<UUID> | No | franchises | Resolve list. |
+| keywords | M2M (game_keyword) | No | keywords | Resolve via keyword ids. |
+| genres | M2M (game_genre) | No | genres | Resolve. |
+| themes | M2M (game_theme) | No | themes | Resolve. |
+| game_modes | M2M (game_mode_link) | No | game_modes | Resolve. |
+| player_perspectives | M2M (game_player_perspective) | No | player_perspectives | Resolve. |
+| collection_ids | M2M (game_collection) | No | collection | Singular IGDB collection id becomes a single pivot entry; future multi-source expansion possible. |
+| franchise_ids | M2M (game_franchise) | No | franchises | Resolve list. |
+| age_rating_ids | M2M (game_age_rating) | No | age_ratings | Each IGDB age rating id -> pivot row; age_rating is dimension. |
 | parent_game_id | UUID | No | parent_game | Link if exists. |
-| dlc_ids | ARRAY<UUID> | No | (derived) | All Games where parent_game == this AND category in (DLC_ADDON) |
-| expansion_ids | ARRAY<UUID> | No | (derived) | Games where parent_game == this AND category in (EXPANSION, STANDALONE_EXPANSION, EXPANDED_GAME) |
-| remake_ids | ARRAY<UUID> | No | (derived) | Games category=REMAKE with parent_game=this |
-| remaster_ids | ARRAY<UUID> | No | (derived) | Games category=REMASTER with parent_game=this |
-| port_ids | ARRAY<UUID> | No | (derived) | Games category=PORT with parent_game=this |
+| dlc_ids | Derived | No | (derived) | All Games where parent_game == this AND category in (DLC_ADDON) |
+| expansion_ids | Derived | No | (derived) | Games where parent_game == this AND category in (EXPANSION, STANDALONE_EXPANSION, EXPANDED_GAME) |
+| remake_ids | Derived | No | (derived) | Games category=REMAKE with parent_game=this |
+| remaster_ids | Derived | No | (derived) | Games category=REMASTER with parent_game=this |
+| port_ids | Derived | No | (derived) | Games category=PORT with parent_game=this |
 | created_at_source | TIMESTAMP | Yes | created_at | Convert epoch -> UTC. |
 | updated_at_source | TIMESTAMP | Yes | updated_at | Convert epoch -> UTC. |
 | ingestion_timestamp | TIMESTAMP | Yes | (system) | Now() at ingestion. |
@@ -330,6 +331,7 @@ Only enumerations are actually used now. Codes derive from IGDB docs (numeric) m
 - Age rating content descriptors full taxonomy.
 
 ## 15. Revision History
+- v0.3.2 (2025-08-19): Converted collections & age_ratings relationships to explicit many-to-many join tables (game_collection, game_age_rating); removed collection_id FK from game table.
 - v0.3.1 (2025-08-15): Standardized arrow formatting (->), wording cleanup.
 - v0.3.0 (2025-08-15): Added Achievements (GameAchievement) mapping, detailed relationship derived arrays (dlc/expansion/remake/remaster/port), extended scope to include all requested entities.
 - v0.2.0 (2025-08-15): Added full IGDB entity coverage appendix (Section 16), extended mapping tables & enums.

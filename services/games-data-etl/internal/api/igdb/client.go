@@ -114,7 +114,13 @@ func (c *Client) validateDateRange(startDate, endDate time.Time) error {
 }
 
 func (c *Client) buildGameQuery(params GameQueryParams) string {
-	fields := "fields id,name,summary,storyline,category,status,first_release_date,total_rating,total_rating_count,aggregated_rating,aggregated_rating_count,keywords,genres,themes,game_modes,player_perspectives,collection,franchises,parent_game,created_at,updated_at; "
+	fields := "fields id,name,summary,storyline,category,status,first_release_date," +
+		"total_rating,total_rating_count,aggregated_rating,aggregated_rating_count," +
+		"keywords,genres,themes,game_modes,player_perspectives,collections," +
+		"franchises,parent_game,platforms,involved_companies,alternative_names" +
+		",release_dates,screenshots,artworks,cover,videos,websites,multiplayer_modes," +
+		"language_supports,age_ratings,created_at,updated_at;"
+
 	pagination := fmt.Sprintf("limit %d; offset %d; ", params.Limit, params.Offset)
 	sortClause := "sort total_rating desc; "
 
@@ -276,13 +282,37 @@ func (c *Client) GetNamedEntities(endpoint string, ids []int32) ([]byte, error) 
 	if len(ids) == 0 {
 		return []byte("[]"), nil
 	}
-	// build id list
 	parts := make([]string, 0, len(ids))
 	for _, id := range ids {
 		parts = append(parts, fmt.Sprintf("%d", id))
 	}
 	where := fmt.Sprintf("where id = (%s);", strings.Join(parts, ","))
+	// first attempt with timestamps
 	query := "fields id,name,slug,created_at,updated_at; " + where + fmt.Sprintf(" limit %d;", len(ids))
+	data, err := c.executeGenericPOST(endpoint, query)
+	if err != nil && strings.Contains(err.Error(), "Invalid Field") {
+		// retry with minimal fields
+		c.logger.Debug().Str("endpoint", endpoint).Msg("Retrying named entity fetch without created_at/updated_at")
+		query2 := "fields id,name,slug; " + where + fmt.Sprintf(" limit %d;", len(ids))
+		return c.executeGenericPOST(endpoint, query2)
+	}
+	return data, err
+}
+
+// GetEntitiesByIDs fetches arbitrary endpoint entities with selected fields for given ids.
+func (c *Client) GetEntitiesByIDs(endpoint string, ids []int32, fields string) ([]byte, error) {
+	if err := c.validateToken(); err != nil {
+		return nil, err
+	}
+	if len(ids) == 0 {
+		return []byte("[]"), nil
+	}
+	parts := make([]string, 0, len(ids))
+	for _, id := range ids {
+		parts = append(parts, fmt.Sprintf("%d", id))
+	}
+	where := fmt.Sprintf("where id = (%s);", strings.Join(parts, ","))
+	query := "fields " + fields + "; " + where + fmt.Sprintf(" limit %d;", len(ids))
 	return c.executeGenericPOST(endpoint, query)
 }
 
@@ -313,4 +343,13 @@ func (c *Client) executeGenericPOST(endpoint, bodyStr string) ([]byte, error) {
 		return nil, fmt.Errorf("endpoint %s failed (%d): %s", endpoint, resp.StatusCode, string(data))
 	}
 	return data, nil
+}
+
+// GetEntitiesByWhere fetches entities via an arbitrary where clause (used for achievements by game).
+func (c *Client) GetEntitiesByWhere(endpoint, where, fields string, limit int) ([]byte, error) {
+	if err := c.validateToken(); err != nil {
+		return nil, err
+	}
+	query := fmt.Sprintf("fields %s; where %s; limit %d;", fields, where, limit)
+	return c.executeGenericPOST(endpoint, query)
 }

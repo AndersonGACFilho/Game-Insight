@@ -33,18 +33,17 @@ func (r *DimensionRepository) PerspectivesBySourceRefs(refs []int32) ([]entities
 func (r *DimensionRepository) FranchisesBySourceRefs(refs []int32) ([]entities.Franchise, error) {
 	return fetch[entities.Franchise](r.db, refs)
 }
-func (r *DimensionRepository) CollectionBySourceRef(ref *int32) (*entities.Collection, error) {
-	if ref == nil {
-		return nil, nil
-	}
-	var c entities.Collection
-	if err := r.db.Where("source_ref = ?", *ref).First(&c).Error; err != nil {
-		return nil, err
-	}
-	return &c, nil
+func (r *DimensionRepository) PlatformsBySourceRefs(refs []int32) ([]entities.Platform, error) {
+	return fetch[entities.Platform](r.db, refs)
+}
+func (r *DimensionRepository) CollectionsBySourceRefs(refs []int32) ([]entities.Collection, error) {
+	return fetch[entities.Collection](r.db, refs)
+}
+func (r *DimensionRepository) AgeRatingsBySourceRefs(refs []int32) ([]entities.AgeRating, error) {
+	return fetch[entities.AgeRating](r.db, refs)
 }
 
-// Upsert helpers (create if missing, update mutable fields if existing and newer)
+// UpsertGenres Upsert helpers (create if missing, update mutable fields if existing and newer)
 func (r *DimensionRepository) UpsertGenres(items []igdb_models.IGDBNamedEntity) error {
 	return r.upsertNamed("genre", "genre_id", items)
 }
@@ -66,11 +65,131 @@ func (r *DimensionRepository) UpsertFranchises(items []igdb_models.IGDBNamedEnti
 func (r *DimensionRepository) UpsertCollections(items []igdb_models.IGDBNamedEntity) error {
 	return r.upsertNamed("collection", "collection_id", items)
 }
+func (r *DimensionRepository) UpsertPlatforms(items []igdb_models.IGDBPlatform) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		for _, it := range items {
+			res := tx.Table("platform").Where("source_ref = ?", it.ID).Updates(map[string]any{
+				"name":              it.Name,
+				"abbreviation":      nullIfEmpty(it.Abbrev),
+				"generation":        it.Generation,
+				"category_code":     it.Category,
+				"updated_at_source": it.UpdatedAt.Time,
+			})
+			if res.Error != nil {
+				return res.Error
+			}
+			if res.RowsAffected == 0 {
+				insert := map[string]any{
+					"platform_id":       uuid.New(),
+					"source_ref":        it.ID,
+					"name":              it.Name,
+					"abbreviation":      nullIfEmpty(it.Abbrev),
+					"generation":        it.Generation,
+					"category_code":     it.Category,
+					"created_at_source": it.CreatedAt.Time,
+					"updated_at_source": it.UpdatedAt.Time,
+				}
+				if err := tx.Table("platform").Create(insert).Error; err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
+}
+func (r *DimensionRepository) UpsertCompanies(items []igdb_models.IGDBCompany) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		for _, it := range items {
+			res := tx.Table("company").Where("source_ref = ?", it.ID).Updates(map[string]any{
+				"name":              it.Name,
+				"country":           it.Country,
+				"description":       nullIfEmpty(it.Description),
+				"updated_at_source": it.UpdatedAt.Time,
+			})
+			if res.Error != nil {
+				return res.Error
+			}
+			if res.RowsAffected == 0 {
+				insert := map[string]any{
+					"company_id":        uuid.New(),
+					"source_ref":        it.ID,
+					"name":              it.Name,
+					"country":           it.Country,
+					"description":       nullIfEmpty(it.Description),
+					"created_at_source": it.CreatedAt.Time,
+					"updated_at_source": it.UpdatedAt.Time,
+				}
+				if err := tx.Table("company").Create(insert).Error; err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
+}
+
+func (r *DimensionRepository) CompanyIDsBySourceRefs(refs []int64) (map[int64]uuid.UUID, error) {
+	result := map[int64]uuid.UUID{}
+	if len(refs) == 0 {
+		return result, nil
+	}
+	var rows []struct {
+		SourceRef int64
+		CompanyID uuid.UUID
+	}
+	if err := r.db.Table("company").Select("source_ref, company_id").Where("source_ref IN ?", refs).Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+	for _, rw := range rows {
+		result[rw.SourceRef] = rw.CompanyID
+	}
+	return result, nil
+}
+
+func (r *DimensionRepository) PlatformIDsBySourceRefs(refs []int64) (map[int64]uuid.UUID, error) {
+	result := map[int64]uuid.UUID{}
+	if len(refs) == 0 {
+		return result, nil
+	}
+	var rows []struct {
+		SourceRef  int64
+		PlatformID uuid.UUID
+	}
+	if err := r.db.Table("platform").Select("source_ref, platform_id").Where("source_ref IN ?", refs).Scan(&rows).Error; err != nil {
+		return nil, err
+	}
+	for _, rw := range rows {
+		result[rw.SourceRef] = rw.PlatformID
+	}
+	return result, nil
+}
+
+func nullIfEmpty(s string) any {
+	if s == "" {
+		return nil
+	}
+	return s
+}
+
+// Generic fetch helper using Go generics.
+func fetch[T any](db *gorm.DB, refs []int32) ([]T, error) {
+	var result []T
+	if len(refs) == 0 {
+		return result, nil
+	}
+	int64s := make([]int64, 0, len(refs))
+	for _, r := range refs {
+		int64s = append(int64s, int64(r))
+	}
+	if err := db.Where("source_ref IN ?", int64s).Find(&result).Error; err != nil {
+		return nil, err
+	}
+	return result, nil
+}
 
 func (r *DimensionRepository) upsertNamed(table, idCol string, items []igdb_models.IGDBNamedEntity) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		for _, it := range items {
-			// Try update first if newer
 			res := tx.Table(table).Where("source_ref = ?", it.ID).Updates(map[string]any{
 				"name":              it.Name,
 				"slug":              it.Slug,
@@ -79,7 +198,7 @@ func (r *DimensionRepository) upsertNamed(table, idCol string, items []igdb_mode
 			if res.Error != nil {
 				return res.Error
 			}
-			if res.RowsAffected == 0 { // insert
+			if res.RowsAffected == 0 {
 				insert := map[string]any{
 					idCol:               uuid.New(),
 					"source_ref":        it.ID,
@@ -97,18 +216,37 @@ func (r *DimensionRepository) upsertNamed(table, idCol string, items []igdb_mode
 	})
 }
 
-// Generic fetch helper using Go generics.
-func fetch[T any](db *gorm.DB, refs []int32) ([]T, error) {
-	var result []T
-	if len(refs) == 0 {
-		return result, nil
+func (r *DimensionRepository) UpsertAgeRatings(items []igdb_models.IGDBAgeRating) error {
+	if len(items) == 0 {
+		return nil
 	}
-	int64s := make([]int64, 0, len(refs))
-	for _, r := range refs {
-		int64s = append(int64s, int64(r))
-	}
-	if err := db.Where("source_ref IN ?", int64s).Find(&result).Error; err != nil {
-		return nil, err
-	}
-	return result, nil
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		for _, it := range items {
+			upd := map[string]any{
+				"organization_code": it.Category,
+				"rating_code":       it.Rating,
+				"synopsis":          nullIfEmpty(it.Synopsis),
+				"updated_at_source": it.UpdatedAt.Time,
+			}
+			res := tx.Table("age_rating").Where("source_ref = ?", it.ID).Updates(upd)
+			if res.Error != nil {
+				return res.Error
+			}
+			if res.RowsAffected == 0 { // insert
+				ins := map[string]any{
+					"age_rating_id":     uuid.New(),
+					"source_ref":        it.ID,
+					"organization_code": it.Category,
+					"rating_code":       it.Rating,
+					"synopsis":          nullIfEmpty(it.Synopsis),
+					"created_at_source": it.CreatedAt.Time,
+					"updated_at_source": it.UpdatedAt.Time,
+				}
+				if err := tx.Table("age_rating").Create(ins).Error; err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
 }

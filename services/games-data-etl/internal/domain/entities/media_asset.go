@@ -12,7 +12,7 @@ type MediaAsset struct {
 	Type     string     `json:"type" gorm:"column:type"` // COVER, SCREENSHOT, ARTWORK, etc.
 	Width    *int32     `json:"width" gorm:"column:width"`
 	Height   *int32     `json:"height" gorm:"column:height"`
-	URL      string     `json:"url" gorm:"column:url"`
+	URL      string     `json:"url" gorm:"column:url_original"`
 	Checksum *string    `json:"checksum" gorm:"column:checksum"`
 
 	// Association

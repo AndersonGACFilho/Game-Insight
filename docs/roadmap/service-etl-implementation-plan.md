@@ -271,8 +271,7 @@ Definition of Done for a task includes: code + tests + docs updated + metrics in
 4. Update docs index + CHANGELOG  
 
 ## 11. Immediate Next Steps (Actionable)
-Status legend: [ ] pending, [WIP] in progress, [x] done.
-1. [x] Add migrations: ingestion_watermark (0004_ingestion_foundations.sql)  
+Status legend: [ ] pending, [WIP] in progress, [x] done.  
 2. [ ] Scaffold IGDB ETL worker (skeleton + config)  
 3. [ ] Implement Game Service base endpoints + pagination  
 4. [ ] Gateway reverse proxy + API key middleware  

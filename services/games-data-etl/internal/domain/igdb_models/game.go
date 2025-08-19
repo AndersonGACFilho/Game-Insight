@@ -1,6 +1,7 @@
 package igdb_models
 
 // IGDBGame represents the structure of a game from the IGDB API
+// Note: IGDB uses singular 'cover' field (single image id). We capture it separately.
 type IGDBGame struct {
 	ID                    int64    `json:"id"`
 	Name                  string   `json:"name"`
@@ -19,9 +20,22 @@ type IGDBGame struct {
 	Themes                []int32  `json:"themes"`
 	GameModes             []int32  `json:"game_modes"`
 	PlayersPerspectives   []int32  `json:"player_perspectives"`
-	Collection            *int32   `json:"collection"`
+	Collections           []int32  `json:"collections"`
 	Frachises             []int32  `json:"franchises"`
 	ParentGame            *int32   `json:"parent_game"`
+	Platforms             []int32  `json:"platforms"`
+	InvolvedCompanies     []int32  `json:"involved_companies"`
+	AlternativeNames      []int32  `json:"alternative_names"`
+	ReleaseDates          []int32  `json:"release_dates"`
+	Screenshots           []int32  `json:"screenshots"`
+	Artworks              []int32  `json:"artworks"`
+	Cover                 *int32   `json:"cover"`
+	MultiplayerModes      []int32  `json:"multiplayer_modes"`
+	LanguageSupports      []int32  `json:"language_supports"`
+	AgeRatings            []int32  `json:"age_ratings"`
+	Achievements          []int32  `json:"achievements"`
+	Websites              []int32  `json:"websites"`
+	Videos                []int32  `json:"videos"`
 	CreatedAt             UnixTime `json:"created_at"`
 	UpdatedAt             UnixTime `json:"updated_at"`
 }

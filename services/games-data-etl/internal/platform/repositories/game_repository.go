@@ -23,12 +23,10 @@ func (r *GameRepository) Save(game *entities.Game) error {
 // Assumes dimension entities (genres, themes, etc.) already exist.
 func (r *GameRepository) SaveWithAssociations(game *entities.Game) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
-		// Try to find existing by source_ref
 		var existing entities.Game
 		err := tx.Where("source_ref = ?", game.SourceMeta.SourceRef).First(&existing).Error
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				// Insert new
 				if err := tx.Create(game).Error; err != nil {
 					return err
 				}
@@ -36,22 +34,133 @@ func (r *GameRepository) SaveWithAssociations(game *entities.Game) error {
 				return err
 			}
 		} else {
-			// Update existing: ensure we keep same ID
+			// Preserve existing ID and propagate to children before update
+			oldID := game.ID
 			game.ID = existing.ID
+			propagateChildIDs(game, existing.ID)
 			if err := tx.Model(&existing).Updates(game).Error; err != nil {
 				return err
 			}
+			_ = oldID // for clarity; old transient ID discarded
 		}
 
-		// Replace many-to-many associations (idempotent)
-		assocNames := []string{"Genres", "Themes", "Keywords", "GameModes", "Perspectives", "Franchises"}
+		// Replace many-to-many sets (now includes AgeRatings)
+		assocNames := []string{"Genres", "Themes", "Keywords", "GameModes", "Perspectives", "Franchises", "AgeRatings", "Collections", "Platforms"}
 		for _, name := range assocNames {
 			if err := tx.Model(game).Association(name).Replace(r.sliceForAssociation(game, name)); err != nil {
 				return err
 			}
 		}
+
+		gid := game.ID
+		// Helper inline to fully replace one-to-many sets (delete + bulk insert) (AgeRatings removed from children handling)
+		replaceChildren := func(model any, rows any) error {
+			if err := tx.Where("game_id = ?", gid).Delete(model).Error; err != nil {
+				return err
+			}
+			switch v := rows.(type) {
+			case []entities.GameAltName:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
+			case []entities.InvolvedCompany:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
+			case []entities.ReleaseDate:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
+			case []entities.MediaAsset:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
+			case []entities.MultiplayerMode:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
+			case []entities.GameLanguageSupport:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
+			case []entities.GameWebsite:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
+			case []entities.GameVideo:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
+			}
+			return nil
+		}
+
+		// Children replacement (idempotent)
+		if err := replaceChildren(&entities.GameAltName{}, game.GameAltNames); err != nil {
+			return err
+		}
+		if err := replaceChildren(&entities.InvolvedCompany{}, game.Companies); err != nil {
+			return err
+		}
+		if err := replaceChildren(&entities.ReleaseDate{}, game.ReleaseDates); err != nil {
+			return err
+		}
+		if err := replaceChildren(&entities.MediaAsset{}, game.MediaAssets); err != nil {
+			return err
+		}
+		if err := replaceChildren(&entities.MultiplayerMode{}, game.MultiplayerModes); err != nil {
+			return err
+		}
+		if err := replaceChildren(&entities.GameLanguageSupport{}, game.LanguageSupports); err != nil {
+			return err
+		}
+		if err := replaceChildren(&entities.GameAchievement{}, game.Achievements); err != nil {
+			return err
+		}
+		if err := replaceChildren(&entities.GameWebsite{}, game.Websites); err != nil {
+			return err
+		}
+		if err := replaceChildren(&entities.GameVideo{}, game.Videos); err != nil {
+			return err
+		}
+
 		return nil
 	})
+}
+
+// propagateChildIDs updates one-to-many child slices to use the persisted gameID (AgeRatings removed as m2m).
+func propagateChildIDs(g *entities.Game, gid uuid.UUID) {
+	for i := range g.GameAltNames {
+		g.GameAltNames[i].GameID = gid
+	}
+	for i := range g.Companies {
+		g.Companies[i].GameID = gid
+	}
+	for i := range g.ReleaseDates {
+		g.ReleaseDates[i].GameID = gid
+	}
+	for i := range g.MediaAssets {
+		if g.MediaAssets[i].GameID != nil {
+			*g.MediaAssets[i].GameID = gid
+		} else {
+			g.MediaAssets[i].GameID = &gid
+		}
+	}
+	for i := range g.MultiplayerModes {
+		g.MultiplayerModes[i].GameID = gid
+	}
+	for i := range g.LanguageSupports {
+		g.LanguageSupports[i].GameID = gid
+	}
+	for i := range g.Achievements {
+		g.Achievements[i].GameID = gid
+	}
+	for i := range g.Websites {
+		g.Websites[i].GameID = gid
+	}
+	for i := range g.Videos {
+		g.Videos[i].GameID = gid
+	}
 }
 
 // sliceForAssociation returns the slice value for the given association name.
@@ -69,6 +178,12 @@ func (r *GameRepository) sliceForAssociation(game *entities.Game, name string) a
 		return game.Perspectives
 	case "Franchises":
 		return game.Franchises
+	case "AgeRatings":
+		return game.AgeRatings
+	case "Collections":
+		return game.Collections
+	case "Platforms":
+		return game.Platforms
 	default:
 		return nil
 	}
