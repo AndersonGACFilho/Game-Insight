@@ -10,6 +10,8 @@ import (
 type AgeRating struct {
 	ID           uuid.UUID     `json:"age_rating_id" gorm:"column:age_rating_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta                 // embeds source_ref, created_at_source, updated_at_source
+	GameID       uuid.UUID     `json:"game_id" gorm:"column:game_id;type:uuid;not null"`
+	Game         *Game         `json:"game" gorm:"foreignKey:GameID"`
 	Organization *AgeRatingOrg `json:"organization" gorm:"column:organization_code"`
 	RatingCode   *int16        `json:"rating_code" gorm:"column:rating_code"`
 	Synopsis     *string       `json:"synopsis" gorm:"column:synopsis"`

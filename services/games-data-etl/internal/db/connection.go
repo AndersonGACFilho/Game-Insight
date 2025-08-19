@@ -25,17 +25,17 @@ type Config struct {
 // LoadConfig builds Config from environment with sensible defaults.
 func LoadConfig() Config {
 	return Config{
-		Host:     getenv("DB_HOST", "localhost"),
-		Port:     getenv("DB_PORT", "5432"),
-		User:     getenv("DB_USER", "user"),
-		Password: getenv("DB_PASSWORD", "pass"),
-		Name:     getenv("DB_NAME", "game_insight"),
-		SSLMode:  getenv("DB_SSLMODE", "disable"),
-		Timezone: getenv("DB_TIMEZONE", "UTC"),
+		Host:     Getenv("DB_HOST", "localhost"),
+		Port:     Getenv("DB_PORT", "5432"),
+		User:     Getenv("DB_USER", "user"),
+		Password: Getenv("DB_PASSWORD", "pass"),
+		Name:     Getenv("DB_NAME", "game_insight"),
+		SSLMode:  Getenv("DB_SSLMODE", "disable"),
+		Timezone: Getenv("DB_TIMEZONE", "UTC"),
 	}
 }
 
-func getenv(k, def string) string {
+func Getenv(k, def string) string {
 	v := os.Getenv(k)
 	if v == "" {
 		return def
