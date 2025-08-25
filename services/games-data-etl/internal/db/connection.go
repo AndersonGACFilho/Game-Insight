@@ -11,7 +11,8 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-// Config holds database configuration loaded from environment.
+// Config holds database configuration loaded from
+// environment.
 type Config struct {
 	Host     string
 	Port     string
@@ -22,7 +23,8 @@ type Config struct {
 	Timezone string
 }
 
-// LoadConfig builds Config from environment with sensible defaults.
+// LoadConfig builds Config from environment with sensible
+// defaults.
 func LoadConfig() Config {
 	return Config{
 		Host:     Getenv("DB_HOST", "localhost"),
@@ -43,7 +45,8 @@ func Getenv(k, def string) string {
 	return v
 }
 
-// Open opens a *gorm.DB with tuned settings (no pluralization, structured logger).
+// Open opens a *gorm.DB with tuned settings (no
+// pluralization, structured logger).
 func Open(cfg Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s TimeZone=%s",

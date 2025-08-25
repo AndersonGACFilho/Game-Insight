@@ -6,6 +6,14 @@ import (
 	"game-data-etl/internal/etl"
 	"game-data-etl/internal/platform/logger"
 	"game-data-etl/internal/platform/repositories"
+	"github.com/prometheus/client_golang/prometheus/collectors"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -14,9 +22,9 @@ func main() {
 
 	// Configuration
 	cfg := db.LoadConfig()
-	// You'll want to add an IGDB API key and other configs here
 	igdbSecret := db.Getenv("IGDB_SECRET", "bfuou8knx9hzqrx57x8kyr832ryz62")
 	clientID := db.Getenv("IGDB_CLIENT_ID", "dqo79q2m2xekhsb38anwwa9fodctel")
+	metricsPort := db.Getenv("METRICS_PORT", "9108")
 
 	// Database
 	dbConn, err := db.Open(cfg)
@@ -27,7 +35,8 @@ func main() {
 
 	// Repositories
 	gameRepository := repositories.NewGameRepository(dbConn)
-	dimensionRepo := repositories.NewDimensionRepository(dbConn)
+	dimensionRepo :=
+		repositories.NewDimensionRepository(dbConn)
 
 	// API Client
 	igdbClient := igdb.NewClient(
@@ -45,13 +54,47 @@ func main() {
 	}
 	log.Info().Msg("IGDB token retrieved successfully")
 
+	// Prometheus metrics registry and instruments
+	reg := prometheus.NewRegistry()
+	etlMetrics := etl.NewMetrics(reg)
+	// Expose build info / Go collector
+	reg.MustRegister(collectors.NewGoCollector())
+	reg.MustRegister(collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}))
+
+	// Metrics HTTP server (non-blocking)
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
+	go func() {
+		addr := ":" + metricsPort
+		log.Info().Str("addr", addr).Msg("Metrics server listening")
+		if err := http.ListenAndServe(addr, mux); err != nil {
+			log.Error().Err(err).Msg("Metrics server error")
+		}
+	}()
+
 	// SRP Components
-	extractor := etl.NewIGDBExtractor(igdbClient, log, "")
+	extractor := etl.NewIGDBExtractor(
+		igdbClient,
+		log,
+		"rating > 60 & aggregated_rating_count > 10",
+	)
 	transformer := etl.NewGameTransformer(log)
-	enricher := etl.NewDimensionEnricher(dimensionRepo, igdbClient, log)
+	enricher := etl.NewCompositeEnricher(dimensionRepo,
+		igdbClient, log)
 	loader := etl.NewGameLoader(gameRepository)
 
+	batchLimit := 500
+	if v := os.Getenv("BATCH_LIMIT"); v != "" {
+		// naive parse
+		if n, _ := strconv.Atoi(v); n > 0 {
+			batchLimit = n
+		}
+	}
+
 	// Pipeline
-	pipeline := etl.NewPipeline(log, extractor, transformer, enricher, loader, 500)
+	pipeline := etl.NewPipeline(log, extractor, transformer,
+		enricher, loader, batchLimit, etlMetrics)
+	start := time.Now()
 	pipeline.Run()
+	log.Info().Dur("total_runtime", time.Since(start)).Msg("Pipeline run completed")
 }

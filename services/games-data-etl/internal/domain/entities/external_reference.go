@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// ExternalReference stores an external store or system identifier for a game.
+// ExternalReference stores an external store or system
+// identifier for a game.
 type ExternalReference struct {
 	ID         uuid.UUID `json:"external_reference_id" gorm:"column:external_reference_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	GameID     uuid.UUID `json:"game_id" gorm:"column:game_id;type:uuid;not null"`

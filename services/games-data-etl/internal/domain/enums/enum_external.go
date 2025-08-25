@@ -1,6 +1,7 @@
 package enums
 
-// ExternalRefCategory represents external_games.category codes (subset in use).
+// ExternalRefCategory represents external_games.category
+// codes (subset in use).
 type ExternalRefCategory int
 
 const (
@@ -14,7 +15,8 @@ const (
 	ExternalRefUnknown    ExternalRefCategory = -1
 )
 
-// LanguageSupportType enumerates language_support_types (subset / planned).
+// LanguageSupportType enumerates language_support_types
+// (subset / planned).
 type LanguageSupportType int
 
 const (
@@ -37,7 +39,8 @@ const (
 	ReviewSourceEurogamer  ReviewSource = "EUROGAMER"
 )
 
-// AchievementCategory groups achievements by origin (placeholder codes).
+// AchievementCategory groups achievements by origin
+// (placeholder codes).
 type AchievementCategory int
 
 const (
@@ -47,7 +50,8 @@ const (
 	AchievementCategoryUnknown   AchievementCategory = 99
 )
 
-// MediaAssetType distinguishes asset purposes including achievement icons.
+// MediaAssetType distinguishes asset purposes including
+// achievement icons.
 type MediaAssetType string
 
 const (

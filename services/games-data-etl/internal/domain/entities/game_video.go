@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// GameVideo stores metadata about an official trailer or gameplay video.
+// GameVideo stores metadata about an official trailer or
+// gameplay video.
 type GameVideo struct {
 	ID uuid.UUID `json:"game_video_id" gorm:"column:game_video_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta

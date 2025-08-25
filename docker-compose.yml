@@ -104,19 +104,88 @@ services:
     ports:
       - "8000:8000"
 
-  igdb-etl:
-    build: ./services/igdb-etl
+  games-data-etl:
+    build: ./services/games-data-etl
     environment:
-      - DATABASE_URL=postgres://user:pass@postgres:5432/game_insight?sslmode=disable
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=pass
+      - DB_NAME=game_insight
+      - DB_SSLMODE=disable
+      - DB_TIMEZONE=UTC
       - IGDB_CLIENT_ID=${IGDB_CLIENT_ID:-replace_me}
-      - IGDB_CLIENT_SECRET=${IGDB_CLIENT_SECRET:-replace_me}
-      - IGDB_POLL_INTERVAL_SECONDS=900
-      - IGDB_BATCH_SIZE=100
+      - IGDB_SECRET=${IGDB_CLIENT_SECRET:-replace_me}
+      - BATCH_LIMIT=${IGDB_BATCH_SIZE:-100}
       - LOG_LEVEL=info
+      - LOG_FORMAT=console
+      - LOKI_URL=http://loki:3100
+      - LOKI_LABELS=service=games-data-etl,env=dev
+      - METRICS_PORT=9108
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
     depends_on:
       - postgres
+      - loki
+      - prometheus
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9108/metrics"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
+    ports:
+      - "9108:9108"
+
+  loki:
+    image: grafana/loki:2.9.3
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3100/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    ports:
+      - "9090:9090"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    image: grafana/grafana:10.4.5
+    depends_on:
+      - prometheus
+      - loki
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./observability/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./observability/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
 
 volumes:
   pgdata:
+  loki-data:
+  prometheus-data:
+  grafana-data:

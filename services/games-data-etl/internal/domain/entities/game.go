@@ -5,8 +5,10 @@ import (
 	"time"
 )
 
-// Game is the central catalog entity representing a playable title.
-// Relationship slice fields use separate link tables; they are ignored by GORM mapping with gorm:"-".
+// Game is the central catalog entity representing a
+// playable title.
+// Relationship slice fields use separate link tables; they
+// are ignored by GORM mapping with gorm:"-".
 type Game struct {
 	ID uuid.UUID `json:"game_id" gorm:"column:game_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta
@@ -59,7 +61,8 @@ type Game struct {
 	MultiplayerModes []MultiplayerMode     `json:"multiplayer_modes" gorm:"foreignKey:GameID"`
 	ExternalRefs     []ExternalReference   `json:"external_references" gorm:"foreignKey:GameID"`
 
-	// Derived relationships (computed from category and parent_game)
+	// Derived relationships (computed from category and
+	// parent_game)
 	DLCs       []Game `json:"dlcs" gorm:"foreignKey:ParentGameID;where:category_code = 1"`
 	Expansions []Game `json:"expansions" gorm:"foreignKey:ParentGameID;where:category_code IN (2,4,10)"`
 	Remasters  []Game `json:"remasters" gorm:"foreignKey:ParentGameID;where:category_code = 9"`

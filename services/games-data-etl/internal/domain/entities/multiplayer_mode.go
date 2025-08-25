@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// MultiplayerMode details multiplayer capabilities for a game.
+// MultiplayerMode details multiplayer capabilities for a
+// game.
 type MultiplayerMode struct {
 	ID uuid.UUID `json:"multiplayer_mode_id" gorm:"column:multiplayer_mode_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta

@@ -1,6 +1,7 @@
 package igdb_models
 
-// Additional IGDB lightweight models for related entities needed for enrichment.
+// Additional IGDB lightweight models for related entities
+// needed for enrichment.
 
 type IGDBPlatform struct {
 	ID         int64    `json:"id"`
@@ -92,25 +93,38 @@ type IGDBLanguageSupport struct {
 	UpdatedAt UnixTime `json:"updated_at"`
 }
 
-// IGDBAgeRating represents a single age rating issued by a regional organization.
+// IGDBAgeRating represents a single age rating issued by a
+// regional organization.
 type IGDBAgeRating struct {
 	ID                  int64    `json:"id"`
-	Category            int16    `json:"category"` // maps to AgeRatingOrg
-	Rating              int16    `json:"rating"`   // organization-specific rating code
+	Organization        int64    `json:"organization"`
+	RatingCategory      int64    `json:"rating_category"`
 	RatingCoverURL      string   `json:"rating_cover_url"`
 	Synopsis            string   `json:"synopsis"`
-	ContentDescriptions []int32  `json:"content_descriptions"`
+	ContentDescriptions []int64  `json:"rating_content_descriptions"`
 	CreatedAt           UnixTime `json:"created_at"`
 	UpdatedAt           UnixTime `json:"updated_at"`
 }
 
-// IGDBAgeRatingContentDescription represents descriptors (violence, etc.). Currently unused; placeholder for future enrichment.
-type IGDBAgeRatingContentDescription struct {
-	ID          int64    `json:"id"`
-	Category    int16    `json:"category"`
-	Description string   `json:"description"`
-	CreatedAt   UnixTime `json:"created_at"`
-	UpdatedAt   UnixTime `json:"updated_at"`
+// IGDBAgeRatingOrganization represents rating
+// organizations (ESRB, PEGI, etc.)
+type IGDBAgeRatingOrganization struct {
+	ID        int64    `json:"id"`
+	Name      string   `json:"name"`
+	Checksum  string   `json:"checksum"`
+	CreatedAt UnixTime `json:"created_at"`
+	UpdatedAt UnixTime `json:"updated_at"`
+}
+
+// IGDBAgeRatingContentDescriptionV2 represents descriptors (violence, etc.) v2 endpoint.
+type IGDBAgeRatingContentDescriptionV2 struct {
+	ID              int64    `json:"id"`
+	Organization    int64    `json:"organization"`
+	Description     string   `json:"description"`
+	DescriptionType int64    `json:"description_type"`
+	CreatedAt       UnixTime `json:"created_at"`
+	UpdatedAt       UnixTime `json:"updated_at"`
+	Checksum        string   `json:"checksum"`
 }
 
 type IGDBAchievement struct {

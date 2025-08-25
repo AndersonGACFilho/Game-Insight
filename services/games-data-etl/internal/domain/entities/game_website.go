@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// GameWebsite represents an external website reference for a game (official, store, social, etc.).
+// GameWebsite represents an external website reference for
+// a game (official, store, social, etc.).
 type GameWebsite struct {
 	ID uuid.UUID `json:"website_id" gorm:"column:game_website_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta

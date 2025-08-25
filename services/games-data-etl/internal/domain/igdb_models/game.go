@@ -1,7 +1,9 @@
 package igdb_models
 
-// IGDBGame represents the structure of a game from the IGDB API
-// Note: IGDB uses singular 'cover' field (single image id). We capture it separately.
+// IGDBGame represents the structure of a game from the IGDB
+// API
+// Note: IGDB uses singular 'cover' field (single image id).
+// We capture it separately.
 type IGDBGame struct {
 	ID                    int64    `json:"id"`
 	Name                  string   `json:"name"`

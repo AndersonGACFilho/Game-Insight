@@ -4,7 +4,8 @@ import (
 	enums2 "game-data-etl/internal/domain/enums"
 )
 
-// Type aliases bridging enums submodule into entities for ergonomic field usage.
+// Type aliases bridging enums submodule into entities for
+// ergonomic field usage.
 type (
 	AgeRatingOrg        = enums2.AgeRatingOrg
 	ExternalRefCategory = enums2.ExternalRefCategory

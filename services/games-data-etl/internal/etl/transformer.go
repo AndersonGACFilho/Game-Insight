@@ -1,5 +1,12 @@
 package etl
 
+// transformer.go
+// SRP: Transformer converts raw source DTO into internal
+// aggregate root skeleton (Game) without enrichment.
+// OCP: Additional transformers for other sources can
+// implement Transformer interface.
+// DIP: Pipeline uses the Transformer interface abstraction.
+
 import (
 	"game-data-etl/internal/domain/entities"
 	"game-data-etl/internal/domain/igdb_models"
@@ -9,21 +16,37 @@ import (
 	"time"
 )
 
-// Transformer abstracts converting a source (IGDB) model into the domain entity.
+// Transformer abstracts converting a source (IGDB) model
+// into the domain entity.
+// Must not perform persistence or network calls.
 type Transformer interface {
 	Transform(igdb_models.IGDBGame) (*entities.Game, error)
 }
 
-// GameTransformer implements Transformer for IGDB game payloads.
+// GameTransformer implements Transformer for IGDB game
+// payloads.
+// Minimal validation logic lives here (e.g., slug
+// normalization); complex rules belong to a validation
+// layer (future).
 type GameTransformer struct {
 	logger zerolog.Logger
 }
 
-func NewGameTransformer(logger zerolog.Logger) *GameTransformer {
+// NewGameTransformer creates a new game transformer
+// instance.
+func NewGameTransformer(
+	logger zerolog.Logger,
+) *GameTransformer {
 	return &GameTransformer{logger: logger}
 }
 
-func (t *GameTransformer) Transform(igdbGame igdb_models.IGDBGame) (*entities.Game, error) {
+// Transform maps IGDBGame -> entities.Game (base fields
+// only).
+// Side effects: logging only.
+func (t *GameTransformer) Transform(
+	igdbGame igdb_models.IGDBGame,
+) (*entities.Game, error) {
+	// Start log context
 	t.logger.Debug().Str("game_name", igdbGame.Name).Msg("Starting game transformation")
 
 	game := &entities.Game{
@@ -48,12 +71,13 @@ func (t *GameTransformer) Transform(igdbGame igdb_models.IGDBGame) (*entities.Ga
 	// Category & Status
 	game.CategoryCode = int16PtrOrNil(igdbGame.Category)
 	game.StatusCode = int16PtrOrNil(igdbGame.Status)
-
+	// End
 	t.logger.Debug().Str("game_name", game.Title).Msg("Game base transformation completed")
 	return game, nil
 }
 
-// Helper pointer builders (kept private to transformation layer)
+// Helper pointer builders (kept private to transformation
+// layer)
 func ptrOrNil(s string) *string {
 	if strings.TrimSpace(s) == "" {
 		return nil

@@ -4,7 +4,8 @@ import (
 	"github.com/google/uuid"
 )
 
-// MediaAsset represents visual assets like covers, screenshots, and artwork.
+// MediaAsset represents visual assets like covers,
+// screenshots, and artwork.
 type MediaAsset struct {
 	ID uuid.UUID `json:"asset_id" gorm:"column:asset_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta
@@ -22,5 +23,6 @@ type MediaAsset struct {
 // TableName overrides pluralization.
 func (MediaAsset) TableName() string { return "media_asset" }
 
-// Asset is an alias for MediaAsset to maintain backward compatibility
+// Asset is an alias for MediaAsset to maintain backward
+// compatibility
 type Asset = MediaAsset

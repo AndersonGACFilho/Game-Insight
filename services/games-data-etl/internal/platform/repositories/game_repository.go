@@ -19,9 +19,19 @@ func (r *GameRepository) Save(game *entities.Game) error {
 	return r.db.Create(game).Error
 }
 
-// SaveWithAssociations persists a Game and its many-to-many associations.
-// Assumes dimension entities (genres, themes, etc.) already exist.
-func (r *GameRepository) SaveWithAssociations(game *entities.Game) error {
+// SaveWithAssociations is deprecated; use UpsertGraph. Left
+// for backward compatibility.
+func (r *GameRepository) SaveWithAssociations(
+	game *entities.Game,
+) error {
+	return r.UpsertGraph(game)
+}
+
+// UpsertGraph persists a Game and its associations
+// (many-to-many + one-to-many) idempotently.
+func (r *GameRepository) UpsertGraph(
+	game *entities.Game,
+) error {
 	return r.db.Transaction(func(tx *gorm.DB) error {
 		var existing entities.Game
 		err := tx.Where("source_ref = ?", game.SourceMeta.SourceRef).First(&existing).Error
@@ -34,26 +44,26 @@ func (r *GameRepository) SaveWithAssociations(game *entities.Game) error {
 				return err
 			}
 		} else {
-			// Preserve existing ID and propagate to children before update
 			oldID := game.ID
 			game.ID = existing.ID
 			propagateChildIDs(game, existing.ID)
-			if err := tx.Model(&existing).Updates(game).Error; err != nil {
+			if err := tx.Model(&existing).Updates(game).Error; err !=
+				nil {
 				return err
 			}
-			_ = oldID // for clarity; old transient ID discarded
+			_ = oldID
 		}
 
-		// Replace many-to-many sets (now includes AgeRatings)
 		assocNames := []string{"Genres", "Themes", "Keywords", "GameModes", "Perspectives", "Franchises", "AgeRatings", "Collections", "Platforms"}
 		for _, name := range assocNames {
-			if err := tx.Model(game).Association(name).Replace(r.sliceForAssociation(game, name)); err != nil {
+			if err :=
+				tx.Model(game).Association(name).Replace(r.sliceForAssociation(game,
+					name)); err != nil {
 				return err
 			}
 		}
 
 		gid := game.ID
-		// Helper inline to fully replace one-to-many sets (delete + bulk insert) (AgeRatings removed from children handling)
 		replaceChildren := func(model any, rows any) error {
 			if err := tx.Where("game_id = ?", gid).Delete(model).Error; err != nil {
 				return err
@@ -91,36 +101,48 @@ func (r *GameRepository) SaveWithAssociations(game *entities.Game) error {
 				if len(v) > 0 {
 					return tx.Create(&v).Error
 				}
+			case []entities.GameAchievement:
+				if len(v) > 0 {
+					return tx.Create(&v).Error
+				}
 			}
 			return nil
 		}
 
-		// Children replacement (idempotent)
-		if err := replaceChildren(&entities.GameAltName{}, game.GameAltNames); err != nil {
+		if err := replaceChildren(&entities.GameAltName{},
+			game.GameAltNames); err != nil {
 			return err
 		}
-		if err := replaceChildren(&entities.InvolvedCompany{}, game.Companies); err != nil {
+		if err := replaceChildren(&entities.InvolvedCompany{},
+			game.Companies); err != nil {
 			return err
 		}
-		if err := replaceChildren(&entities.ReleaseDate{}, game.ReleaseDates); err != nil {
+		if err := replaceChildren(&entities.ReleaseDate{},
+			game.ReleaseDates); err != nil {
 			return err
 		}
-		if err := replaceChildren(&entities.MediaAsset{}, game.MediaAssets); err != nil {
+		if err := replaceChildren(&entities.MediaAsset{},
+			game.MediaAssets); err != nil {
 			return err
 		}
-		if err := replaceChildren(&entities.MultiplayerMode{}, game.MultiplayerModes); err != nil {
+		if err := replaceChildren(&entities.MultiplayerMode{},
+			game.MultiplayerModes); err != nil {
 			return err
 		}
-		if err := replaceChildren(&entities.GameLanguageSupport{}, game.LanguageSupports); err != nil {
+		if err := replaceChildren(&entities.GameLanguageSupport{},
+			game.LanguageSupports); err != nil {
 			return err
 		}
-		if err := replaceChildren(&entities.GameAchievement{}, game.Achievements); err != nil {
+		if err := replaceChildren(&entities.GameAchievement{},
+			game.Achievements); err != nil {
 			return err
 		}
-		if err := replaceChildren(&entities.GameWebsite{}, game.Websites); err != nil {
+		if err := replaceChildren(&entities.GameWebsite{},
+			game.Websites); err != nil {
 			return err
 		}
-		if err := replaceChildren(&entities.GameVideo{}, game.Videos); err != nil {
+		if err := replaceChildren(&entities.GameVideo{},
+			game.Videos); err != nil {
 			return err
 		}
 
@@ -128,7 +150,8 @@ func (r *GameRepository) SaveWithAssociations(game *entities.Game) error {
 	})
 }
 
-// propagateChildIDs updates one-to-many child slices to use the persisted gameID (AgeRatings removed as m2m).
+// propagateChildIDs updates one-to-many child slices to use
+// the persisted gameID (AgeRatings removed as m2m).
 func propagateChildIDs(g *entities.Game, gid uuid.UUID) {
 	for i := range g.GameAltNames {
 		g.GameAltNames[i].GameID = gid
@@ -163,8 +186,12 @@ func propagateChildIDs(g *entities.Game, gid uuid.UUID) {
 	}
 }
 
-// sliceForAssociation returns the slice value for the given association name.
-func (r *GameRepository) sliceForAssociation(game *entities.Game, name string) any {
+// sliceForAssociation returns the slice value for the given
+// association name.
+func (r *GameRepository) sliceForAssociation(
+	game *entities.Game,
+	name string,
+) any {
 	switch name {
 	case "Genres":
 		return game.Genres
@@ -189,8 +216,11 @@ func (r *GameRepository) sliceForAssociation(game *entities.Game, name string) a
 	}
 }
 
-// FindExistingGameIDs maps source_ref -> game_id for provided source refs.
-func (r *GameRepository) FindExistingGameIDs(sourceRefs []int64) (map[int64]string, error) {
+// FindExistingGameIDs maps source_ref -> game_id for
+// provided source refs.
+func (r *GameRepository) FindExistingGameIDs(
+	sourceRefs []int64,
+) (map[int64]string, error) {
 	if len(sourceRefs) == 0 {
 		return map[int64]string{}, nil
 	}
@@ -208,36 +238,49 @@ func (r *GameRepository) FindExistingGameIDs(sourceRefs []int64) (map[int64]stri
 	return result, nil
 }
 
-func (r *GameRepository) FindGameIDBySourceRef(sourceRef int64) (*uuid.UUID, error) {
+func (r *GameRepository) FindGameIDBySourceRef(
+	sourceRef int64,
+) (*uuid.UUID, error) {
 	var row struct {
-		ID uuid.UUID `gorm:"column:game_id"`
+		ID string `gorm:"column:game_id"`
 	}
 	if err := r.db.Table("game").Select("game_id").Where("source_ref = ?", sourceRef).First(&row).Error; err != nil {
 		return nil, err
 	}
-	return &row.ID, nil
+	uid, err := uuid.Parse(row.ID)
+	if err != nil {
+		return nil, err
+	}
+	return &uid, nil
 }
 
-func (r *GameRepository) ResolveParentBySourceRef(game *entities.Game, parentSourceRef int64) error {
-	var parent entities.Game
-	if err := r.db.Select("game_id").Where("source_ref = ?", parentSourceRef).First(&parent).Error; err != nil {
+func (r *GameRepository) ResolveParentBySourceRef(
+	game *entities.Game,
+	parentSourceRef int64,
+) error {
+	var row struct {
+		ID string `gorm:"column:game_id"`
+	}
+	if err := r.db.Table("game").Select("game_id").Where("source_ref = ?", parentSourceRef).First(&row).Error; err != nil {
 		return err
 	}
-	game.ParentGameID = &parent.ID
+	pid, err := uuid.Parse(row.ID)
+	if err != nil {
+		return err
+	}
+	game.ParentGameID = &pid
 	return nil
 }
 
-func (r *GameRepository) ExistsBySourceRef(sourceRef int64) (bool, error) {
-	var id uuid.UUID
-	err := r.db.Table("game").Select("game_id").Where("source_ref = ?", sourceRef).Scan(&id).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, nil
-	}
-	if err != nil {
+func (r *GameRepository) ExistsBySourceRef(
+	sourceRef int64,
+) (bool, error) {
+	var count int64
+	if err := r.db.Table("game").Where("source_ref = ?", sourceRef).Count(&count).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
 		return false, err
 	}
-	if id == uuid.Nil {
-		return false, nil
-	}
-	return true, nil
+	return count > 0, nil
 }

@@ -5,8 +5,10 @@ import (
 	"time"
 )
 
-// Shared pattern dimensions: Genre, Theme, GameMode, PlayerPerspective, Keyword, Collection, Franchise
-// Each has: id, source_ref, name, slug, created_at_source, updated_at_source, created_at, updated_at
+// Shared pattern dimensions: Genre, Theme, GameMode,
+// PlayerPerspective, Keyword, Collection, Franchise
+// Each has: id, source_ref, name, slug, created_at_source,
+// updated_at_source, created_at, updated_at
 
 // Genre maps to genre table
 type Genre struct {

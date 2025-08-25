@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// GameAltName stores alternative titles for localization or regional branding.
+// GameAltName stores alternative titles for localization or
+// regional branding.
 type GameAltName struct {
 	ID uuid.UUID `json:"alt_name_id" gorm:"column:game_alt_name_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta

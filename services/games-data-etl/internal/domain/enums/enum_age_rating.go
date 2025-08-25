@@ -1,6 +1,7 @@
 package enums
 
-// AgeRatingOrg represents IGDB age_ratings.category classification organizations.
+// AgeRatingOrg represents IGDB age_ratings.category
+// classification organizations.
 type AgeRatingOrg int
 
 const (

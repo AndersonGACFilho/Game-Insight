@@ -1,6 +1,7 @@
 package enums
 
-// WebsiteCategory represents IGDB websites.category codes (subset currently used).
+// WebsiteCategory represents IGDB websites.category codes
+// (subset currently used).
 type WebsiteCategory int
 
 const (

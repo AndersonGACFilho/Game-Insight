@@ -14,7 +14,8 @@ type UnixTime struct {
 // UnmarshalJSON converts Unix epoch integer to time.Time
 func (ut *UnixTime) UnmarshalJSON(data []byte) error {
 	// Try to parse as integer first
-	if timestamp, err := strconv.ParseInt(string(data), 10, 64); err == nil {
+	if timestamp, err := strconv.ParseInt(string(data), 10,
+		64); err == nil {
 		ut.Time = time.Unix(timestamp, 0).UTC()
 		return nil
 	}

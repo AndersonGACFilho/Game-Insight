@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// GameEngine represents an underlying technology used to build a game.
+// GameEngine represents an underlying technology used to
+// build a game.
 type GameEngine struct {
 	ID uuid.UUID `json:"game_engine_id" gorm:"column:game_engine_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta

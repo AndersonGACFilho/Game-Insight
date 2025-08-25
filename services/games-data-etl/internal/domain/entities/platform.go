@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// Platform represents a hardware platform or operating system on which games run.
+// Platform represents a hardware platform or operating
+// system on which games run.
 type Platform struct {
 	ID uuid.UUID `json:"platform_id" gorm:"column:platform_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta

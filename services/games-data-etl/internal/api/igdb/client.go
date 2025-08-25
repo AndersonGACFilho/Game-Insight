@@ -1,5 +1,19 @@
 package igdb
 
+// Package igdb provides a thin, responsibility-focused HTTP
+// client for the IGDB API.
+// Design notes (SOLID):
+// * SRP: Client only knows how to authenticate and issue
+// queries; no transformation logic.
+// * OCP: New endpoints added via small helper methods
+// (e.g., GetEntitiesByIDs) without modifying core flow.
+// * DIP: Higher layers (extractor) depend on this
+// abstraction rather than raw http.
+// The client intentionally exposes only the primitives the
+// ETL layer needs while keeping
+// request building explicit for observability and future
+// rate limiting.
+
 import (
 	"encoding/json"
 	"fmt"
@@ -17,6 +31,11 @@ const (
 	contentTypeText = "text/plain"
 )
 
+// Client implements a minimal IGDB API client with token
+// acquisition and POST-based query helpers.
+// It is concurrency-safe for read operations after token
+// acquisition (mutable fields guarded by simple sequencing
+// of calls in current usage).
 type Client struct {
 	httpClient  *http.Client
 	loginURL    string
@@ -28,12 +47,18 @@ type Client struct {
 	logger      zerolog.Logger
 }
 
+// TokenResponse represents the OAuth-style token payload
+// returned by IGDB.
 type TokenResponse struct {
 	AccessToken string `json:"access_token"`
 	ExpiresIn   int    `json:"expires_in"`
 	TokenType   string `json:"token_type"`
 }
 
+// GameQueryParams captures high-level filters supported by
+// GetGames.
+// Only the subset used internally is modeled; arbitrary
+// WHERE clauses can be passed via Where.
 type GameQueryParams struct {
 	StartDate time.Time
 	EndDate   time.Time
@@ -42,7 +67,10 @@ type GameQueryParams struct {
 	Where     string
 }
 
-func NewClient(loginURL, baseURL, apiKey, clientID string, logger zerolog.Logger) *Client {
+// NewClient constructs a new IGDB client. The caller must
+// invoke GetToken() before data calls.
+func NewClient(loginURL, baseURL, apiKey, clientID string,
+	logger zerolog.Logger) *Client {
 	return &Client{
 		httpClient: &http.Client{Timeout: defaultTimeout},
 		loginURL:   loginURL,
@@ -54,14 +82,20 @@ func NewClient(loginURL, baseURL, apiKey, clientID string, logger zerolog.Logger
 	}
 }
 
-func (c *Client) GetGames(params GameQueryParams) ([]byte, error) {
+// GetGames fetches game data using a composed IGDB query
+// string based on provided parameters.
+// Responsibilities: build (fields/pagination/where/sort) ->
+// POST -> basic error handling -> raw bytes.
+func (c *Client) GetGames(params GameQueryParams) ([]byte,
+	error) {
 	c.logger.Debug().Msg("Starting GetGames request")
 
 	if err := c.validateToken(); err != nil {
 		return nil, err
 	}
 
-	if err := c.validateDateRange(params.StartDate, params.EndDate); err != nil {
+	if err := c.validateDateRange(params.StartDate,
+		params.EndDate); err != nil {
 		return nil, err
 	}
 
@@ -69,6 +103,8 @@ func (c *Client) GetGames(params GameQueryParams) ([]byte, error) {
 	return c.executeGameRequest(requestBody)
 }
 
+// GetToken obtains and stores an access token. It must be
+// called before other data endpoints.
 func (c *Client) GetToken() (string, error) {
 	c.logger.Debug().Msg("Starting token request")
 
@@ -93,10 +129,14 @@ func (c *Client) GetToken() (string, error) {
 	return c.processTokenResponse(resp)
 }
 
+// String implements fmt.Stringer for debug purposes
+// (sanitizes token).
 func (c *Client) String() string {
 	return fmt.Sprintf("IGDB Client: %s (Client ID: %s)", c.baseURL, c.clientID)
 }
 
+// validateToken ensures a token was set prior to data
+// calls.
 func (c *Client) validateToken() error {
 	if c.token.AccessToken == "" {
 		c.logger.Error().Msg("No access token available")
@@ -105,15 +145,25 @@ func (c *Client) validateToken() error {
 	return nil
 }
 
-func (c *Client) validateDateRange(startDate, endDate time.Time) error {
-	if !startDate.IsZero() && !endDate.IsZero() && startDate.After(endDate) {
+// validateDateRange guards against inverted date ranges;
+// zero values are accepted.
+func (c *Client) validateDateRange(
+	startDate time.Time,
+	endDate time.Time,
+) error {
+	if !startDate.IsZero() && !endDate.IsZero() &&
+		startDate.After(endDate) {
 		c.logger.Error().Msg("Start date cannot be after end date")
 		return fmt.Errorf("start date cannot be after end date")
 	}
 	return nil
 }
 
-func (c *Client) buildGameQuery(params GameQueryParams) string {
+// buildGameQuery composes required IGDB query fields and
+// clauses for the games endpoint.
+func (c *Client) buildGameQuery(
+	params GameQueryParams,
+) string {
 	fields := "fields id,name,summary,storyline,category,status,first_release_date," +
 		"total_rating,total_rating_count,aggregated_rating,aggregated_rating_count," +
 		"keywords,genres,themes,game_modes,player_perspectives,collections," +
@@ -129,7 +179,11 @@ func (c *Client) buildGameQuery(params GameQueryParams) string {
 	return fields + pagination + whereClause + sortClause
 }
 
-func (c *Client) buildWhereClause(params GameQueryParams) string {
+// buildWhereClause constructs a conditional clause based on
+// provided filters.
+func (c *Client) buildWhereClause(
+	params GameQueryParams,
+) string {
 	var conditions []string
 
 	// Add custom where condition
@@ -157,7 +211,11 @@ func (c *Client) buildWhereClause(params GameQueryParams) string {
 	return fmt.Sprintf("where %s; ", strings.Join(conditions, " & "))
 }
 
-func (c *Client) executeGameRequest(requestBody string) ([]byte, error) {
+// executeGameRequest performs the POST for games endpoint
+// and handles response boilerplate.
+func (c *Client) executeGameRequest(
+	requestBody string,
+) ([]byte, error) {
 	endpoint := c.baseURL + "games"
 	body := strings.NewReader(requestBody)
 
@@ -185,12 +243,16 @@ func (c *Client) executeGameRequest(requestBody string) ([]byte, error) {
 	return c.processGameResponse(resp)
 }
 
+// setGameRequestHeaders applies required auth & content
+// headers to a games request.
 func (c *Client) setGameRequestHeaders(req *http.Request) {
 	req.Header.Set("Client-ID", c.clientID)
 	req.Header.Set("Authorization", "Bearer "+c.token.AccessToken)
 	req.Header.Set("Content-Type", contentTypeText)
 }
 
+// logGameRequest emits a debug entry; token truncated for
+// safety.
 func (c *Client) logGameRequest(endpoint string) {
 	c.logger.Debug().
 		Str("endpoint", endpoint).
@@ -198,7 +260,11 @@ func (c *Client) logGameRequest(endpoint string) {
 		Msg("Making games request")
 }
 
-func (c *Client) processGameResponse(resp *http.Response) ([]byte, error) {
+// processGameResponse validates status and returns raw
+// body.
+func (c *Client) processGameResponse(
+	resp *http.Response,
+) ([]byte, error) {
 	responseBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("Failed to read response body")
@@ -220,12 +286,18 @@ func (c *Client) processGameResponse(resp *http.Response) ([]byte, error) {
 	return responseBody, nil
 }
 
+// buildTokenEndpoint creates the OAuth token URL with
+// credentials.
 func (c *Client) buildTokenEndpoint() string {
 	return fmt.Sprintf("%stoken?client_id=%s&client_secret=%s&grant_type=client_credentials",
 		c.loginURL, c.clientID, c.apiKey)
 }
 
-func (c *Client) createTokenRequest(endpoint string) (*http.Request, error) {
+// createTokenRequest builds the HTTP request for token
+// retrieval.
+func (c *Client) createTokenRequest(
+	endpoint string,
+) (*http.Request, error) {
 	req, err := http.NewRequest("POST", endpoint, nil)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("Failed to create token request")
@@ -238,7 +310,11 @@ func (c *Client) createTokenRequest(endpoint string) (*http.Request, error) {
 	return req, nil
 }
 
-func (c *Client) processTokenResponse(resp *http.Response) (string, error) {
+// processTokenResponse reads, validates and stores a token
+// payload.
+func (c *Client) processTokenResponse(
+	resp *http.Response,
+) (string, error) {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		c.logger.Error().Err(err).Msg("Failed to read token response body")
@@ -273,9 +349,16 @@ func (c *Client) processTokenResponse(resp *http.Response) (string, error) {
 	return tokenResp.AccessToken, nil
 }
 
-// GetNamedEntities fetches arbitrary named dimension entities (genres, themes, keywords, etc.) by their numeric IGDB IDs.
-// endpoint examples: "genres", "themes", "keywords", "game_modes", "player_perspectives", "collections", "franchises".
-func (c *Client) GetNamedEntities(endpoint string, ids []int32) ([]byte, error) {
+// GetNamedEntities fetches arbitrary named dimension
+// entities (genres, themes, keywords, etc.) by their
+// numeric IGDB IDs.
+// endpoint examples: "genres", "themes", "keywords",
+// "game_modes", "player_perspectives", "collections",
+// "franchises".
+func (c *Client) GetNamedEntities(
+	endpoint string,
+	ids []int32,
+) ([]byte, error) {
 	if err := c.validateToken(); err != nil {
 		return nil, err
 	}
@@ -299,8 +382,13 @@ func (c *Client) GetNamedEntities(endpoint string, ids []int32) ([]byte, error) 
 	return data, err
 }
 
-// GetEntitiesByIDs fetches arbitrary endpoint entities with selected fields for given ids.
-func (c *Client) GetEntitiesByIDs(endpoint string, ids []int32, fields string) ([]byte, error) {
+// GetEntitiesByIDs fetches arbitrary endpoint entities with
+// selected fields for given ids.
+func (c *Client) GetEntitiesByIDs(
+	endpoint string,
+	ids []int32,
+	fields string,
+) ([]byte, error) {
 	if err := c.validateToken(); err != nil {
 		return nil, err
 	}
@@ -316,12 +404,23 @@ func (c *Client) GetEntitiesByIDs(endpoint string, ids []int32, fields string) (
 	return c.executeGenericPOST(endpoint, query)
 }
 
-// executeGenericPOST executes a POST against an IGDB endpoint with a plain-text body.
-func (c *Client) executeGenericPOST(endpoint, bodyStr string) ([]byte, error) {
+// executeGenericPOST executes a POST against an IGDB
+// endpoint with a plain-text body.
+func (c *Client) executeGenericPOST(
+	endpoint,
+	bodyStr string,
+) ([]byte, error) {
 	url := c.baseURL + endpoint
-	req, err := http.NewRequest("POST", url, strings.NewReader(bodyStr))
+	req, err := http.NewRequest(
+		"POST",
+		url,
+		strings.NewReader(bodyStr),
+	)
 	if err != nil {
-		return nil, fmt.Errorf("failed creating request: %w", err)
+		return nil, fmt.Errorf(
+			"failed creating request: %w",
+			err,
+		)
 	}
 	c.setGameRequestHeaders(req) // same headers
 	resp, err := c.httpClient.Do(req)
@@ -331,7 +430,9 @@ func (c *Client) executeGenericPOST(endpoint, bodyStr string) ([]byte, error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			c.logger.Error().Err(err).Msg("Failed to close generic POST response body")
+			c.logger.Error().Err(err).Msg(
+				"Failed to close generic POST response body",
+			)
 		}
 	}(resp.Body)
 
@@ -340,13 +441,24 @@ func (c *Client) executeGenericPOST(endpoint, bodyStr string) ([]byte, error) {
 		return nil, fmt.Errorf("read body: %w", err)
 	}
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("endpoint %s failed (%d): %s", endpoint, resp.StatusCode, string(data))
+		return nil, fmt.Errorf(
+			"endpoint %s failed (%d): %s",
+			endpoint,
+			resp.StatusCode,
+			string(data),
+		)
 	}
 	return data, nil
 }
 
-// GetEntitiesByWhere fetches entities via an arbitrary where clause (used for achievements by game).
-func (c *Client) GetEntitiesByWhere(endpoint, where, fields string, limit int) ([]byte, error) {
+// GetEntitiesByWhere fetches entities via an arbitrary
+// where clause (used for achievements by game).
+func (c *Client) GetEntitiesByWhere(
+	endpoint string,
+	where string,
+	fields string,
+	limit int,
+) ([]byte, error) {
 	if err := c.validateToken(); err != nil {
 		return nil, err
 	}

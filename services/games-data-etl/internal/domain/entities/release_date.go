@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// ReleaseDate represents a platform-specific release event for a Game.
+// ReleaseDate represents a platform-specific release event
+// for a Game.
 type ReleaseDate struct {
 	ID uuid.UUID `json:"release_date_id" gorm:"column:release_date_id;type:uuid;primaryKey;default:gen_random_uuid()"`
 	SourceMeta
