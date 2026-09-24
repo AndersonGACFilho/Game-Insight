@@ -1,12 +1,21 @@
 # Game Insight 🎮
+
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![Go](https://img.shields.io/badge/Go-00ADD8.svg?logo=go&logoColor=white)](https://go.dev/)
+[![Java](https://img.shields.io/badge/Java-007396.svg?logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F.svg?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1.svg?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker Compose](https://img.shields.io/badge/Docker%20Compose-2496ED.svg?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![OpenTelemetry](https://img.shields.io/badge/observability-OpenTelemetry-425CC7.svg?logo=opentelemetry&logoColor=white)](https://opentelemetry.io/)
+[![Architecture: Microservices](https://img.shields.io/badge/architecture-microservices-6A5ACD.svg)](#system-architecture)
+[![Steam API](https://img.shields.io/badge/source-Steam-000000.svg?logo=steam&logoColor=white)](https://steamcommunity.com/dev)
+[![Version](https://img.shields.io/badge/version-0.1.0-0A9EDC.svg)](#project-roadmap-high-level)
+
 Game Insight is a cross-platform game recommendation engine designed to answer the perennial gamer question: **"What should I play next?"**
 
 It solves this by creating a **"True Gamer Profile"**—a single, unified view of a user's entire gaming life, aggregating library data, playtime, and achievements from multiple platforms like Steam, PlayStation, and Xbox. This rich, behavioral dataset powers a nuanced recommendation engine that goes far beyond simple genre matching.
 
 > Project Status: v0.1.0 – Initial public documentation and early architecture phase (pre-public MVP). Steam-only MVP in progress; console integrations pending official partnerships.
-
-<!-- Badges (activate when pipelines exist)
-![Build Status](#) ![Coverage](#) ![License: MIT](#) -->
 
 ---
 
